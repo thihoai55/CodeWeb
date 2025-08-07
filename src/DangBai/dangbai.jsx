@@ -24,6 +24,7 @@ function DangBai() {
 
   const [titleCharCount, setTitleCharCount] = useState(0);
   const [descCharCount, setDescCharCount] = useState(0);
+  const [activeTab, setActiveTab] = useState('khu-vuc'); // Thêm dòng này
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -102,12 +103,12 @@ function DangBai() {
           {/* Title & Tabs */}
           <div style={{
             marginBottom: '20px',
-            width: '100%',
+            // width: '100%',
             background: 'transparent',
             padding: '0 32px'
           }}>
             <h1 style={{
-              fontSize: '28px',
+              fontSize: '25px',
               fontWeight: '700',
               color: '#333',
               margin: '0 0 10px 0'
@@ -119,61 +120,75 @@ function DangBai() {
               display: 'flex',
               gap: '32px',
               borderBottom: '1px solid #e0e0e0',
-              // paddingBottom: '16px'
             }}>
-              <div style={{
-                padding: '8px 0',
-                cursor: 'pointer',
-                color: '#666',
-                fontSize: '16px',
-                fontWeight: '500',
-                borderBottom: '2px solid transparent'
-              }}
-                onClick={() => scrollToSection('khu-vuc')}>
+              <div
+                style={{
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  color: activeTab === 'khu-vuc' ? '#3181d0ff' : '#666',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  borderBottom: activeTab === 'khu-vuc' ? '2px solid #3181d0ff' : '2px solid transparent',
+                  transition: 'color 0.2s, border-bottom 0.2s'
+                }}
+                onClick={() => { setActiveTab('khu-vuc'); scrollToSection('khu-vuc'); }}
+              >
                 Khu vực
               </div>
-              <div style={{
-                padding: '8px 0',
-                cursor: 'pointer',
-                color: '#666',
-                fontSize: '16px',
-                fontWeight: '500',
-                borderBottom: '2px solid transparent'
-              }}
-                onClick={() => scrollToSection('thong-tin-mo-ta')}>
+              <div
+                style={{
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  color: activeTab === 'thong-tin-mo-ta' ? '#3181d0ff' : '#666',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  borderBottom: activeTab === 'thong-tin-mo-ta' ? '2px solid #3181d0ff' : '2px solid transparent',
+                  transition: 'color 0.2s, border-bottom 0.2s'
+                }}
+                onClick={() => { setActiveTab('thong-tin-mo-ta'); scrollToSection('thong-tin-mo-ta'); }}
+              >
                 Thông tin mô tả
               </div>
-              <div style={{
-                padding: '8px 0',
-                cursor: 'pointer',
-                color: '#666',
-                fontSize: '16px',
-                fontWeight: '500',
-                borderBottom: '2px solid transparent'
-              }}
-                onClick={() => scrollToSection('hinh-anh')}>
+              <div
+                style={{
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  color: activeTab === 'hinh-anh' ? '#3181d0ff' : '#666',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  borderBottom: activeTab === 'hinh-anh' ? '2px solid #3181d0ff' : '2px solid transparent',
+                  transition: 'color 0.2s, border-bottom 0.2s'
+                }}
+                onClick={() => { setActiveTab('hinh-anh'); scrollToSection('hinh-anh'); }}
+              >
                 Hình ảnh
               </div>
-              <div style={{
-                padding: '8px 0',
-                cursor: 'pointer',
-                color: '#666',
-                fontSize: '16px',
-                fontWeight: '500',
-                // borderBottom: '2px solid #ff6b35'
-              }}
-                onClick={() => scrollToSection('video')}>
+              <div
+                style={{
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  color: activeTab === 'video' ? '#3181d0ff' : '#666',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  borderBottom: activeTab === 'video' ? '2px solid #3181d0ff' : '2px solid transparent',
+                  transition: 'color 0.2s, border-bottom 0.2s'
+                }}
+                onClick={() => { setActiveTab('video'); scrollToSection('video'); }}
+              >
                 Video
               </div>
-              <div style={{
-                padding: '8px 0',
-                cursor: 'pointer',
-                color: '#666',
-                fontSize: '16px',
-                fontWeight: '500',
-                borderBottom: '2px solid transparent'
-              }}
-                onClick={() => scrollToSection('thong-tin-lien-he')}>
+              <div
+                style={{
+                  padding: '8px 0',
+                  cursor: 'pointer',
+                  color: activeTab === 'thong-tin-lien-he' ? '#3181d0ff' : '#666',
+                  fontSize: '16px',
+                  fontWeight: '500',
+                  borderBottom: activeTab === 'thong-tin-lien-he' ? '2px solid #3181d0ff' : '2px solid transparent',
+                  transition: 'color 0.2s, border-bottom 0.2s'
+                }}
+                onClick={() => { setActiveTab('thong-tin-lien-he'); scrollToSection('thong-tin-lien-he'); }}
+              >
                 Thông tin liên hệ
               </div>
             </div>
@@ -187,7 +202,7 @@ function DangBai() {
             boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             flex: 1,
             minWidth: 0,
-            margin: '0 100px 100px 100px'
+            margin: '0 100px 0 100px'
           }}>
             {/* Khu vực */}
             <div id="khu-vuc" style={{
@@ -438,8 +453,7 @@ function DangBai() {
                     color: '#222',
                     background: '#fff',
                     outline: 'none',
-                    marginBottom: 0,
-                    resize: 'vertical'
+                    marginBottom: 0
                   }}
                 />
                 <div style={{ textAlign: 'right', fontSize: '12px', color: descCharCount >= 1000 ? 'red' : '#666', marginTop: '3px' }}>
@@ -749,61 +763,61 @@ function DangBai() {
             </div>
 
             {/* Thông tin thanh toán */}
-            {/* <div style={{
+            <div style={{
               marginBottom: '32px',
               background: '#c8f1fc',
-              borderRadius: '28px',
-              padding: '24px 32px',
+              borderRadius: '25px',
+              padding: '25px 24px',
               fontSize: '32px',
-              fontWeight: 400,
+              fontWeight: 700,
               color: '#111'
             }}>
-              <div style={{ fontWeight: 700, fontSize: '38px', marginBottom: '16px' }}>
+              <div style={{ fontWeight: 700, fontSize: '25px', marginBottom: '20px' }}>
                 Thông tin thanh toán
               </div>
-              <div style={{
-                borderTop: '3px solid #222',
-                margin: '16px 0'
-              }} />
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', marginBottom: '24px' }}>
-                <div style={{ minWidth: '220px', fontWeight: 500 }}>Loại tin:</div>
-                <div style={{ fontWeight: 500, fontSize: '32px', lineHeight: 1.2 }}>
+              {/* <div style={{
+                borderTop: '0.5px solid #222',
+                margin: '10px 0'
+              }} /> */}
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', marginBottom: '10px' }}>
+                <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Loại tin:</div>
+                <div style={{ fontWeight: 500, fontSize: '16px', lineHeight: 1.2 }}>
                   Đứng đầu danh sách các tin đăng. TIÊU ĐỀ MÀU ĐỎ, IN HOA
                 </div>
               </div>
               <div style={{
-                borderTop: '3px solid #222',
-                margin: '16px 0'
+                borderTop: '0.3px solid #222',
+                margin: '10px 0'
               }} />
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '24px' }}>
-                <div style={{ minWidth: '220px', fontWeight: 500 }}>Đơn giá:</div>
-                <div style={{ fontWeight: 500, fontSize: '32px' }}>{'30.000'}</div>
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
+                <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Đơn giá:</div>
+                <div style={{ fontWeight: 500, fontSize: '16px' }}>{'30.000'}</div>
               </div>
               <div style={{
-                borderTop: '3px solid #222',
-                margin: '16px 0'
+                borderTop: '0.3px solid #222',
+                margin: '10px 0'
               }} />
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '24px' }}>
-                <div style={{ minWidth: '220px', fontWeight: 500 }}>Số ngày:</div>
-                <div style={{ fontWeight: 500, fontSize: '32px' }}>{'3'}</div>
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
+                <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Số ngày:</div>
+                <div style={{ fontWeight: 500, fontSize: '16px' }}>{'3'}</div>
               </div>
               <div style={{
-                borderTop: '3px solid #222',
-                margin: '16px 0'
+                borderTop: '0.3px solid #222',
+                margin: '10px 0'
               }} />
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '24px' }}>
-                <div style={{ minWidth: '220px', fontWeight: 500 }}>Ngày hết hạn:</div>
-                <div style={{ fontWeight: 500, fontSize: '32px' }}>{getExpirationDate()}</div>
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '1px' }}>
+                <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Ngày hết hạn:</div>
+                <div style={{ fontWeight: 500, fontSize: '16px' }}>{getExpirationDate()}</div>
               </div>
               <div style={{
-                borderTop: '3px solid #222',
-                margin: '16px 0'
+                borderTop: '0.3px solid #222',
+                margin: '10px 0'
               }} />
               <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                <div style={{ minWidth: '220px', fontWeight: 500 }}>Thành tiền:</div>
-                <div style={{ fontWeight: 700, fontSize: '32px' }}>{calculateTotal().toLocaleString()}</div>
+                <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Thành tiền:</div>
+                <div style={{ fontWeight: 500, fontSize: '16px' }}>{calculateTotal().toLocaleString()}</div>
               </div>
-            </div> */}
+            </div>
 
             {/* Submit Button */}
             <button style={{

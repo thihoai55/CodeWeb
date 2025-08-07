@@ -8,7 +8,9 @@ function Header() {
       background: "#fff",
       borderBottom: "1px solid #e0e0e0",
       padding: "12px 24px 0 24px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      // position: 'fixed',
+      // width: '100%'
     }}>
       {/* Hàng 1: Logo - Menu - Action */}
       <div style={{

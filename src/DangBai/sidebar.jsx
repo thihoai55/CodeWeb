@@ -23,7 +23,8 @@ function Sidebar() {
       padding: '24px 16px',
       fontFamily: 'Arial, sans-serif',
       minHeight: '100vh',
-      boxSizing: 'border-box'
+      boxSizing: 'border-box', 
+      // position: 'fixed'
     }}>
       {/* User Info */}
       <div style={{
