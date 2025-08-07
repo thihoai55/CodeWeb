@@ -28,7 +28,7 @@ function Header() {
           minWidth: 90,
           marginRight: 12
         }}>
-          <img src="/logo192.png" alt="Motel Home" style={{height: 32, marginBottom: 1}} />
+          <img src="/logo.png" alt="Motel Home" style={{height: 32, marginBottom: 1}} />
           <div style={{
             fontSize: "11px",
             color: "#888",

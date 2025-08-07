@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from './sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 
 function DangBai() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     province: '',
     district: '',
@@ -78,6 +80,26 @@ function DangBai() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const handleSubmitAndPayment = () => {
+    // Kiểm tra các trường bắt buộc
+    if (!formData.province || !formData.district || !formData.category || !formData.title || !formData.contactName || !formData.contactPhone) {
+      alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+      return;
+    }
+    
+    // Lưu thông tin đăng bài vào localStorage để sử dụng ở trang thanh toán
+    const postData = {
+      ...formData,
+      totalAmount: calculateTotal(),
+      postType: formData.postType,
+      numberOfDays: formData.numberOfDays
+    };
+    localStorage.setItem('postData', JSON.stringify(postData));
+    
+    // Chuyển hướng đến trang thanh toán
+    navigate('/thanh-toan');
   };
 
   return (
@@ -820,18 +842,20 @@ function DangBai() {
             </div>
 
             {/* Submit Button */}
-            <button style={{
-              width: '100%',
-              padding: '16px',
-              background: '#4d9ff2ff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '16px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'background 0.2s'
-            }}
+            <button 
+              onClick={handleSubmitAndPayment}
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: '#4d9ff2ff',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '16px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                transition: 'background 0.2s'
+              }}
               onMouseEnter={(e) => e.target.style.background = '#1565c0'}
               onMouseLeave={(e) => e.target.style.background = '#4d9ff2ff'}>
               Đăng tin và thanh toán
