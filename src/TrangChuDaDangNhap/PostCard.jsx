@@ -1,6 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 function PostCard({ post }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    // Tạo ID ngẫu nhiên cho bài đăng (trong thực tế sẽ lấy từ database)
+    const postId = Math.floor(Math.random() * 1000000);
+    navigate(`/xem-bai-dang/${postId}`);
+  };
+
   return (
     <div style={{
       border: "1px solid #e0e0e0",
@@ -12,6 +21,7 @@ function PostCard({ post }) {
       cursor: "pointer",
       overflow: "hidden"
     }}
+    onClick={handleClick}
     onMouseEnter={(e) => {
       e.currentTarget.style.transform = "scale(1.045)";
       e.currentTarget.style.boxShadow = "0 10px 32px 0 rgba(25,118,210,0.18)";
