@@ -1,19 +1,34 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Sidebar() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [activeIdx, setActiveIdx] = useState(0);
 
   const menuItems = [
-    { label: 'Quản lý bài đăng', icon: '📋' },
-    { label: 'Đăng bài mới', icon: '📝' },
-    { label: 'Thông tin cá nhân', icon: '👤' },
-    { label: 'Đổi mật khẩu', icon: '🔒' },
-    { label: 'Lịch sử nạp tiền', icon: '⏱️' },
-    { label: 'Lịch sử giao dịch', icon: '📄' },
-    { label: 'Thông báo', icon: '🔔' },
-    { label: 'Liên hệ & trợ giúp', icon: '❓' },
-    { label: 'Hợp đồng cho thuê', icon: '📑'},
+    { label: 'Quản lý bài đăng', icon: '📋', path: '/quan-ly-bai-dang' },
+    { label: 'Đăng bài mới', icon: '📝', path: '/dang-bai' },
+    { label: 'Thông tin cá nhân', icon: '👤', path: '/thong-tin-ca-nhan' },
+    { label: 'Đổi mật khẩu', icon: '🔒', path: '/doi-mat-khau' },
+    { label: 'Lịch sử nạp tiền', icon: '⏱️', path: '/lich-su-nap-tien' },
+    { label: 'Lịch sử giao dịch', icon: '📄', path: '/lich-su-giao-dich' },
+    { label: 'Thông báo', icon: '🔔', path: '/thong-bao' },
+    { label: 'Liên hệ & trợ giúp', icon: '❓', path: '/lien-he-tro-giup' },
+    { label: 'Hợp đồng cho thuê', icon: '📑', path: '/hop-dong-cho-thue' },
   ];
+
+  // Xác định active item dựa trên current path
+  const getActiveIndex = () => {
+    const currentPath = location.pathname;
+    const activeIndex = menuItems.findIndex(item => item.path === currentPath);
+    return activeIndex >= 0 ? activeIndex : 0;
+  };
+
+  const handleMenuClick = (idx, path) => {
+    setActiveIdx(idx);
+    navigate(path);
+  };
 
   return (
     <div style={{
@@ -113,17 +128,17 @@ function Sidebar() {
               borderRadius: '7px',
               fontSize: '15px',
               fontWeight: item.color ? '600' : '500',
-              color: activeIdx === idx ? '#1976d2' : (item.color || '#222'),
-              backgroundColor: activeIdx === idx ? '#e3f2fd' : (item.color ? '#f1f8ff' : 'transparent'),
+              color: getActiveIndex() === idx ? '#1976d2' : (item.color || '#222'),
+              backgroundColor: getActiveIndex() === idx ? '#e3f2fd' : (item.color ? '#f1f8ff' : 'transparent'),
               cursor: 'pointer',
               transition: 'background 0.2s, color 0.2s'
             }}
-            onClick={() => setActiveIdx(idx)}
+            onClick={() => handleMenuClick(idx, item.path)}
             onMouseEnter={e => {
-              if (activeIdx !== idx) e.currentTarget.style.background = '#f5f5f5';
+              if (getActiveIndex() !== idx) e.currentTarget.style.background = '#f5f5f5';
             }}
             onMouseLeave={e => {
-              if (activeIdx !== idx) e.currentTarget.style.background = item.color ? '#f1f8ff' : 'transparent';
+              if (getActiveIndex() !== idx) e.currentTarget.style.background = item.color ? '#f1f8ff' : 'transparent';
             }}
           >
             <span style={{ marginRight: '5px', fontSize: '18px' }}>{item.icon}</span>
@@ -151,6 +166,7 @@ function Sidebar() {
         }}
           onMouseEnter={e => e.currentTarget.style.background = '#f5f5f5'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          onClick={() => navigate('/')}
         >
           <span style={{ marginRight: '5px', fontSize: '18px' }}>↩️</span>
           Đăng xuất
