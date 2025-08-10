@@ -7,7 +7,8 @@ import TrangChuDaDangNhap from "./TrangChuDaDangNhap/TrangChuDaDangNhap";
 import DangBai from "./DangBai/dangbai";
 import ThanhToan from "./ThanhToan/thanhtoan";
 import XemBaiDang from "./XemChiTietBaiDang/Xembaidang";
-
+import QuanLyBaiDang from "./QuanLyBaiDang/baidang";
+import SuaBai from "./SuaBai/suabai";
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,8 @@ function App() {
         <Route path="/dang-bai" element={<DangBai />} />
         <Route path="/thanh-toan" element={<ThanhToan />} />
         <Route path="/xem-bai-dang/:id" element={<XemBaiDang />} />
+        <Route path="/quan-ly-bai-dang/" element={<QuanLyBaiDang />} />
+        <Route path="/sua-bai/" element={<SuaBai />} />
         {/* <Route path="/bo-loc" element={<BoLoc />} /> */}
 
   
