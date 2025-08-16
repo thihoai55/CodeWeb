@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
@@ -7,12 +7,6 @@ function XemBaiDang() {
   const navigate = useNavigate();
   const { id } = useParams(); // Lấy ID bài đăng từ URL
   
-  // State cho các tính năng tương tác
-  const [selectedImage, setSelectedImage] = useState(0);
-  const [showAllImages, setShowAllImages] = useState(false);
-  const [showMap, setShowMap] = useState(false);
-  const [showReviews, setShowReviews] = useState(false);
-
   // Dữ liệu mẫu cho bài đăng
   const postData = {
     id: "123456",
@@ -88,6 +82,41 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
     }
   };
 
+  // State cho các tính năng tương tác
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [showAllImages, setShowAllImages] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [showReviews, setShowReviews] = useState(false);
+
+  // State cho đánh giá
+  const [reviews, setReviews] = useState(postData.reviews);
+  const newReviewName = 'Ngô Thị Thanh Nhàn';
+  const [newReviewRating, setNewReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [newReviewComment, setNewReviewComment] = useState('');
+  
+  // Đồng bộ chiều cao thanh bên tới ngang "Trọ cùng khu vực"
+  const postDetailRef = useRef(null);
+  const ownerCardRef = useRef(null);
+  const [featuredContainerHeight, setFeaturedContainerHeight] = useState(null);
+  const [sidebarItemCount, setSidebarItemCount] = useState(18);
+  useEffect(() => {
+    const computeHeights = () => {
+      const postH = postDetailRef.current ? postDetailRef.current.offsetHeight : 0;
+      const ownerH = ownerCardRef.current ? ownerCardRef.current.offsetHeight : 0;
+      const gapBetweenCards = 20; // khoảng cách giữa hai thẻ ở sidebar
+      if (postH > 0) {
+        const available = Math.max(200, postH - ownerH - gapBetweenCards);
+        setFeaturedContainerHeight(available);
+        const approxItemHeight = 84; // ước lượng chiều cao mỗi mục (px)
+        const desiredCount = Math.ceil(available / approxItemHeight) + 1;
+        setSidebarItemCount(Math.max(12, desiredCount));
+      }
+    };
+    computeHeights();
+    window.addEventListener('resize', computeHeights);
+    return () => window.removeEventListener('resize', computeHeights);
+  }, []);
   // Dữ liệu tin nổi bật
   const featuredPosts = [
     {
@@ -145,6 +174,21 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
     }
   ];
 
+  // Tạo danh sách bài viết nổi bật từ mục ảnh
+  const featuredFromImages = postData.images.map((img, index) => ({
+    id: index + 1,
+    title: `Bài viết nổi bật ${index + 1}`,
+    price: postData.price,
+    image: img,
+    time: `${index + 1} giờ trước`
+  }));
+  // Kéo dài danh sách bên thanh phải để gần bằng chiều cao nội dung bài đăng
+  const baseFeatured = [...featuredPosts, ...featuredFromImages];
+  const sidebarFeatured = Array.from({ length: sidebarItemCount }, (_, i) => ({
+    ...baseFeatured[i % baseFeatured.length],
+    uid: `sf-${i}`
+  }));
+
   const handleContact = (type) => {
     switch(type) {
       case 'phone':
@@ -167,6 +211,42 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
         ★
       </span>
     ));
+  };
+
+  const renderInteractiveStars = () => {
+    return [...Array(5)].map((_, index) => {
+      const starIndex = index + 1;
+      const isActive = starIndex <= (hoverRating || newReviewRating);
+      return (
+        <span
+          key={index}
+          style={{ cursor: 'pointer', color: isActive ? '#FFD700' : '#ddd' }}
+          onMouseEnter={() => setHoverRating(starIndex)}
+          onMouseLeave={() => setHoverRating(0)}
+          onClick={() => setNewReviewRating(starIndex)}
+        >
+          ★
+        </span>
+      );
+    });
+  };
+
+  const handleSubmitReview = () => {
+    if (!newReviewComment.trim() || newReviewRating === 0) {
+      alert('Vui lòng chấm sao và nhập nội dung đánh giá.');
+      return;
+    }
+    const newReview = {
+      id: Date.now(),
+      user: newReviewName,
+      rating: newReviewRating,
+      comment: newReviewComment.trim(),
+      date: new Date().toLocaleDateString('vi-VN')
+    };
+    setReviews([newReview, ...reviews]);
+    setNewReviewRating(0);
+    setNewReviewComment('');
+    setShowReviews(true);
   };
 
   return (
@@ -194,7 +274,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
             {/* Main Content */}
             <div style={{ flex: 1 }}>
               {/* Post Header */}
-              <div style={{ 
+              <div ref={postDetailRef} style={{ 
                 background: '#fff', 
                 borderRadius: '12px', 
                 padding: '24px',
@@ -205,23 +285,27 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                   fontSize: '24px', 
                   fontWeight: '700', 
                   marginBottom: '16px',
-                  color: '#333'
+                  color: '#52b4f9'
                 }}>
                   {postData.title}
                 </h1>
                 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
+                {/* Address on its own line */}
+                <div style={{ marginBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>📍</span>
-                    <span>{postData.address}</span>
+                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.address}</span>
                   </div>
+                </div>
+                {/* Other info on the next line */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>💰</span>
-                    <span style={{ fontWeight: '600', color: '#e53935' }}>{postData.price}</span>
+                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.price}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>📏</span>
-                    <span>{postData.area}</span>
+                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.area}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>#</span>
@@ -235,58 +319,109 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
 
                 {/* Image Gallery */}
                 <div style={{ marginBottom: '24px' }}>
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <div style={{ flex: 1 }}>
-                      <img 
-                        src={postData.images[selectedImage]} 
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
+                    {/* Left: Main image */}
+                    <div>
+                      <img
+                        src={postData.images[selectedImage]}
                         alt="Main"
-                        style={{ 
-                          width: '100%', 
-                          height: '400px', 
+                        style={{
+                          width: '100%',
+                          height: '400px',
                           objectFit: 'cover',
-                          borderRadius: '8px'
+                          borderRadius: '16px'
                         }}
                       />
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      {postData.images.slice(0, 3).map((img, index) => (
-                        <img 
-                          key={index}
-                          src={img} 
-                          alt={`Thumbnail ${index + 1}`}
-                          style={{ 
-                            width: '120px', 
-                            height: '120px', 
-                            objectFit: 'cover',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            border: selectedImage === index ? '2px solid #1976d2' : '1px solid #ddd'
-                          }}
-                          onClick={() => setSelectedImage(index)}
-                        />
-                      ))}
-                      {postData.images.length > 4 && (
-                        <div 
-                          style={{ 
-                            width: '120px', 
-                            height: '120px', 
-                            background: '#f0f0f0',
-                            borderRadius: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            fontWeight: '600'
-                          }}
-                          onClick={() => setShowAllImages(true)}
-                        >
+
+                    {/* Right: 2x2 thumbnails grid */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '12px' }}>
+                      {[1, 2, 3].map((i) => {
+                        const imgSrc = postData.images[i];
+                        if (!imgSrc) return <div key={i} style={{ borderRadius: '12px', background: '#f3f4f6' }} />;
+                        return (
+                          <img
+                            key={i}
+                            src={imgSrc}
+                            alt={`Thumbnail ${i}`}
+                            onClick={() => setSelectedImage(i)}
+                            style={{
+                              width: '100%',
+                              height: '194px',
+                              objectFit: 'cover',
+                              borderRadius: '12px',
+                              cursor: 'pointer',
+                              border: selectedImage === i ? '2px solid #1976d2' : '1px solid #eee'
+                            }}
+                          />
+                        );
+                      })}
+
+                      {/* Bottom-right: overlay tile "Xem thêm" */}
+                      <div
+                        onClick={() => setShowAllImages(true)}
+                        style={{
+                          position: 'relative',
+                          width: '100%',
+                          height: '194px',
+                          borderRadius: '12px',
+                          overflow: 'hidden',
+                          cursor: 'pointer',
+                          border: '1px solid #eee',
+                          background: postData.images[4] ? `url(${postData.images[4]}) center/cover no-repeat` : '#f3f4f6'
+                        }}
+                      >
+                        <div style={{
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'rgba(0,0,0,0.35)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: '18px'
+                        }}>
                           Xem thêm
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* All images modal */}
+                {showAllImages && (
+                  <div
+                    onClick={(e) => { if (e.target === e.currentTarget) setShowAllImages(false); }}
+                    style={{
+                      position: 'fixed',
+                      inset: 0,
+                      background: 'rgba(0,0,0,0.6)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      zIndex: 1000
+                    }}
+                  >
+                    <div style={{ background: '#fff', borderRadius: '12px', maxWidth: '1000px', width: '92%', maxHeight: '85vh', overflow: 'auto', padding: '16px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                        <div style={{ fontWeight: 700 }}>Tất cả hình ảnh</div>
+                        <button onClick={() => setShowAllImages(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer' }}>Đóng ✕</button>
+                      </div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+                        {postData.images.map((img, idx) => (
+                          <img
+                            key={idx}
+                            src={img}
+                            alt={`Hình ${idx + 1}`}
+                            onClick={() => { setSelectedImage(idx); setShowAllImages(false); }}
+                            style={{ width: '100%', height: '200px', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer' }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Description */}
                 <div style={{ marginBottom: '24px' }}>
@@ -367,16 +502,48 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                     <div style={{ display: 'flex', gap: '4px' }}>
                       {renderStars(Math.floor(postData.rating.average))}
                     </div>
-                    <span style={{ color: '#666' }}>({postData.rating.total} đánh giá)</span>
+                    <span style={{ color: '#666' }}>({reviews.length} đánh giá)</span>
+                  </div>
+
+                  {/* Write review box */}
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', marginBottom: '12px' }}>
+                    <img src={postData.owner.avatar} alt="Avatar" style={{ width: 56, height: 56, borderRadius: '50%', objectFit: 'cover' }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, marginBottom: 6 }}>{newReviewName}</div>
+                      <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
+                        {renderInteractiveStars()}
+                      </div>
+                      <div style={{ position: 'relative', background: '#eee', borderRadius: 12, paddingRight: 140 }}>
+                        <input
+                          value={newReviewComment}
+                          onChange={(e) => setNewReviewComment(e.target.value)}
+                          placeholder="Đánh giá bài viết..."
+                          style={{
+                            width: '100%',
+                            border: 'none',
+                            outline: 'none',
+                            background: 'transparent',
+                            padding: '12px 16px',
+                            fontSize: 14
+                          }}
+                        />
+                        <div style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', display: 'flex', gap: 14 }}>
+                          <span role="img" aria-label="emoji" style={{ cursor: 'pointer' }}>😊</span>
+                          <span role="img" aria-label="video" style={{ cursor: 'pointer' }}>🎥</span>
+                          <span role="img" aria-label="photo" style={{ cursor: 'pointer' }}>📷</span>
+                          <button onClick={handleSubmitReview} style={{ border: 'none', background: 'black', color: 'white', borderRadius: 9999, padding: '6px 10px', cursor: 'pointer' }}>➤</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   {showReviews && (
-                    <div style={{ marginTop: '16px' }}>
-                      {postData.reviews.map(review => (
-                        <div key={review.id} style={{ 
-                          borderBottom: '1px solid #eee', 
+                    <div style={{ marginTop: '8px' }}>
+                      {reviews.map(review => (
+                        <div key={review.id} style={{
+                          borderBottom: '1px solid #eee',
                           padding: '16px 0',
-                          marginBottom: '16px'
+                          marginBottom: '8px'
                         }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                             <span style={{ fontWeight: '600' }}>{review.user}</span>
@@ -408,7 +575,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                 <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
                   Trọ cùng khu vực
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                   {nearbyPosts.map(post => (
                     <div key={post.id} style={{ 
                       border: '1px solid #eee',
@@ -419,7 +586,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                       <img 
                         src={post.image} 
                         alt={post.title}
-                        style={{ width: '100%', height: '150px', objectFit: 'cover' }}
+                        style={{ width: '100%', height: '180px', objectFit: 'cover' }}
                       />
                       <div style={{ padding: '12px' }}>
                         <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
@@ -436,89 +603,167 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                   ))}
                 </div>
               </div>
-            </div>
 
-            {/* Sidebar */}
-            <div style={{ width: '320px' }}>
-              {/* Owner Info */}
+              {/* Bài viết nổi bật từ ảnh */}
               <div style={{ 
                 background: '#fff', 
                 borderRadius: '12px', 
+                padding: '24px',
+                marginBottom: '20px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+              }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>
+                  Bài viết mới
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+                  {featuredFromImages.map(item => (
+                    <div key={item.id} style={{ 
+                      border: '1px solid #eee',
+                      borderRadius: '8px',
+                      overflow: 'hidden',
+                      cursor: 'pointer'
+                    }}>
+                      <img 
+                        src={item.image} 
+                        alt={item.title}
+                        style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+                      />
+                      <div style={{ padding: '12px' }}>
+                        <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
+                          {item.title}
+                        </h4>
+                        <div style={{ color: '#e53935', fontWeight: '600', marginBottom: '4px' }}>
+                          {item.price}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#666' }}>
+                          {item.time}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Sidebar */}
+            <div style={{ width: '320px', position: 'sticky', top: '20px', alignSelf: 'flex-start' }}>
+              {/* Owner Info - redesigned */}
+              <div ref={ownerCardRef} style={{
+                background: '#fff',
+                borderRadius: '12px',
                 padding: '20px',
                 marginBottom: '20px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
               }}>
-                <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>
-                  Người cho thuê
-                </h3>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                  <img 
-                    src={postData.owner.avatar} 
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <img
+                    src={postData.owner.avatar}
                     alt="Avatar"
-                    style={{ 
-                      width: '48px', 
-                      height: '48px', 
+                    style={{
+                      width: '64px',
+                      height: '64px',
                       borderRadius: '50%',
-                      objectFit: 'cover'
+                      objectFit: 'cover',
+                      border: '1px solid #eee',
+                      marginBottom: '12px'
                     }}
                   />
-                  <div>
-                    <div style={{ fontWeight: '600' }}>{postData.owner.name}</div>
-                    <div style={{ fontSize: '14px', color: '#666' }}>
-                      {postData.owner.totalPosts} tin đăng
-                    </div>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>Người cho thuê</div>
+                  <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '12px' }}>
+                    {postData.owner.totalPosts} tin đăng
                   </div>
                 </div>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <button 
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <button
                     onClick={() => handleContact('appointment')}
                     style={{
                       width: '100%',
-                      padding: '12px',
-                      background: '#1976d2',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      background: '#fff',
+                      color: '#111827',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '9999px',
                       cursor: 'pointer',
                       fontSize: '14px',
-                      fontWeight: '600'
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
                     }}
                   >
-                    Đặt lịch hẹn xem phòng
+                    <span>✉️</span>
+                    <span>Đặt lịch hẹn xem phòng</span>
                   </button>
-                  <button 
+
+                  <button
                     onClick={() => handleContact('phone')}
                     style={{
                       width: '100%',
-                      padding: '12px',
-                      background: '#4caf50',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      background: '#fff',
+                      color: '#111827',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '9999px',
                       cursor: 'pointer',
                       fontSize: '14px',
-                      fontWeight: '600'
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
                     }}
                   >
-                    {postData.owner.phone}
+                    <span>📞</span>
+                    <span>{postData.owner.phone}</span>
                   </button>
-                  <button 
+
+                  <button
                     onClick={() => handleContact('rent')}
                     style={{
                       width: '100%',
-                      padding: '12px',
-                      background: '#ff9800',
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '8px',
+                      padding: '10px 12px',
+                      background: '#fff',
+                      color: '#111827',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '9999px',
                       cursor: 'pointer',
                       fontSize: '14px',
-                      fontWeight: '600'
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
                     }}
                   >
-                    Gửi yêu cầu thuê
+                    <span>🔒</span>
+                    <span>Gửi yêu cầu thuê</span>
                   </button>
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: '12px',
+                  paddingTop: '8px',
+                  borderTop: '1px solid #f3f4f6',
+                  fontSize: '13px',
+                  color: '#6b7280'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }} onClick={() => alert('Đã lưu bài!')}>
+                    <span>♡</span>
+                    <span>Lưu bài</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }} onClick={() => alert('Đã sao chép liên kết!')}>
+                    <span>🔗</span>
+                    <span>Chia sẻ</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }} onClick={() => alert('Cảm ơn bạn đã báo cáo!')}>
+                    <span>⚠️</span>
+                    <span>Báo cáo</span>
+                  </div>
                 </div>
               </div>
 
@@ -527,14 +772,16 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                 background: '#fff', 
                 borderRadius: '12px', 
                 padding: '20px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                maxHeight: featuredContainerHeight ? `${featuredContainerHeight}px` : undefined,
+                overflowY: 'auto'
               }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '16px' }}>
                   Tin nổi bật
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {featuredPosts.map(post => (
-                    <div key={post.id} style={{ 
+                  {sidebarFeatured.map(post => (
+                    <div key={post.uid || post.id} style={{ 
                       display: 'flex', 
                       gap: '12px',
                       cursor: 'pointer',
@@ -542,8 +789,8 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                       borderRadius: '8px',
                       transition: 'background 0.2s'
                     }}
-                    onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
-                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = '#f5f5f5')}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                     >
                       <img 
                         src={post.image} 
