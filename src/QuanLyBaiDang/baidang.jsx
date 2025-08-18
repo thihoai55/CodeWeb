@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
@@ -6,6 +6,8 @@ import Footer from '../TrangChuDaDangNhap/Footer';
 import ModalAnTin from '../ModalAnTin/antin';
 import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
+import LichHen from '../NhanVaXuLyLichHen/lichhen';
+import YeuCauThue from '../NhanVaXuLyYeuCauThue/yeucauthue';
 
 function QuanLyBaiDang() {
   const navigate = useNavigate();
@@ -16,7 +18,7 @@ function QuanLyBaiDang() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
 
-  const posts = [
+  const [posts, setPosts] = useState([
     {
       id: 'BD001',
       type: 'Phòng trọ',
@@ -52,21 +54,53 @@ function QuanLyBaiDang() {
       area: '45 m²',
       description: 'Cho các bạn sinh viên thuê trọ ở trung tâm thành phố gần các trường đại học có gác lửng và tủ lạnh',
       image: 'https://spacet-release.s3.ap-southeast-1.amazonaws.com/img/blog/2023-10-04/thiet-ke-phong-tro-co-khu-vuc-bep-651cda6dc9649b0ef5c6f6d0.webp',
-      status: 'Đang chờ duyệt',
+      status: 'Đã cho thuê',
       startDate: '09/07/2025',
       endDate: '15/07/2025'
     }
-  ];
+  ]);
+
+  // Đếm số lượng theo trạng thái
+  const statusCounts = useMemo(() => {
+    const counts = { all: 0, displaying: 0, rented: 0, expired: 0, hidden: 0 };
+    for (const p of posts) {
+      if (p.status === 'Đang hiển thị') counts.displaying += 1;
+      else if (p.status === 'Đã cho thuê') counts.rented += 1;
+      else if (p.status === 'Đã hết hạn') counts.expired += 1;
+      else if (p.status === 'Đã ẩn') counts.hidden += 1;
+    }
+    // "Tất cả" loại trừ các tin đã ẩn
+    counts.all = posts.filter(p => p.status !== 'Đã ẩn').length;
+    return counts;
+  }, [posts]);
 
   const tabs = [
-    { id: 'all', label: 'Tất cả', count: 3 },
-    { id: 'displaying', label: 'Đang hiển thị', count: 1 },
-    { id: 'rented', label: 'Đã cho thuê', count: 0 },
-    { id: 'expired', label: 'Hết hạn', count: 1 },
-    { id: 'appointments', label: 'Lịch hẹn', count: 0 },
-    { id: 'requests', label: 'Yêu cầu thuê', count: 0 },
-    { id: 'hidden', label: 'Đã ẩn', count: 0 }
+    { id: 'all', label: 'Tất cả', count: statusCounts.all },
+    { id: 'displaying', label: 'Đang hiển thị', count: statusCounts.displaying },
+    { id: 'rented', label: 'Đã cho thuê', count: statusCounts.rented },
+    { id: 'expired', label: 'Hết hạn', count: statusCounts.expired },
+    { id: 'appointments', label: 'Lịch hẹn', count: 4 },
+    { id: 'requests', label: 'Yêu cầu thuê', count: 4 },
+    { id: 'hidden', label: 'Đã ẩn', count: statusCounts.hidden }
   ];
+
+  // Lọc bài đăng theo tab
+  const displayPosts = useMemo(() => {
+    switch (selectedTab) {
+      case 'displaying':
+        return posts.filter(p => p.status === 'Đang hiển thị');
+      case 'rented':
+        return posts.filter(p => p.status === 'Đã cho thuê');
+      case 'expired':
+        return posts.filter(p => p.status === 'Đã hết hạn');
+      case 'hidden':
+        return posts.filter(p => p.status === 'Đã ẩn');
+      case 'all':
+      default:
+        // Tất cả trừ đã ẩn
+        return posts.filter(p => p.status !== 'Đã ẩn');
+    }
+  }, [selectedTab, posts]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -74,8 +108,10 @@ function QuanLyBaiDang() {
         return '#28a745';
       case 'Đã hết hạn':
         return '#dc3545';
-      case 'Đang chờ duyệt':
+      case 'Đã cho thuê':
         return '#ffc107';
+      case 'Đã ẩn':
+        return '#6c757d';
       default:
         return '#6c757d';
     }
@@ -115,13 +151,19 @@ function QuanLyBaiDang() {
           {/* Main Content */}
           <div style={{ padding: '0 32px', flex: 1 }}>
 
-            {/* Posts List */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px'
-            }}>
-              {posts.map((post) => (
+            {/* Conditional Content based on selected tab */}
+            {selectedTab === 'appointments' ? (
+              <LichHen />
+            ) : selectedTab === 'requests' ? (
+              <YeuCauThue />
+            ) : (
+              /* Posts List */
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px'
+              }}>
+                {displayPosts.map((post) => (
                 <div key={post.id} style={{
                   background: '#fff',
                   borderRadius: '10px',
@@ -295,7 +337,10 @@ function QuanLyBaiDang() {
                       marginBottom: '4px'
                     }}>{post.status}</div>
 
-                    {['Ẩn bài', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê'].map((label) => (
+                    {(post.status === 'Đã ẩn' 
+                        ? ['Đăng lại', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
+                        : ['Ẩn bài', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
+                      ).map((label) => (
                       <button key={label} style={{
                         padding: '5px 12px',
                         background: '#f5f5f5',
@@ -309,8 +354,14 @@ function QuanLyBaiDang() {
                       }}
                         onClick={() => {
                           if (label === 'Ẩn bài') { setSelectedPost(post); setOpenHideModal(true); }
+                          else if (label === 'Đăng lại') {
+                            setPosts(prev => prev.map(p => p.id === post.id ? { ...p, status: 'Đang hiển thị' } : p));
+                            setSelectedTab('displaying');
+                          }
                           else if (label === 'Xóa bài') { setSelectedPost(post); setOpenDeleteModal(true); }
                           else if (label === 'Sửa bài') { navigate('/sua-bai', { state: { post } }); }
+                          else if (label === 'Lịch hẹn') { setSelectedTab('appointments'); }
+                          else if (label === 'Yêu cầu thuê') { setSelectedTab('requests'); }
                         }}
                         onMouseEnter={(e) => { e.currentTarget.style.background = '#efefef'; e.currentTarget.style.borderColor = '#cfcfcf'; }}
                         onMouseLeave={(e) => { e.currentTarget.style.background = '#f5f5f5'; e.currentTarget.style.borderColor = '#d9d9d9'; }}
@@ -320,8 +371,9 @@ function QuanLyBaiDang() {
                     ))}
                   </div>
                 </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -334,9 +386,14 @@ function QuanLyBaiDang() {
         open={openHideModal}
         onCancel={() => { setOpenHideModal(false); setSelectedPost(null); }}
         onConfirm={() => {
-          // TODO: gọi API ẩn bài với selectedPost?.id
+          // Cập nhật trạng thái bài viết thành "Đã ẩn"
+          if (selectedPost?.id) {
+            setPosts(prev => prev.map(p => p.id === selectedPost.id ? { ...p, status: 'Đã ẩn' } : p));
+          }
           setOpenHideModal(false);
           setSelectedPost(null);
+          // Chuyển sang tab Đã ẩn
+          setSelectedTab('hidden');
         }}
       />
       <ModalXoaTin

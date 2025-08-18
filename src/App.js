@@ -9,6 +9,8 @@ import ThanhToan from "./ThanhToan/thanhtoan";
 import XemBaiDang from "./XemChiTietBaiDang/Xembaidang";
 import QuanLyBaiDang from "./QuanLyBaiDang/baidang";
 import SuaBai from "./SuaBai/suabai";
+import QuanLyGiaoDich from "./QuanLyGiaoDich/lichsugiaodich";
+import LichSuNapTien from "./QuanLyGiaoDich/lichsunaptien";
 function App() {
   return (
     <BrowserRouter>
@@ -22,12 +24,15 @@ function App() {
         <Route path="/xem-bai-dang/:id" element={<XemBaiDang />} />
         <Route path="/quan-ly-bai-dang/" element={<QuanLyBaiDang />} />
         <Route path="/sua-bai/" element={<SuaBai />} />
+        <Route path="/lich-su-giao-dich" element={<QuanLyGiaoDich />} />
+        <Route path="/lich-su-nap-tien" element={<LichSuNapTien />} />
         {/* <Route path="/bo-loc" element={<BoLoc />} /> */}
 
-  
+      
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+

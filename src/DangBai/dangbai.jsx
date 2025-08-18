@@ -88,7 +88,7 @@ function DangBai() {
       alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
       return;
     }
-    
+
     // Lưu thông tin đăng bài vào localStorage để sử dụng ở trang thanh toán
     const postData = {
       ...formData,
@@ -97,7 +97,7 @@ function DangBai() {
       numberOfDays: formData.numberOfDays
     };
     localStorage.setItem('postData', JSON.stringify(postData));
-    
+
     // Chuyển hướng đến trang thanh toán
     navigate('/thanh-toan');
   };
@@ -842,7 +842,7 @@ function DangBai() {
             </div>
 
             {/* Submit Button */}
-            <button 
+            <button
               onClick={handleSubmitAndPayment}
               style={{
                 width: '100%',
