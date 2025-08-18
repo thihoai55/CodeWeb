@@ -67,9 +67,12 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
     }
   };
 
+  // Google Maps từ địa chỉ
+  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(postData.location.address)}&output=embed`;
+  const mapExternalUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(postData.location.address)}`;
+
   const [selectedImage, setSelectedImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
-  const [showMap, setShowMap] = useState(false);
 
   const postDetailRef = useRef(null);
   const ownerCardRef = useRef(null);
@@ -148,7 +151,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
       <Header />
       
       <main style={{ padding: '20px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+        <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 20px' }}>
           <div style={{ marginBottom: '20px', fontSize: '14px', color: '#666' }}>
             <span style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>Trang chủ</span>
             {' > '}
@@ -300,19 +303,22 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                   <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
                     Vị trí & Bản đồ
                   </h3>
-                  <div style={{ height: '300px', background: '#f0f0f0', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-                    <div style={{ textAlign: 'center' }}>
-                      <div style={{ fontSize: '48px', marginBottom: '16px' }}>🗺️</div>
-                      <div style={{ fontSize: '16px', marginBottom: '12px' }}>
-                        {postData.location.address}
-                      </div>
-                      <button 
-                        onClick={() => setShowMap(true)}
-                        style={{ padding: '8px 16px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}
-                      >
-                        Xem bản đồ lớn hơn
-                      </button>
-                    </div>
+                  <div style={{ height: '300px', borderRadius: '8px', overflow: 'hidden', position: 'relative', background: '#f0f0f0' }}>
+                    <iframe
+                      title="Google Map"
+                      src={mapEmbedUrl}
+                      width="100%"
+                      height="300"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                    <button
+                      onClick={() => window.open(mapExternalUrl, '_blank')}
+                      style={{ position: 'absolute', right: 12, bottom: 12, padding: '8px 12px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '14px' }}
+                    >
+                      Xem bản đồ lớn hơn
+                    </button>
                   </div>
                 </div>
 
@@ -335,7 +341,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                         <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
                           {post.title}
                         </h4>
-                        <div style={{ color: '#e53935', fontWeight: '600', marginBottom: '4px' }}>
+                        <div style={{ color: '#52b4f9', fontWeight: '600', marginBottom: '4px' }}>
                           {post.price}
                         </div>
                         <div style={{ fontSize: '12px', color: '#666' }}>
@@ -359,7 +365,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                         <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
                           {item.title}
                         </h4>
-                        <div style={{ color: '#e53935', fontWeight: '600', marginBottom: '4px' }}>
+                        <div style={{ color: '#52b4f9', fontWeight: '600', marginBottom: '4px' }}>
                           {item.price}
                         </div>
                         <div style={{ fontSize: '12px', color: '#666' }}>
@@ -440,7 +446,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                         <div style={{ fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
                           {post.title}
                         </div>
-                        <div style={{ color: '#e53935', fontWeight: '600', fontSize: '12px', marginBottom: '2px' }}>
+                        <div style={{ color: '#52b4f9', fontWeight: '600', fontSize: '12px', marginBottom: '2px' }}>
                           {post.price}
                         </div>
                         <div style={{ fontSize: '12px', color: '#666' }}>
