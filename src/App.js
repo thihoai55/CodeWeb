@@ -11,6 +11,10 @@ import QuanLyBaiDang from "./QuanLyBaiDang/baidang";
 import SuaBai from "./SuaBai/suabai";
 import QuanLyGiaoDich from "./QuanLyGiaoDich/lichsugiaodich";
 import LichSuNapTien from "./QuanLyGiaoDich/lichsunaptien";
+import ThongTinCaNhan from "./ThongTinCaNhan/thongtincanhan";
+import DoiMatKhau from "./ThongTinCaNhan/doimatkhau";
+import LienHeTroGiup from "./LienHeTroGiup/lienhetrogiup";
+
 function App() {
   return (
     <BrowserRouter>
@@ -28,7 +32,11 @@ function App() {
         <Route path="/lich-su-nap-tien" element={<LichSuNapTien />} />
         {/* <Route path="/bo-loc" element={<BoLoc />} /> */}
 
-      
+        
+        <Route path="/thong-tin-ca-nhan" element={<ThongTinCaNhan />} />
+        <Route path="/doi-mat-khau" element={<DoiMatKhau />} />
+        <Route path="/lien-he-tro-giup" element={<LienHeTroGiup />} />
+
       </Routes>
     </BrowserRouter>
   );
