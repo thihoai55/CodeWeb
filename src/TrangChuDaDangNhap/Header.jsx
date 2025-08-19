@@ -4,12 +4,80 @@ import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
 import BoLoc from "../BoLoc/boloc"
 import TimKiemTheoKhuVuc from "../TimKiemTheoKhuVuc/timkiem"
+import ThongBaoDropdown from "../ThongBao/ThongBao";
+import YeuThichDropdown from "../LuuBai/YeuThich";
 
 function Header() {
   const navigate = useNavigate();
 
   const [openBoLoc, setOpenBoLoc] = React.useState(false);
   const [openTimKiem, setOpenTimKiem] = React.useState(false);
+  const [openNotify, setOpenNotify] = React.useState(false);
+  const [openFav, setOpenFav] = React.useState(false);
+
+  const loadInitialNotifications = () => {
+    try {
+      const raw = localStorage.getItem("app_notifications");
+      if (raw) return JSON.parse(raw);
+    } catch (_) {}
+    const seed = [
+      {
+        id: "seed-1",
+        title: "Có lịch hẹn xem phòng mới",
+        message: "Người dùng A đặt lịch xem phòng vào 15:00 hôm nay.",
+        time: new Date().toISOString(),
+        read: false,
+        avatar: "/anh/avt.jpg"
+      },
+      {
+        id: "seed-2",
+        title: "Bài đăng đã được duyệt",
+        message: "Tin #1023 đã được phê duyệt và hiển thị.",
+        time: new Date(Date.now() - 3600 * 1000 * 5).toISOString(),
+        read: true,
+        icon: "📃"
+      }
+    ];
+    try { localStorage.setItem("app_notifications", JSON.stringify(seed)); } catch (_) {}
+    return seed;
+  };
+
+  const [notifications, setNotifications] = React.useState(loadInitialNotifications);
+
+  React.useEffect(() => {
+    try { localStorage.setItem("app_notifications", JSON.stringify(notifications)); } catch (_) {}
+  }, [notifications]);
+
+  React.useEffect(() => {
+    function handleWindowClick() { setOpenNotify(false); }
+    window.addEventListener("click", handleWindowClick);
+    return () => window.removeEventListener("click", handleWindowClick);
+  }, []);
+
+  const loadSavedPosts = () => {
+    try {
+      const ids = JSON.parse(localStorage.getItem("savedPosts") || "[]");
+      const detailsMap = JSON.parse(localStorage.getItem("savedPostsDetails") || "{}");
+      return ids.map(id => ({ id, ...(detailsMap[id] || {}) }));
+    } catch (_) {
+      return [];
+    }
+  };
+  const [favorites, setFavorites] = React.useState(loadSavedPosts);
+
+  React.useEffect(() => {
+    function handleStorage(e) {
+      if (e.key === "savedPosts" || e.key === "savedPostsDetails") {
+        setFavorites(loadSavedPosts());
+      }
+    }
+    window.addEventListener("storage", handleStorage);
+    window.addEventListener("saved-posts-updated", () => setFavorites(loadSavedPosts()));
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      window.removeEventListener("saved-posts-updated", () => setFavorites(loadSavedPosts()));
+    };
+  }, []);
 
   // State để lưu thông tin khu vực được chọn
   const [selectedArea, setSelectedArea] = React.useState({
@@ -196,66 +264,129 @@ function Header() {
               Trang quản lý
             </button>
 
-            {/* Icon thông báo */}
-            <button style={{
-              padding: "0 10px",
-              border: "none",
-              borderRadius: "12px",
-              background: "#fff",
-              color: "#222",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              height: "36px",
-              minWidth: 0
-            }}
-              onMouseEnter={e => {
-                e.target.style.background = "#f5f5f5";
-                e.target.style.transform = "translateY(-1.5px)";
-                e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
+            <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
+              <button
+                onClick={() => setOpenNotify(v => !v)}
+                style={{
+                  padding: "0 10px",
+                  border: "none",
+                  borderRadius: "12px",
+                  background: "#fff",
+                  color: "#222",
+                  fontSize: "15px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                  boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  height: "36px",
+                  minWidth: 0,
+                  position: "relative"
+                }}
+                onMouseEnter={e => {
+                  e.target.style.background = "#f5f5f5";
+                  e.target.style.transform = "translateY(-1.5px)";
+                  e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
+                }}
+                onMouseLeave={e => {
+                  e.target.style.background = "#fff";
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
+                }}
+              >
+                <span style={{ fontSize: 18 }}>🔔</span>
+                {notifications.some(n => !n.read) && (
+                  <span style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -2,
+                    minWidth: 16,
+                    height: 16,
+                    padding: "0 4px",
+                    borderRadius: 10,
+                    background: "#d93025",
+                    color: "#fff",
+                    fontSize: 11,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    lineHeight: 1
+                  }}>{notifications.filter(n => !n.read).length}</span>
+                )}
+              </button>
+              <ThongBaoDropdown
+                open={openNotify}
+                onClose={() => setOpenNotify(false)}
+                notifications={notifications}
+                onItemClick={(id) => {
+                  setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+                }}
+                onMarkAllRead={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+              />
+            </div>
+            <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
+              <button style={{
+                padding: "0 10px",
+                border: "none",
+                borderRadius: "12px",
+                background: "#fff",
+                color: "#e53935",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                height: "36px",
+                minWidth: 0,
+                position: "relative"
               }}
-              onMouseLeave={e => {
-                e.target.style.background = "#fff";
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
-              }}>
-              {/* , verticalAlign: 'middle', lineHeight: 1.1, display: 'inline-block', marginTop: '1px' */}
-              <span style={{ fontSize: 18 }}>🔔</span>
-            </button>
-            <button style={{
-              padding: "0 10px",
-              border: "none",
-              borderRadius: "12px",
-              background: "#fff",
-              color: "#e53935",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              height: "36px",
-              minWidth: 0
-            }}
-              onMouseEnter={e => {
-                e.target.style.background = "#f5f5f5";
-                e.target.style.transform = "translateY(-1.5px)";
-                e.target.style.boxShadow = "0 4px 10px rgba(25,118,210,0.10)";
-              }}
-              onMouseLeave={e => {
-                e.target.style.background = "#fff";
-                e.target.style.transform = "translateY(0)";
-                e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
-              }}>
-              <span style={{ fontSize: 18 }}>❤️</span>
-            </button>
+                onClick={() => setOpenFav(v => !v)}
+                onMouseEnter={e => {
+                  e.target.style.background = "#f5f5f5";
+                  e.target.style.transform = "translateY(-1.5px)";
+                  e.target.style.boxShadow = "0 4px 10px rgba(25,118,210,0.10)";
+                }}
+                onMouseLeave={e => {
+                  e.target.style.background = "#fff";
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
+                }}>
+                <span style={{ fontSize: 18 }}>❤️</span>
+                {favorites.length > 0 && (
+                  <span style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -2,
+                    minWidth: 16,
+                    height: 16,
+                    padding: "0 4px",
+                    borderRadius: 10,
+                    background: "#d93025",
+                    color: "#fff",
+                    fontSize: 11,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    lineHeight: 1
+                  }}>{favorites.length}</span>
+                )}
+              </button>
+              <YeuThichDropdown
+                open={openFav}
+                onClose={() => setOpenFav(false)}
+                items={favorites}
+                onItemClick={(id) => {
+                  setOpenFav(false);
+                  // Điều hướng tới chi tiết bài viết
+                  navigate(`/xem-bai-dang/${id}`);
+                }}
+              />
+            </div>
 
             {/* Avatar hình tròn */}
             <div

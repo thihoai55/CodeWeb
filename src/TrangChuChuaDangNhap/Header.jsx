@@ -158,33 +158,36 @@ function Header() {
             minWidth: 180,
             marginLeft: 12
           }}>
-            <button style={{
-              padding: "0 8px",
-              border: "none",
-              borderRadius: "12px",
-              background: "#fff",
-              color: "#222",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
-              display: "flex",
-              alignItems: "center",
-              gap: "6px",
-              height: "36px",
-              minWidth: 0
-            }}
-            onMouseEnter={e => {
-              e.target.style.background = "#f5f5f5";
-              e.target.style.transform = "translateY(-1.5px)";
-              e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
-            }}
-            onMouseLeave={e => {
-              e.target.style.background = "#fff";
-              e.target.style.transform = "translateY(0)";
-              e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
-            }}>
+            <button
+              onClick={() => navigate("/dang-nhap")}
+              style={{
+                padding: "0 8px",
+                border: "none",
+                borderRadius: "12px",
+                background: "#fff",
+                color: "#222",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                height: "36px",
+                minWidth: 0
+              }}
+              onMouseEnter={e => {
+                e.target.style.background = "#f5f5f5";
+                e.target.style.transform = "translateY(-1.5px)";
+                e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
+              }}
+              onMouseLeave={e => {
+                e.target.style.background = "#fff";
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
+              }}
+            >
               <span style={{fontSize: 18, verticalAlign: 'middle', lineHeight: 1.1, display: 'inline-block', marginTop: '1px'}}>🔔</span>
             </button>
             <button style={{
