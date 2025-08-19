@@ -6,6 +6,8 @@ import Danhgia from './Danhgia';
 import LuuBaiViet from './Luubaiviet';
 import ChiaSe from './Chiasebai';
 import BaoCao from './BaoCao';
+import GuiYeuCauThue from './Guiyeucauthue'; 
+import DatLichHenXemPhong from './Datlichhenxemphong';
 
 function XemBaiDang() {
   const navigate = useNavigate();
@@ -73,6 +75,8 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
+  const [rentModalOpen, setRentModalOpen] = useState(false);
+  const [appointmentOpen, setAppointmentOpen] = useState(false);
 
   const postDetailRef = useRef(null);
   const ownerCardRef = useRef(null);
@@ -136,10 +140,10 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
         window.open(`tel:${postData.owner.phone}`);
         break;
       case 'appointment':
-        alert('Chức năng đặt lịch hẹn sẽ được tích hợp sau!');
+        setAppointmentOpen(true);
         break;
       case 'rent':
-        alert('Chức năng gửi yêu cầu thuê sẽ được tích hợp sau!');
+        setRentModalOpen(true);
         break;
       default:
         break;
@@ -460,9 +464,26 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
             </div>
           </div>
         </div>
-      </main>
+        </main>
 
-      <Footer />
+<GuiYeuCauThue
+  isOpen={rentModalOpen}
+  onClose={() => setRentModalOpen(false)}
+  defaultDate={new Date().toISOString().slice(0,10)}
+  onSubmit={(date) => {
+    setRentModalOpen(false);
+    alert(`Đã gửi yêu cầu thuê từ ngày ${new Date(date).toLocaleDateString('vi-VN')}. Vui lòng chờ chủ trọ phê duyệt.`);
+  }}
+/>
+
+<DatLichHenXemPhong
+  isOpen={appointmentOpen}
+  onClose={() => setAppointmentOpen(false)}
+  defaultDate={new Date().toISOString().slice(0,10)}
+  defaultTime="09:00"
+/>
+
+<Footer />
     </div>
   );
 }
