@@ -45,14 +45,14 @@ function Header() {
             minWidth: 90,
             marginRight: 12
           }}>
-            <img src="/logo.png" alt="Motel Home" style={{ height: 32, marginBottom: 1 }} />
+            <img src="/anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
             <div style={{
-              fontSize: "11px",
+              fontSize: "10px",
               color: "#888",
               marginTop: "1px",
               fontWeight: 500
             }}>
-              NƠI TÌM CHỖ Ở VIỆT NAM
+              
             </div>
           </div>
           {/* Menu giữa */}
