@@ -62,19 +62,33 @@ const Register = () => {
         }}
       >
         {/* Logo */}
-        <img
-          src="/logo.png"
-          alt="Motel Home"
+        {/* Logo */}
+        <div
           style={{
-            width: 150,
-            display: "block",
-            margin: "0 auto",
-            maxWidth: "100%",
-            height: 50,
+            background: "rgba(255,255,255,0.5)",
+            borderRadius: 16,
+            // padding: "5px",
             marginBottom: 8,
             marginTop: -8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            // boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+            maxHeight: 50,
+            // maxWidth: 150,
           }}
-        />
+        >
+          <img
+            src="/anh/logotachnen.png"
+            alt="Motel Home"
+            style={{
+              height: 50,
+              width: 150,
+              objectFit: "contain",
+              display: "block",
+            }}
+          />
+        </div>
         <h2 style={{ textAlign: "center", fontWeight: 700, fontSize: 28, margin: "10px 0 18px 0", color: "#2a2afc" }}>
           Đăng Ký
         </h2>
