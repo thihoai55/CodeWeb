@@ -1,9 +1,9 @@
 import React from "react";
 import PostCard from "./PostCard";
 
-function PostList() {
-  // Dữ liệu mẫu
-  const posts = [
+function PostList({ posts: customPosts, fixedColumns }) {
+  // Dữ liệu mẫu (mặc định dùng cho trang chủ)
+  const defaultPosts = [
     {
       title: "Phòng trọ mới xây sạch sẽ, gần trung tâm thành phố, có đầy đủ tiện nghi,...",
       img: "https://th.bing.com/th/id/OIP.8XnAKLQnuXCfnp-s2PdTDQHaFj?w=261&h=196&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
@@ -12,7 +12,7 @@ function PostList() {
       address: "Trần Phú, Thành phố Huế",
     },
     {
-      title: "Phòng trọ cho nữ thuê không gian được trang trí đẹp mắt,...",
+      title: "Phòng trọ cho nữ thuê không gian được trang trí đẹp mắt, ...",
       img: "https://bandon.vn/uploads/posts/thiet-ke-nha-tro-dep-2020-bandon-0.jpg",
       price: "2.5 triệu / tháng",
       size: "30 m²",
@@ -47,7 +47,7 @@ function PostList() {
       address: "Phan Chu Trinh, Hà Nội",
     },
     {
-      title: "Tùm người ở ghépp trong căn hộ có gác lửng rộng 65m2,...",
+      title: "Tùm người ở ghépp trong căn hộ có gác lửng rộng 65m2, ...",
       img: "https://cdn.chotot.com/uEHaEtr9GcI7nnaADBciNGcK8M6tZeRs4-d_tWcAJmg/preset:listing/plain/1e324e89c3d81eafc71e4a9e218a7304-2940712751021281457.jpg",
       price: "2 triệu / tháng",
       size: "35 m²",
@@ -61,6 +61,10 @@ function PostList() {
       address: "Phường Bãi Cháy, Hạ Long",
     },
   ];
+
+  const posts = customPosts && customPosts.length > 0 ? customPosts : defaultPosts;
+  const gridTemplate = fixedColumns ? `repeat(${fixedColumns}, 1fr)` : "repeat(auto-fill, minmax(280px, 1fr))";
+
   return (
     <section style={{
       margin: "40px 0",
@@ -77,7 +81,7 @@ function PostList() {
       }}>Tin mới đăng</h2>
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+        gridTemplateColumns: gridTemplate,
         gap: "24px",
         justifyContent: "center"
       }}>

@@ -14,12 +14,18 @@ import LichSuNapTien from "./QuanLyGiaoDich/lichsunaptien";
 import ThongTinCaNhan from "./ThongTinCaNhan/thongtincanhan";
 import DoiMatKhau from "./ThongTinCaNhan/doimatkhau";
 import LienHeTroGiup from "./LienHeTroGiup/lienhetrogiup";
+import NapTien from "./NapTien/naptien";
+import HopDongChoThue from "./HopDongChoThue/hopdongchothue";
+import Trang2 from "./ChuyenTrang/Trang2";
+import Trang3 from "./ChuyenTrang/Trang3";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<TrangChuChuaDangNhap />} />
+        <Route path="/trang-2" element={<Trang2 />} />
+        <Route path="/trang-3" element={<Trang3 />} />
         <Route path="/dang-nhap" element={<DangNhap />} />
         <Route path="/dang-ky" element={<DangKy />} />
         <Route path="/trang-chu-da-dang-nhap" element={<TrangChuDaDangNhap />} />
@@ -36,6 +42,8 @@ function App() {
         <Route path="/thong-tin-ca-nhan" element={<ThongTinCaNhan />} />
         <Route path="/doi-mat-khau" element={<DoiMatKhau />} />
         <Route path="/lien-he-tro-giup" element={<LienHeTroGiup />} />
+        <Route path="/nap-tien" element={<NapTien />} />
+        <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
 
       </Routes>
     </BrowserRouter>

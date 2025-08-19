@@ -1,0 +1,239 @@
+import React, { useState, useEffect } from 'react';
+import Header from '../TrangChuDaDangNhap/Header';
+import Footer from '../TrangChuDaDangNhap/Footer';
+import Sidebar from '../DangBai/sidebar';
+import { useNavigate } from 'react-router-dom';
+
+function NapTien() {
+  const navigate = useNavigate();
+  const [amount, setAmount] = useState(50000);
+  const presetAmounts = [50000, 100000, 200000, 500000, 1000000, 2000000, 5000000];
+
+  // Convert number to Vietnamese words (simple currency reader)
+  const DIGITS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+  const SUFFIXES = ['', ' nghìn', ' triệu', ' tỷ', ' nghìn tỷ', ' triệu tỷ'];
+
+  const readTriple = (num, isFull) => {
+    let str = '';
+    const hundred = Math.floor(num / 100);
+    const ten = Math.floor((num % 100) / 10);
+    const unit = num % 10;
+
+    if (hundred > 0 || isFull) {
+      str += `${DIGITS[hundred]} trăm`;
+    }
+
+    if (ten > 1) {
+      str += (str ? ' ' : '') + `${DIGITS[ten]} mươi`;
+      if (unit === 1) str += ' mốt';
+      else if (unit === 5) str += ' lăm';
+      else if (unit === 4) str += ' tư';
+      else if (unit !== 0) str += ` ${DIGITS[unit]}`;
+    } else if (ten === 1) {
+      str += (str ? ' ' : '') + 'mười';
+      if (unit === 5) str += ' lăm';
+      else if (unit !== 0) str += ` ${DIGITS[unit]}`;
+    } else if (ten === 0 && unit > 0) {
+      if (str) str += ' lẻ';
+      str += ` ${unit === 5 && str ? 'năm' : DIGITS[unit]}`;
+    }
+
+    return str.trim();
+  };
+
+  const toVietnameseNumber = (n) => {
+    if (n === 0) return 'không';
+    let i = 0;
+    let words = '';
+    while (n > 0 && i < SUFFIXES.length) {
+      const triple = n % 1000;
+      if (triple !== 0) {
+        const prefix = readTriple(triple, i > 0);
+        words = `${prefix}${SUFFIXES[i]}${words ? ' ' + words : ''}`;
+      }
+      n = Math.floor(n / 1000);
+      i += 1;
+    }
+    return words.trim();
+  };
+
+  const amountInWords = amount > 0 ? `${toVietnameseNumber(amount)} đồng` : '';
+
+  const [step, setStep] = useState(1);
+  const [countdown, setCountdown] = useState(580); // 09:40
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    let timerId;
+    if (step === 2) {
+      setCountdown(580);
+      timerId = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timerId);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => timerId && clearInterval(timerId);
+  }, [step]);
+
+  const formatTime = (s) => {
+    const mm = String(Math.floor(s / 60)).padStart(2, '0');
+    const ss = String(s % 60).padStart(2, '0');
+    return `00:${mm}:${ss}`;
+  };
+
+  const handleContinue = (e) => {
+    e.preventDefault();
+    setStep(2);
+  };
+
+  const handleCancel = () => {
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+      navigate('/quan-ly-bai-dang');
+    }, 1200);
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
+      <Header />
+      <div style={{ display: 'flex', flex: 1 }}>
+        <Sidebar />
+        <div style={{ flex: 1, padding: '20px 0 0 0' }}>
+          <div style={{ padding: '0 32px', marginBottom: '16px' }}>
+            <span style={{ color: '#1976d2', cursor: 'pointer', fontSize: '16px' }} onClick={() => navigate('/quan-ly-bai-dang')}>Trang quản lý</span>
+            <span style={{ margin: '0 8px', color: '#b0b7c3' }}>›</span>
+            <span style={{ color: '#333', fontSize: '16px' }}>Nạp tiền</span>
+          </div>
+
+          {step === 1 && (
+            <div style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '0 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+              <h1 style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 16px 0', color: '#111' }}>Chọn số tiền cần nạp</h1>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+                {presetAmounts.map((v) => (
+                  <button
+                    key={v}
+                    onClick={() => setAmount(v)}
+                    onMouseEnter={(e) => {
+                      if (amount !== v) {
+                        e.currentTarget.style.background = '#f5faff';
+                        e.currentTarget.style.borderColor = '#1976d2';
+                        e.currentTarget.style.color = '#1976d2';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (amount !== v) {
+                        e.currentTarget.style.background = '#fff';
+                        e.currentTarget.style.borderColor = '#90caf9';
+                        e.currentTarget.style.color = '#1976d2';
+                      }
+                    }}
+                    style={{
+                      padding: '12px 14px', borderRadius: '12px', border: `2px solid ${amount === v ? '#1976d2' : '#90caf9'}`,
+                      background: amount === v ? '#e3f2fd' : '#fff', color: '#1976d2', fontWeight: 700, cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center'
+                    }}
+                  >
+                    <span style={{
+                      width: '12px', height: '12px', borderRadius: '50%',
+                      border: `3px solid ${amount === v ? '#1976d2' : '#90caf9'}`,
+                      background: amount === v ? '#1976d2' : 'transparent'
+                    }} />
+                    {v.toLocaleString('vi-VN')}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ fontSize: '14px', color: '#333', margin: '8px 0 6px 0' }}>Hoặc nhập số tiền cần nạp</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <input value={amount.toString()} onChange={(e) => setAmount(Number(e.target.value.replace(/\D/g, '')) || 0)}
+                  placeholder="Hoặc nhập số tiền cần nạp" style={{ flex: 1, padding: '10px 12px', border: '1px solid #dfe3e8', borderRadius: '6px', fontSize: '15px' }} />
+                <div style={{ padding: '10px 12px', border: '1px solid #dfe3e8', borderRadius: '6px', background: '#f7f9fc' }}>đ</div>
+              </div>
+              {amountInWords && (
+                <div style={{ color: '#ef5350', fontSize: '12px', marginTop: '6px' }}>{amountInWords}</div>
+              )}
+
+              <div style={{ background: '#e5f1ff', borderRadius: '8px', padding: '12px 16px', marginTop: '16px', marginBottom: '16px' }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <input type="checkbox" />
+                  <span>Xuất hóa đơn cho giao dịch</span>
+                </label>
+              </div>
+
+              <button onClick={handleContinue} style={{ width: '100%', padding: '14px', background: '#ff6d2d', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}>
+                Tiếp tục
+              </button>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '0 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+              <h2 style={{ fontSize: '18px', margin: 0, color: '#333' }}>Bước 2: Thanh toán bằng cách scan mã QRCODE bên dưới</h2>
+              <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', margin: '16px 0' }}>
+                <div style={{ border: '1px solid #e0e0e0', padding: '12px', borderRadius: '8px' }}>
+                  <img src="anh/qr.png" alt="QR" style={{ width: '260px', height: '260px', objectFit: 'contain' }} />
+                </div>
+                <button onClick={handleCancel} style={{ marginTop: '12px', padding: '8px 16px', background: '#666', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>Hủy ({formatTime(countdown)})</button>
+              </div>
+
+              <div style={{ marginTop: '8px' }}>
+                <div style={{ fontWeight: 800, color: '#1976d2', fontSize: '20px', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  Hướng dẫn thanh toán bằng QR Code
+                </div>
+                <div style={{ height: '4px', background: '#1976d2', marginBottom: '12px' }} />
+
+                <div style={{ background: '#1976d2', borderRadius: '8px', padding: '16px', color: '#fff', marginBottom: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>1</div>
+                    <div>Đăng nhập ứng dụng ► Chọn chức năng Quét mã QR</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>2</div>
+                    <div>Quét QR Code của Giao dịch</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>3</div>
+                    <div>Xác nhận thông tin giao dịch và hoàn tất thanh toán</div>
+                  </div>
+                </div>
+
+                <div style={{ background: '#1976d2', color: '#fff', borderRadius: '6px', padding: '10px 16px', display: 'inline-block' }}>
+                  Ứng dụng hỗ trợ quét QR thanh toán :
+                </div>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '12px', flexWrap: 'wrap' }}>
+                  <img src="anh/momo.png" alt="momo" style={{ width: '100px', height: '64px' }} />
+                  <img src="anh/gg.jpg" alt="vnPay" style={{ width: '64px', height: '64px' }} />
+                  <img src="anh/fb.png" alt="bank1" style={{ width: '64px', height: '64px' }} />
+                  <img src="anh/bank.jpg" alt="bank2" style={{ width: '64px', height: '64px' }} />
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {showToast && (
+        <div style={{
+          position: 'fixed', top: '20px', right: '20px', background: '#4caf50', color: '#fff',
+          padding: '14px 18px', borderRadius: '6px', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', zIndex: 9999
+        }}>
+          Giao dịch đã được huỷ thành công
+        </div>
+      )}
+
+      <Footer />
+    </div>
+  );
+}
+
+export default NapTien;
+
+
