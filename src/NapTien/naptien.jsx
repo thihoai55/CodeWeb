@@ -10,54 +10,54 @@ function NapTien() {
   const presetAmounts = [50000, 100000, 200000, 500000, 1000000, 2000000, 5000000];
 
   // Convert number to Vietnamese words (simple currency reader)
-  const DIGITS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
-  const SUFFIXES = ['', ' nghìn', ' triệu', ' tỷ', ' nghìn tỷ', ' triệu tỷ'];
+  // const DIGITS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+  // const SUFFIXES = ['', ' nghìn', ' triệu', ' tỷ', ' nghìn tỷ', ' triệu tỷ'];
 
-  const readTriple = (num, isFull) => {
-    let str = '';
-    const hundred = Math.floor(num / 100);
-    const ten = Math.floor((num % 100) / 10);
-    const unit = num % 10;
+  // const readTriple = (num, isFull) => {
+  //   let str = '';
+  //   const hundred = Math.floor(num / 100);
+  //   const ten = Math.floor((num % 100) / 10);
+  //   const unit = num % 10;
 
-    if (hundred > 0 || isFull) {
-      str += `${DIGITS[hundred]} trăm`;
-    }
+  //   if (hundred > 0 || isFull) {
+  //     str += `${DIGITS[hundred]} trăm`;
+  //   }
 
-    if (ten > 1) {
-      str += (str ? ' ' : '') + `${DIGITS[ten]} mươi`;
-      if (unit === 1) str += ' mốt';
-      else if (unit === 5) str += ' lăm';
-      else if (unit === 4) str += ' tư';
-      else if (unit !== 0) str += ` ${DIGITS[unit]}`;
-    } else if (ten === 1) {
-      str += (str ? ' ' : '') + 'mười';
-      if (unit === 5) str += ' lăm';
-      else if (unit !== 0) str += ` ${DIGITS[unit]}`;
-    } else if (ten === 0 && unit > 0) {
-      if (str) str += ' lẻ';
-      str += ` ${unit === 5 && str ? 'năm' : DIGITS[unit]}`;
-    }
+  //   if (ten > 1) {
+  //     str += (str ? ' ' : '') + `${DIGITS[ten]} mươi`;
+  //     if (unit === 1) str += ' mốt';
+  //     else if (unit === 5) str += ' lăm';
+  //     else if (unit === 4) str += ' tư';
+  //     else if (unit !== 0) str += ` ${DIGITS[unit]}`;
+  //   } else if (ten === 1) {
+  //     str += (str ? ' ' : '') + 'mười';
+  //     if (unit === 5) str += ' lăm';
+  //     else if (unit !== 0) str += ` ${DIGITS[unit]}`;
+  //   } else if (ten === 0 && unit > 0) {
+  //     if (str) str += ' lẻ';
+  //     str += ` ${unit === 5 && str ? 'năm' : DIGITS[unit]}`;
+  //   }
 
-    return str.trim();
-  };
+  //   return str.trim();
+  // };
 
-  const toVietnameseNumber = (n) => {
-    if (n === 0) return 'không';
-    let i = 0;
-    let words = '';
-    while (n > 0 && i < SUFFIXES.length) {
-      const triple = n % 1000;
-      if (triple !== 0) {
-        const prefix = readTriple(triple, i > 0);
-        words = `${prefix}${SUFFIXES[i]}${words ? ' ' + words : ''}`;
-      }
-      n = Math.floor(n / 1000);
-      i += 1;
-    }
-    return words.trim();
-  };
+  // const toVietnameseNumber = (n) => {
+  //   if (n === 0) return 'không';
+  //   let i = 0;
+  //   let words = '';
+  //   while (n > 0 && i < SUFFIXES.length) {
+  //     const triple = n % 1000;
+  //     if (triple !== 0) {
+  //       const prefix = readTriple(triple, i > 0);
+  //       words = `${prefix}${SUFFIXES[i]}${words ? ' ' + words : ''}`;
+  //     }
+  //     n = Math.floor(n / 1000);
+  //     i += 1;
+  //   }
+  //   return words.trim();
+  // };
 
-  const amountInWords = amount > 0 ? `${toVietnameseNumber(amount)} đồng` : '';
+  // const amountInWords = amount > 0 ? `${toVietnameseNumber(amount)} đồng` : '';
 
   const [step, setStep] = useState(1);
   const [countdown, setCountdown] = useState(580); // 09:40
@@ -113,7 +113,7 @@ function NapTien() {
 
           {step === 1 && (
             <div style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '0 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-              <h1 style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 16px 0', color: '#111' }}>Chọn số tiền cần nạp</h1>
+              <h1 style={{ fontSize: '22px', fontWeight: 600, margin: '0 0 16px 0', color: '#111' }}>Chọn số tiền cần nạp</h1>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '14px', marginBottom: '16px' }}>
                 {presetAmounts.map((v) => (
@@ -123,7 +123,7 @@ function NapTien() {
                     onMouseEnter={(e) => {
                       if (amount !== v) {
                         e.currentTarget.style.background = '#f5faff';
-                        e.currentTarget.style.borderColor = '#1976d2';
+                        e.currentTarget.style.borderColor = '#76b4f3ff';
                         e.currentTarget.style.color = '#1976d2';
                       }
                     }}
@@ -150,17 +150,50 @@ function NapTien() {
                 ))}
               </div>
 
-              <div style={{ fontSize: '14px', color: '#333', margin: '8px 0 6px 0' }}>Hoặc nhập số tiền cần nạp</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <input value={amount.toString()} onChange={(e) => setAmount(Number(e.target.value.replace(/\D/g, '')) || 0)}
-                  placeholder="Hoặc nhập số tiền cần nạp" style={{ flex: 1, padding: '10px 12px', border: '1px solid #dfe3e8', borderRadius: '6px', fontSize: '15px' }} />
-                <div style={{ padding: '10px 12px', border: '1px solid #dfe3e8', borderRadius: '6px', background: '#f7f9fc' }}>đ</div>
+              <div style={{ fontSize: '16px', color: '#111', margin: '8px 0 6px 0' }}>Hoặc nhập số tiền cần nạp</div>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',       
+                  border: '1px solid #b3b3b3ff',
+                  borderRadius: '15px',     
+                  overflow: 'hidden',
+                  marginTop: '10px'
+                }}
+              >
+                <input
+                  value={amount.toString()}
+                  onChange={(e) =>
+                    setAmount(Number(e.target.value.replace(/\D/g, '')) || 0)
+                  }
+                  placeholder="Hoặc nhập số tiền cần nạp"
+                  style={{
+                    flex: 1,
+                    padding: '10px 12px',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '15px'
+                  }}
+                />
+                <div
+                  style={{
+                    padding: '10px 20px',
+                    borderLeft: '1px solid #b3b3b3ff',
+                    background: '#edededff',
+                    fontSize: '15px'
+                  }}
+                >
+                  đ
+                </div>
               </div>
-              {amountInWords && (
-                <div style={{ color: '#ef5350', fontSize: '12px', marginTop: '6px' }}>{amountInWords}</div>
-              )}
 
-              <div style={{ background: '#e5f1ff', borderRadius: '8px', padding: '12px 16px', marginTop: '16px', marginBottom: '16px' }}>
+
+              {/* {amountInWords && (
+                <div style={{ color: '#ef5350', fontSize: '12px', marginTop: '6px' }}>{amountInWords}</div>
+              )} */}
+
+              <div style={{ background: '#cee1f8ff', borderRadius: '8px', padding: '12px 16px', marginTop: '16px', marginBottom: '16px' }}>
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                   <input type="checkbox" />
                   <span>Xuất hóa đơn cho giao dịch</span>
@@ -184,34 +217,39 @@ function NapTien() {
               </div>
 
               <div style={{ marginTop: '8px' }}>
-                <div style={{ fontWeight: 800, color: '#1976d2', fontSize: '20px', marginBottom: '8px', textTransform: 'uppercase' }}>
+                <div style={{ fontWeight: 700, color: '#333', fontSize: '20px', marginBottom: '8px', textTransform: 'uppercase' }}>
                   Hướng dẫn thanh toán bằng QR Code
                 </div>
-                <div style={{ height: '4px', background: '#1976d2', marginBottom: '12px' }} />
+                {/* <div style={{ height: '4px', background: '#1976d2', marginBottom: '12px' }} /> */}
 
                 <div style={{ background: '#1976d2', borderRadius: '8px', padding: '16px', color: '#fff', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>1</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>1</div>
                     <div>Đăng nhập ứng dụng ► Chọn chức năng Quét mã QR</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>2</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>2</div>
                     <div>Quét QR Code của Giao dịch</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>3</div>
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#fff', color: '#1976d2', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700 }}>3</div>
                     <div>Xác nhận thông tin giao dịch và hoàn tất thanh toán</div>
                   </div>
                 </div>
 
-                <div style={{ background: '#1976d2', color: '#fff', borderRadius: '6px', padding: '10px 16px', display: 'inline-block' }}>
-                  Ứng dụng hỗ trợ quét QR thanh toán :
+                <div style={{ background: '#1976d2', color: '#fff', padding: '10px 16px' }}>
+                  Ứng dụng hỗ trợ quét QR thanh toán
                 </div>
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'center', marginTop: '12px', flexWrap: 'wrap' }}>
-                  <img src="anh/momo.png" alt="momo" style={{ width: '100px', height: '64px' }} />
-                  <img src="anh/gg.jpg" alt="vnPay" style={{ width: '64px', height: '64px' }} />
-                  <img src="anh/fb.png" alt="bank1" style={{ width: '64px', height: '64px' }} />
-                  <img src="anh/bank.jpg" alt="bank2" style={{ width: '64px', height: '64px' }} />
+                <div style={{ display: 'flex', gap: '25px', alignItems: 'center', marginTop: '12px', flexWrap: 'wrap', background: '#e0e0e0f', justifyContent: 'center' }}>
+                  <img src="anh/viettinbank.png" alt="momo" style={{ width: '90px', height: '90px', borderRadius: '10px' }} />
+                  <img src="anh/mbbank.png" alt="vnPay" style={{ width: '90px', height: '90px', boderRadius: '10px' }} />
+                  <img src="anh/vpbank.png" alt="bank1" style={{ width: '90px', height: '90px' }} />
+                  <img src="anh/VCB.png" alt="bank2" style={{ width: '90px', height: '90px' }} />
+                  <img src="anh/saccombank.jpg" alt="bank2" style={{ width: '90px', height: '90px' }} />
+                  <img src="anh/myVIB.png" alt="bank2" style={{ width: '90px', height: '90px' }} />
+                  <img src="anh/agribank.png" alt="bank2" style={{ width: '90px', height: '90px' }} />
+                  <img src="anh/abbank.jpg" alt="bank2" style={{ width: '90px', height: '90px' }} />
+
                 </div>
               </div>
             </div>

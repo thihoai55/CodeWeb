@@ -86,7 +86,7 @@ function DoiMatKhau() {
               )}
 
               <button type="submit" style={{
-                width: '100%', padding: '12px', background: '#1e5aa7', color: '#fff',
+                width: '100%', padding: '12px', background: '#1976d2', color: '#fff',
                 border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: 600, cursor: 'pointer'
               }}>Đổi mật khẩu</button>
 
