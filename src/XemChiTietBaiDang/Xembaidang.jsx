@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 import Danhgia from './Danhgia';
-import LuuBaiViet from '../LuuBai/luubaiviet.jsx ';
+import LuuBaiViet from './Luubaiviet';
 import ChiaSe from './Chiasebai';
 import BaoCao from './BaoCao';
 import GuiYeuCauThue from './Guiyeucauthue'; 
