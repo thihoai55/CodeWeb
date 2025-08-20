@@ -4,7 +4,7 @@ import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
 import BoLoc from "../BoLoc/boloc"
 import TimKiemTheoKhuVuc from "../TimKiemTheoKhuVuc/timkiem"
-import ThongBaoDropdown from "../ThongBao/thongbao";
+import ThongBaoDropdown from "../ThongBao/ThongBao";
 import YeuThichDropdown from "../LuuBai/YeuThich";
 
 function Header() {
@@ -112,8 +112,10 @@ function Header() {
             alignItems: "flex-start",
             minWidth: 90,
             marginRight: 12,
-            cursor: 'pointer'
-          }} onClick={() => navigate('/trang-chu-da-dang-nhap')}>
+            cursor: "pointer"
+          }}
+            onClick={() => navigate("/trang-chu-da-dang-nhap")}
+          >
             <img src="/anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
             <div style={{
               fontSize: "10px",

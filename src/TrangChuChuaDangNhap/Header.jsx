@@ -40,8 +40,10 @@ function Header() {
             alignItems: "flex-start",
             minWidth: 90,
             marginRight: 12,
-            cursor: 'pointer'
-          }} onClick={() => navigate('/') }>
+            cursor: "pointer"
+          }}
+            onClick={() => navigate("/")}
+          >
             <img src="/anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
             <div style={{
               fontSize: "10px",
