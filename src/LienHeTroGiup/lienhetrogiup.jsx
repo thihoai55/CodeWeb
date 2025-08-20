@@ -46,7 +46,7 @@ function LienHeTroGiup() {
 
   const Input = ({ label, type = 'text', value, onChange, placeholder, required, error, multiline = false }) => (
     <div style={{ marginBottom: '16px' }}>
-      <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333', fontWeight: '500' }}>
+      <div style={{ fontSize: '16px', marginBottom: '6px', color: '#333', fontWeight: '500' }}>
         {label} {required && <span style={{ color: '#d32f2f' }}>*</span>}
       </div>
       {multiline ? (
@@ -88,9 +88,9 @@ function LienHeTroGiup() {
             Liên hệ trực tuyến
           </h1>
           
-          <div style={{ borderBottom: '1px solid #eee', marginBottom: '30px' }}></div>
+          <div style={{ borderBottom: '1px solid #ddddddff', marginBottom: '30px' }}></div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '90px'}}>
             {/* Form Section */}
             <div>
               <form onSubmit={handleSubmit}>
@@ -132,7 +132,7 @@ function LienHeTroGiup() {
                 />
                 
                 <div style={{ marginBottom: '16px' }}>
-                  <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333', fontWeight: '500' }}>
+                  <div style={{ fontSize: '16px', marginBottom: '6px', color: '#333', fontWeight: '500' }}>
                     Mã xác nhận <span style={{ color: '#d32f2f' }}>*</span>
                   </div>
                   <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
@@ -148,9 +148,9 @@ function LienHeTroGiup() {
                       }}
                     />
                     <div style={{
-                      width: '80px', height: '40px', background: 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4)',
+                      width: '80px', height: '40px', background: '#7b7b7bff',
                       borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontSize: '16px', fontWeight: 'bold', color: '#fff', fontFamily: 'monospace',
+                      fontSize: '16px', fontWeight: 'bold', color: '#333', fontFamily: 'Arial Black, Comic Sans, Tahoma bold',
                       position: 'relative', overflow: 'hidden'
                     }}>
                       <div style={{ position: 'absolute', top: '2px', left: '2px', width: '2px', height: '2px', background: '#fff', borderRadius: '50%' }}></div>
@@ -163,7 +163,7 @@ function LienHeTroGiup() {
                 </div>
                 
                 <button type="submit" style={{
-                  width: '100%', padding: '12px', background: '#d32f2f', color: '#fff',
+                  width: '100%', padding: '12px', background: '#1976d2', color: '#fff',
                   border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: '600', cursor: 'pointer'
                 }}>
                   Gửi liên hệ
@@ -177,23 +177,23 @@ function LienHeTroGiup() {
                 THÔNG TIN LIÊN HỆ
               </h2>
               
-              <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px', lineHeight: '1.5' }}>
+              <p style={{ fontSize: '16px', color: '#666', marginBottom: '24px', lineHeight: '1.5' }}>
                 Chúng tôi biết bạn có rất nhiều sự lựa chọn. Nhưng cảm ơn vì đã lựa chọn ThuePhongTro.com
               </p>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ fontSize: '14px', color: '#333' }}>
-                  <strong>Điện thoại:</strong> 09678.333.78
+                <div style={{ fontSize: '16px', color: '#333' }}>
+                  <strong>Điện thoại:</strong> 0819 923 174
                 </div>
-                <div style={{ fontSize: '14px', color: '#333' }}>
-                  <strong>Email:</strong> nhatroviet@gmail.com
+                <div style={{ fontSize: '16px', color: '#333' }}>
+                  <strong>Email:</strong> nhathoainhan@gmail.com
                 </div>
-                <div style={{ fontSize: '14px', color: '#333' }}>
-                  <strong>Zalo:</strong> 09678.333.78
+                <div style={{ fontSize: '16px', color: '#333' }}>
+                  <strong>Zalo:</strong> 0819 923 174
                 </div>
-                <div style={{ fontSize: '14px', color: '#333' }}>
+                {/* <div style={{ fontSize: '14px', color: '#333' }}>
                   <strong>Viber:</strong> 09678.333.78
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

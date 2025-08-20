@@ -62,35 +62,35 @@ function DoiMatKhau() {
         <div style={{ flex: 1, padding: '20px 0 0 0' }}>
           <div style={{ padding: '0 32px', marginBottom: '16px' }}>
             <span
-              style={{ color: '#1976d2', cursor: 'pointer', fontSize: '14px' }}
+              style={{ color: '#1976d2', cursor: 'pointer', fontSize: '16px' }}
               onClick={() => navigate('/quan-ly-bai-dang')}
             >
               Trang quản lý
             </span>
             <span style={{ margin: '0 8px', color: '#b0b7c3' }}>›</span>
-            <span style={{ color: '#333', fontSize: '14px' }}>Đổi mật khẩu</span>
+            <span style={{ color: '#333', fontSize: '16px' }}>Đổi mật khẩu</span>
           </div>
 
           <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '0 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-            <div style={{ paddingBottom: '16px', borderBottom: '1px solid #eee' }}>
+            <div style={{ paddingBottom: '16px', borderBottom: '1px solid #ebe9e9ff' }}>
               <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: '#111' }}>Đổi mật khẩu</h1>
             </div>
 
-            <div style={{ maxWidth: '820px', margin: '16px auto 0', display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
+            <div style={{ maxWidth: '820px', margin: '16px auto 0', display: 'grid', gridTemplateColumns: '1fr', gap: '16px', fontSize: '18px', fontWeight: 500 }}>
               <Input label={'Mật khẩu cũ'} value={form.oldPassword} onChange={(v) => handleChange('oldPassword', v)} placeholder={'Nhập mật khẩu cũ'} />
               <Input label={'Mật khẩu mới'} value={form.newPassword} onChange={(v) => handleChange('newPassword', v)} placeholder={'Nhập mật khẩu mới'} />
               <Input label={'Nhập lại mật khẩu'} value={form.confirmPassword} onChange={(v) => handleChange('confirmPassword', v)} placeholder={'Nhập lại mật khẩu'} />
 
               {error && (
-                <div style={{ color: '#d32f2f', fontSize: '14px' }}>{error}</div>
+                <div style={{ color: '#d32f2f', fontSize: '15px' }}>{error}</div>
               )}
 
               <button type="submit" style={{
                 width: '100%', padding: '12px', background: '#1e5aa7', color: '#fff',
-                border: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: 600, cursor: 'pointer'
+                border: 'none', borderRadius: '6px', fontSize: '16px', fontWeight: 600, cursor: 'pointer'
               }}>Đổi mật khẩu</button>
 
-              <div style={{ fontSize: '14px' }}>
+              <div style={{ fontSize: '15px', fontWeight: 400 }}>
                 Bạn quên mật khẩu? <span style={{ color: '#1976d2', cursor: 'pointer' }} onClick={() => alert('Chức năng khôi phục mật khẩu sẽ được bổ sung')}>Bấm vào đây để khôi phục.</span>
               </div>
             </div>

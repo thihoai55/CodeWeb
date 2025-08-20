@@ -110,7 +110,7 @@ function Sidebar() {
           fontWeight: '600',
           cursor: 'pointer',
           boxShadow: '0 2px 8px rgba(25, 118, 210, 0.1)'
-        }}>
+        }} onClick={() => navigate('/nap-tien')}>
           Nạp tiền
         </button>
       </div>

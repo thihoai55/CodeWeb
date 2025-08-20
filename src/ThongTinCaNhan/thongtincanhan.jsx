@@ -61,74 +61,75 @@ function ThongTinCaNhan() {
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
 
-        <div style={{ flex: 1, padding: '20px 0 0 0' }}>
+        <div style={{ flex: 1, padding: '15px 0 0 0' }}>
           <div style={{ padding: '0 32px', marginBottom: '16px' }}>
             <span
-              style={{ color: '#1976d2', cursor: 'pointer', fontSize: '14px' }}
+              style={{ color: '#1976d2', cursor: 'pointer', fontSize: '16px' }}
               onClick={() => navigate('/quan-ly-bai-dang')}
             >
               Trang quản lý
             </span>
             <span style={{ margin: '0 8px', color: '#b0b7c3' }}>›</span>
-            <span style={{ color: '#333', fontSize: '14px' }}>Thông tin cá nhân</span>
+            <span style={{ color: '#333', fontSize: '16px' }}>Thông tin cá nhân</span>
           </div>
 
           <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '0 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
-            <div style={{ padding: '0 0 16px 0', borderBottom: '1px solid #eee' }}>
+            <div style={{ padding: '0 0 16px 0', borderBottom: '1px solid #ebe9e9ff' }}>
               <h1 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: '#111' }}>Thông tin cá nhân</h1>
             </div>
 
             <div style={{ maxWidth: '820px', margin: '16px auto 0', display: 'grid', gridTemplateColumns: '1fr', gap: '16px' }}>
-              <div>
-                <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>Mã tài khoản</div>
-                <Input icon="#" value={profile.accountId} readOnly />
-              </div>
 
               <div>
-                <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>Họ tên</div>
-                <Input icon="👤" value={profile.fullName} onChange={(v) => handleChange('fullName', v)} placeholder="Nhập họ tên" />
-              </div>
-
-              <div>
-                <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>Email</div>
-                <Input icon="✉️" type="email" value={profile.email} onChange={(v) => handleChange('email', v)} placeholder="Nhập email" />
-              </div>
-
-              <div>
-                <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>Số điện thoại</div>
-                <Input icon="📞" value={profile.phone} onChange={(v) => handleChange('phone', v)} placeholder="Nhập số điện thoại" />
-              </div>
-
-              <div>
-                <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>Địa chỉ liên hệ</div>
-                <Input icon="📍" value={profile.address} onChange={(v) => handleChange('address', v)} placeholder="Nhập địa chỉ" />
-              </div>
-
-              <div>
-                <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>Mật khẩu</div>
-                <div style={{ fontSize: '14px' }}>
-                  <span style={{ color: '#1976d2', cursor: 'pointer' }} onClick={() => navigate('/doi-mat-khau')}>Bấm vào đây để thay đổi mật khẩu</span>
-                </div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>Ảnh đại diện</div>
+                <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Ảnh đại diện</div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ width: '120px', height: '120px', borderRadius: '50%', overflow: 'hidden', background: '#f2f4f7', border: '1px solid #e6e9ef' }}>
                     <img src={profile.avatarPreview} alt="Avatar preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <div>
                     <input id="avatar-input" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarChange} />
-                    <label htmlFor="avatar-input" style={{ padding: '8px 16px', background: '#6b778d', color: '#fff', borderRadius: '6px', cursor: 'pointer', display: 'inline-block', fontSize: '14px', fontWeight: 600 }}>Chọn ảnh khác</label>
+                    <label htmlFor="avatar-input" style={{ padding: '8px 16px', background: '#6b778d', color: '#fff', borderRadius: '6px', cursor: 'pointer', display: 'inline-block', fontSize: '15px', fontWeight: 500 }}>Chọn ảnh khác</label>
                   </div>
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Mã tài khoản</div>
+                <Input icon="#" value={profile.accountId} readOnly />
+              </div>
+
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Họ tên</div>
+                <Input icon="👤" value={profile.fullName} onChange={(v) => handleChange('fullName', v)} placeholder="Nhập họ tên" />
+              </div>
+
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Email</div>
+                <Input icon="✉️" type="email" value={profile.email} onChange={(v) => handleChange('email', v)} placeholder="Nhập email" />
+              </div>
+
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Số điện thoại</div>
+                <Input icon="📞" value={profile.phone} onChange={(v) => handleChange('phone', v)} placeholder="Nhập số điện thoại" />
+              </div>
+
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Địa chỉ liên hệ</div>
+                <Input icon="📍" value={profile.address} onChange={(v) => handleChange('address', v)} placeholder="Nhập địa chỉ" />
+              </div>
+
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Mật khẩu</div>
+                <div style={{ fontSize: '15px' }}>
+                  <span style={{ color: '#1976d2', cursor: 'pointer' }} onClick={() => navigate('/doi-mat-khau')}>Bấm vào đây để thay đổi mật khẩu</span>
                 </div>
               </div>
             </div>
 
-            <div style={{ marginTop: '20px', textAlign: 'center' }}>
+            <div style={{ marginTop: '30px', textAlign: 'center', justifyContent: 'end', display: 'flex' }}>
               <button type="submit" style={{
-                background: '#d32f2f', color: '#fff', border: 'none', borderRadius: '6px',
-                padding: '12px 24px', fontSize: '15px', fontWeight: 600, cursor: 'pointer', width: '240px'
+                background: '#1976d2', color: '#fff', border: 'none', borderRadius: '6px',
+                padding: '12px 24px', fontSize: '15px', fontWeight: 600, cursor: 'pointer'
               }}>Cập nhật</button>
             </div>
           </form>
