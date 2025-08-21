@@ -8,7 +8,7 @@ import ChiaSe from './Chiasebai';
 import BaoCao from './BaoCao';
 import GuiYeuCauThue from './Guiyeucauthue'; 
 import DatLichHenXemPhong from './Datlichhenxemphong';
-import { normalizedPosts, getPostById } from '../data/selectors';
+import { normalizedPosts, getPostById } from '../data/selector';
 
 function XemBaiDang() {
   const navigate = useNavigate();
