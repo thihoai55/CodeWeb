@@ -18,7 +18,7 @@ import NapTien from "./NapTien/naptien";
 import HopDongChoThue from "./HopDongChoThue/hopdongchothue";
 import Trang2 from "./ChuyenTrang/Trang2";
 import Trang3 from "./ChuyenTrang/Trang3";
-import ThongBaoSideBar from "./thongbao/thongbaoSideBar";
+import ThongBaoSideBar from "./thongbao/ThongBaoSiderBar";  
 
 function App() {
   return (
