@@ -1,6 +1,6 @@
 import React from "react";
 import PostCard from "./PostCard";
-import postsData from "../data/danhsachbaidang";
+import postsData from "../DaTa/DuLieuBaiDang";
 
 
 function PostList({ posts: customPosts, fixedColumns }) {

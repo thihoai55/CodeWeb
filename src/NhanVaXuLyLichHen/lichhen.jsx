@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createAppointmentNotification } from '../data/dulieuThongBao';
+import { createAppointmentNotification } from '../DaTa/dulieuThongBao';
 
 const LichHen = () => {
   // Dữ liệu mẫu cho các lịch hẹn
