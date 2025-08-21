@@ -5,8 +5,8 @@ import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
 import BoLoc from "../BoLoc/boloc"
 import TimKiemTheoKhuVuc from "../TimKiemTheoKhuVuc/timkiem"
-import ThongBaoDropdown from "../ThongBao/thongbao";
 import YeuThichDropdown from "../LuuBai/YeuThich";
+import ThongBaoDropdown from "../thongbao/thongbao";
 
 function Header() {
   const navigate = useNavigate();
