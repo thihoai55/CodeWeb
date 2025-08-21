@@ -8,70 +8,17 @@ import ChiaSe from './Chiasebai';
 import BaoCao from './BaoCao';
 import GuiYeuCauThue from './Guiyeucauthue'; 
 import DatLichHenXemPhong from './Datlichhenxemphong';
+import { normalizedPosts, getPostById } from '../data/selectors';
 
 function XemBaiDang() {
   const navigate = useNavigate();
   const { id } = useParams();
   
-  const postData = {
-    id: "123456",
-    title: "Phòng trọ mới, đầy đủ tiện nghi, có máy lạnh, ban công",
-    address: "Kiệt 131, Trần Phú, Phường Phước Vĩnh, Thành Phố Huế",
-    price: "1 Triệu/tháng",
-    area: "20 m²",
-    postedDate: "07/08/2025",
-    category: "Phòng trọ",
-    images: [
-      "https://th.bing.com/th/id/OIP.8XnAKLQnuXCfnp-s2PdTDQHaFj?w=261&h=196&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-      "https://bandon.vn/uploads/posts/thiet-ke-nha-tro-dep-2020-bandon-0.jpg",
-      "https://s-housing.vn/wp-content/uploads/2022/09/thiet-ke-phong-tro-dep-54.jpg",
-      "https://bandon.vn/uploads/thiet-ke-nha-tro-dep-2020-bandon-11.jpg",
-      "https://bandon.vn/uploads/thiet-ke-nha-tro-dep-2020-bandon-28.jpg"
-    ],
-    description: `Phòng trọ mới xây, sạch sẽ, thoáng mát với đầy đủ tiện nghi hiện đại. Phòng có điều hòa, nóng lạnh, ban công riêng với view đẹp. Khu vực an ninh tốt, có camera 24/7, cổng khóa vân tay.
-
-Vị trí thuận lợi:
-- Gần chợ Đông Ba (5 phút đi bộ)
-- Gần trường Đại học Khoa học Huế (10 phút đi bộ)
-- Gần trung tâm thành phố (15 phút đi bộ)
-- Có xe buýt đi qua cửa
-
-Tiện ích:
-- Điều hòa inverter tiết kiệm điện
-- Nóng lạnh 24/7
-- Ban công riêng, view đẹp
-- Tủ quần áo rộng rãi
-- Bàn học, kệ sách
-- Nhà vệ sinh khép kín
-- Bếp nấu ăn riêng
-- Wifi tốc độ cao
-
-Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện, nước, wifi.`,
-    owner: {
-      name: "Nguyễn Văn A",
-      phone: "0978772943",
-      avatar: "/anh/avt.jpg",
-      totalPosts: 2
-    },
-    rating: {
-      average: 4.9,
-      total: 38,
-      breakdown: { 5: 20, 4: 10, 3: 5, 2: 2, 1: 1 }
-    },
-    reviews: [
-      { id: 1, user: "Nguyễn Thị Hoài", rating: 5, comment: "Phòng trọ đẹp, giá rẻ, chủ trọ thân thiện, nằm ở trung tâm thành phố và gần trường, cho thuê nhanh.", date: "15/12/2024" },
-      { id: 2, user: "Trần Văn Bình", rating: 5, comment: "Phòng sạch sẽ, tiện nghi đầy đủ, chủ trọ dễ thương, giá cả hợp lý.", date: "10/12/2024" }
-    ],
-    location: {
-      lat: 16.4637,
-      lng: 107.5909,
-      address: "Kiệt 131, Trần Phú, Phường Phước Vĩnh, Thành Phố Huế"
-    }
-  };
+  const postData = getPostById(id);
 
   // Google Maps từ địa chỉ
-  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(postData.location.address)}&output=embed`;
-  const mapExternalUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(postData.location.address)}`;
+  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(postData.map.address)}&output=embed`;
+  const mapExternalUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(postData.map.address)}`;
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
@@ -176,7 +123,7 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
                 <div style={{ marginBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>📍</span>
-                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.address}</span>
+                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.map.address}</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
@@ -385,12 +332,12 @@ Phù hợp cho sinh viên hoặc người đi làm. Giá thuê bao gồm điện
             <div style={{ width: '320px', position: 'sticky', top: '20px', alignSelf: 'flex-start' }}>
               <div ref={ownerCardRef} style={{ background: '#fff', borderRadius: '12px', padding: '20px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <img
+                <img
                     src={postData.owner.avatar}
                     alt="Avatar"
                     style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #eee', marginBottom: '12px' }}
                   />
-                  <div style={{ fontWeight: 600, marginBottom: 4 }}>Người cho thuê</div>
+                  <div style={{ fontWeight: 600, marginBottom: 4 }}>{postData.owner.name}</div>
                   <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '12px' }}>
                     {postData.owner.totalPosts} tin đăng
                   </div>

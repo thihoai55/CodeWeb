@@ -5,31 +5,30 @@ function PostCard({ post }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    // Tạo ID ngẫu nhiên cho bài đăng (trong thực tế sẽ lấy từ database)
-    const postId = Math.floor(Math.random() * 1000000);
-    navigate(`/xem-bai-dang/${postId}`);
+    navigate(`/xem-bai-dang/${post.id}`);
   };
 
   return (
-    <div style={{
-      border: "1px solid #e0e0e0",
-      borderRadius: "10px",
-      padding: "0",
-      background: "#fff",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-      transition: "transform 0.2s ease, box-shadow 0.2s ease",
-      cursor: "pointer",
-      overflow: "hidden"
-    }}
-    onClick={handleClick}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = "scale(1.045)";
-      e.currentTarget.style.boxShadow = "0 10px 32px 0 rgba(25,118,210,0.18)";
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = "scale(1)";
-      e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-    }}
+    <div
+      style={{
+        border: "1px solid #e0e0e0",
+        borderRadius: "10px",
+        padding: "0",
+        background: "#fff",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        cursor: "pointer",
+        overflow: "hidden"
+      }}
+      onClick={handleClick}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = "scale(1.045)";
+        e.currentTarget.style.boxShadow = "0 10px 32px 0 rgba(25,118,210,0.18)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = "scale(1)";
+        e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+      }}
     >
       <img 
         src={post.img} 
