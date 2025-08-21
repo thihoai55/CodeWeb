@@ -338,6 +338,7 @@ function XemBaiDang() {
                     style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '1px solid #eee', marginBottom: '12px' }}
                   />
                   <div style={{ fontWeight: 600, marginBottom: 4 }}>{postData.owner.name}</div>
+
                   <div style={{ fontSize: '12px', color: '#9ca3af', marginBottom: '12px' }}>
                     {postData.owner.totalPosts} tin đăng
                   </div>
