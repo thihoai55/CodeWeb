@@ -1,4 +1,3 @@
-
 export const postsData = [
   {
     id: "1001",
@@ -77,7 +76,7 @@ export const postsData = [
     describe: "Phòng dành cho nữ tại Bãi Cháy – 22 m², sàn gạch sáng, cửa sổ thoáng, WC riêng. Có bàn học, ghế, tủ áo; máy giặt dùng chung theo khung giờ, sân phơi riêng. Khu xóm an ninh, chủ nhà thân thiện, lối đi riêng, giờ giấc tự do. Gần chợ Bãi Cháy, trạm bus, siêu thị mini. Chi phí: điện 3.5k/kWh, nước 18k/m³, gửi xe máy 50k/tháng.",
     rating: { average: 4.7, total: 14, breakdown: { 5: 9, 4: 4, 3: 1, 2: 0, 1: 0 } },
     reviews: [
-      { id: 1, user: "Nguyễn Thị Thanh Nhàn", rating: 5, comment: "Ưu tiên nữ nên rất yên tĩnh, an toàn.", date: "2025-08-03" },
+      { id: 1, user: "Đặng Trà My", rating: 5, comment: "Ưu tiên nữ nên rất yên tĩnh, an toàn.", date: "2025-08-03" },
       { id: 2, user: "Nguyễn Thảo", rating: 4, comment: "Sạch sẽ, gần chợ.", date: "2025-08-04" }
     ],
     location: { lat: 20.9711, lng: 107.0448, address: "Phường Bãi Cháy, Hạ Long" }
