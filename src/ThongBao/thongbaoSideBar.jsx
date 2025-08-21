@@ -10,7 +10,7 @@ import {
   markAllAsRead, 
   updateNotificationSelection, 
   selectAllNotifications 
-} from '../DaTa/DaTaThongBao';
+} from '../data/DaTaThongBao';
 
 const ThongBaoSideBar = () => {
   const navigate = useNavigate();

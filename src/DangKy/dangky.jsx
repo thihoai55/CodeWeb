@@ -30,7 +30,8 @@ const Register = () => {
     }
     setError("");
     // Xử lý đăng ký thành công
-    navigate("/trang-chu-da-dang-nhap"); // Chuyển về trang TrangChuDaDangNhap
+    localStorage.setItem('isLoggedIn', 'true');
+    navigate("/trang-chu-da-dang-nhap");
   };
 
   const inputWidth = 340;

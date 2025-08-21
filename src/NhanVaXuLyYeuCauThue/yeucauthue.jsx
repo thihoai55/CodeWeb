@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createRentalRequestNotification } from '../DaTa/DaTaThongBao';
+import { createRentalRequestNotification } from '../data/DaTaThongBao';
 
 const YeuCauThue = () => {
   const [requests, setRequests] = useState([
