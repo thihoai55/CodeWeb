@@ -18,7 +18,7 @@ function FavoriteItem({ item, onClick }) {
       <div
         style={{
           width: 48,
-          height: 36,
+          height: 36, 
           background: "#eee",
           borderRadius: 6,
           overflow: "hidden",

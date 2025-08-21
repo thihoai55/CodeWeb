@@ -124,13 +124,13 @@ function DangBai() {
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px 0 0 0' }}>
           <div style={{ padding: '0 32px', marginBottom: '16px' }}>
             <span
-              style={{ color: '#1976d2', cursor: 'pointer', fontSize: '14px' }}
+              style={{ color: '#1976d2', cursor: 'pointer', fontSize: '16px' }}
               onClick={() => navigate('/quan-ly-bai-dang')}
             >
               Trang quản lý
             </span>
             <span style={{ margin: '0 8px', color: '#b0b7c3' }}>›</span>
-            <span style={{ color: '#333', fontSize: '14px' }}>Đăng tin cho thuê</span>
+            <span style={{ color: '#333', fontSize: '16px' }}>Đăng tin cho thuê</span>
           </div>
           {/* Title & Tabs */}
           <div style={{

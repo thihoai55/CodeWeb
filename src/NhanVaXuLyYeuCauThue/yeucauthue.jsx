@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { createRentalRequestNotification } from '../DaTa/DaTaThongBao';
 
 const YeuCauThue = () => {
-  const requests = [
+  const [requests, setRequests] = useState([
     {
       id: 1,
       listingId: 'BD006',
@@ -38,15 +39,38 @@ const YeuCauThue = () => {
       rentTime: '15:30',
       phoneNumber: '0839582948'
     }
-  ];
-
+  ]);
 
   const handleApprove = (requestId) => {
     console.log('Chấp nhận yêu cầu thuê:', requestId);
+    
+    // Tìm thông tin yêu cầu thuê
+    const request = requests.find(req => req.id === requestId);
+    
+    // Xóa yêu cầu thuê khỏi danh sách
+    setRequests(prev => prev.filter(req => req.id !== requestId));
+    
+    // Tạo thông báo mới sử dụng notificationManager
+    createRentalRequestNotification(request.listingId, 'approve');
+    
+    // Có thể thêm logic gửi thông báo real-time ở đây
+    alert('Đã chấp nhận yêu cầu thuê và gửi thông báo!');
   };
 
   const handleReject = (requestId) => {
     console.log('Từ chối yêu cầu thuê:', requestId);
+    
+    // Tìm thông tin yêu cầu thuê
+    const request = requests.find(req => req.id === requestId);
+    
+    // Xóa yêu cầu thuê khỏi danh sách
+    setRequests(prev => prev.filter(req => req.id !== requestId));
+    
+    // Tạo thông báo mới sử dụng notificationManager
+    createRentalRequestNotification(request.listingId, 'reject');
+    
+    // Có thể thêm logic gửi thông báo real-time ở đây
+    alert('Đã từ chối yêu cầu thuê và gửi thông báo!');
   };
 
   return (
@@ -87,7 +111,7 @@ const YeuCauThue = () => {
               Tiêu đề: {req.title}
             </h3>
 
-            <div style={{ display: 'flex', gap: '70px', flexWrap: 'wrap', paddingLeft: '15px' }}>
+            <div style={{ display: 'flex', gap: '100px', flexWrap: 'wrap', paddingLeft: '15px' }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                 <span style={{ fontSize: '16px', color: '#666', fontWeight: '600' }}>Mã tin</span>
                 <span style={{ fontSize: '16px', color: '#333' }}>{req.listingId}</span>

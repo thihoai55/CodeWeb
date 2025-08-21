@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
 import BoLoc from "../BoLoc/boloc"
@@ -9,6 +10,7 @@ import YeuThichDropdown from "../LuuBai/YeuThich";
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [openBoLoc, setOpenBoLoc] = React.useState(false);
   const [openTimKiem, setOpenTimKiem] = React.useState(false);
@@ -49,10 +51,21 @@ function Header() {
   }, [notifications]);
 
   React.useEffect(() => {
-    function handleWindowClick() { setOpenNotify(false); }
+    function handleWindowClick() {
+      setOpenNotify(false);
+      setOpenFav(false);
+    }
     window.addEventListener("click", handleWindowClick);
     return () => window.removeEventListener("click", handleWindowClick);
   }, []);
+
+  // Đóng tất cả popup/modal khi chuyển route để tránh che phủ nội dung trang mới
+  React.useEffect(() => {
+    setOpenBoLoc(false);
+    setOpenTimKiem(false);
+    setOpenNotify(false);
+    setOpenFav(false);
+  }, [location.pathname]);
 
   const loadSavedPosts = () => {
     try {
@@ -112,10 +125,8 @@ function Header() {
             alignItems: "flex-start",
             minWidth: 90,
             marginRight: 12,
-            cursor: "pointer"
-          }}
-            onClick={() => navigate("/trang-chu-da-dang-nhap")}
-          >
+            cursor: 'pointer'
+          }} onClick={() => navigate('/trang-chu-da-dang-nhap')}>
             <img src="/anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
             <div style={{
               fontSize: "10px",

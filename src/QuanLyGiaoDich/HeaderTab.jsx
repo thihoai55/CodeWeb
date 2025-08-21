@@ -6,7 +6,7 @@ function HeaderTab({ title = 'Quản lý giao dịch', tabs = [], activeId }) {
 
   return (
     <div style={{
-      marginBottom: '40px',
+      marginBottom: '16px',
       background: '#fff',
       padding: '10px 24px 0 32px',
       boxShadow: '0 2px 0px rgba(199, 193, 193, 0.4)'

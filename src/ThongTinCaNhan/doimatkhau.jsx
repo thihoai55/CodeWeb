@@ -4,6 +4,25 @@ import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 
+function PasswordInput({ label, type = 'password', value, onChange, placeholder }) {
+  return (
+    <div>
+      <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>{label}</div>
+      <input
+        type={type}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        style={{
+          width: '100%', padding: '10px 12px',
+          border: '1px solid #dfe3e8', borderRadius: '6px', fontSize: '15px',
+          background: '#f8fafc'
+        }}
+      />
+    </div>
+  );
+}
+
 function DoiMatKhau() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -37,22 +56,7 @@ function DoiMatKhau() {
     navigate('/thong-tin-ca-nhan');
   };
 
-  const Input = ({ label, type = 'password', value, onChange, placeholder }) => (
-    <div>
-      <div style={{ fontSize: '14px', marginBottom: '6px', color: '#333' }}>{label}</div>
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
-        style={{
-          width: '100%', padding: '10px 12px',
-          border: '1px solid #dfe3e8', borderRadius: '6px', fontSize: '15px',
-          background: '#f8fafc'
-        }}
-      />
-    </div>
-  );
+  
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
@@ -77,9 +81,9 @@ function DoiMatKhau() {
             </div>
 
             <div style={{ maxWidth: '820px', margin: '16px auto 0', display: 'grid', gridTemplateColumns: '1fr', gap: '16px', fontSize: '18px', fontWeight: 500 }}>
-              <Input label={'Mật khẩu cũ'} value={form.oldPassword} onChange={(v) => handleChange('oldPassword', v)} placeholder={'Nhập mật khẩu cũ'} />
-              <Input label={'Mật khẩu mới'} value={form.newPassword} onChange={(v) => handleChange('newPassword', v)} placeholder={'Nhập mật khẩu mới'} />
-              <Input label={'Nhập lại mật khẩu'} value={form.confirmPassword} onChange={(v) => handleChange('confirmPassword', v)} placeholder={'Nhập lại mật khẩu'} />
+              <PasswordInput label={'Mật khẩu cũ'} value={form.oldPassword} onChange={(v) => handleChange('oldPassword', v)} placeholder={'Nhập mật khẩu cũ'} />
+              <PasswordInput label={'Mật khẩu mới'} value={form.newPassword} onChange={(v) => handleChange('newPassword', v)} placeholder={'Nhập mật khẩu mới'} />
+              <PasswordInput label={'Nhập lại mật khẩu'} value={form.confirmPassword} onChange={(v) => handleChange('confirmPassword', v)} placeholder={'Nhập lại mật khẩu'} />
 
               {error && (
                 <div style={{ color: '#d32f2f', fontSize: '15px' }}>{error}</div>

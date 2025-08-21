@@ -4,6 +4,29 @@ import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 
+function ProfileInput({ icon, type = 'text', value, onChange, placeholder, readOnly }) {
+  return (
+    <div style={{ position: 'relative' }}>
+      <span style={{
+        position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
+        color: '#666', fontSize: '16px'
+      }}>{icon}</span>
+      <input
+        type={type}
+        value={value}
+        onChange={e => onChange && onChange(e.target.value)}
+        placeholder={placeholder}
+        readOnly={readOnly}
+        style={{
+          width: '100%', padding: '10px 12px 10px 36px',
+          border: '1px solid #dfe3e8', borderRadius: '6px', fontSize: '15px',
+          background: readOnly ? '#f6f8fa' : '#fff', color: '#111'
+        }}
+      />
+    </div>
+  );
+}
+
 function ThongTinCaNhan() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
@@ -33,26 +56,7 @@ function ThongTinCaNhan() {
     alert('Cập nhật thông tin thành công');
   };
 
-  const Input = ({ icon, type = 'text', value, onChange, placeholder, readOnly }) => (
-    <div style={{ position: 'relative' }}>
-      <span style={{
-        position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
-        color: '#666', fontSize: '16px'
-      }}>{icon}</span>
-      <input
-        type={type}
-        value={value}
-        onChange={e => onChange && onChange(e.target.value)}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        style={{
-          width: '100%', padding: '10px 12px 10px 36px',
-          border: '1px solid #dfe3e8', borderRadius: '6px', fontSize: '15px',
-          background: readOnly ? '#f6f8fa' : '#fff', color: '#111'
-        }}
-      />
-    </div>
-  );
+  
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
@@ -95,27 +99,27 @@ function ThongTinCaNhan() {
 
               <div>
                 <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Mã tài khoản</div>
-                <Input icon="#" value={profile.accountId} readOnly />
+                <ProfileInput icon="#" value={profile.accountId} readOnly />
               </div>
 
               <div>
                 <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Họ tên</div>
-                <Input icon="👤" value={profile.fullName} onChange={(v) => handleChange('fullName', v)} placeholder="Nhập họ tên" />
+                <ProfileInput icon="👤" value={profile.fullName} onChange={(v) => handleChange('fullName', v)} placeholder="Nhập họ tên" />
               </div>
 
               <div>
                 <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Email</div>
-                <Input icon="✉️" type="email" value={profile.email} onChange={(v) => handleChange('email', v)} placeholder="Nhập email" />
+                <ProfileInput icon="✉️" type="email" value={profile.email} onChange={(v) => handleChange('email', v)} placeholder="Nhập email" />
               </div>
 
               <div>
                 <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Số điện thoại</div>
-                <Input icon="📞" value={profile.phone} onChange={(v) => handleChange('phone', v)} placeholder="Nhập số điện thoại" />
+                <ProfileInput icon="📞" value={profile.phone} onChange={(v) => handleChange('phone', v)} placeholder="Nhập số điện thoại" />
               </div>
 
               <div>
                 <div style={{ fontSize: '16px', fontWeight: 500, marginBottom: '8px', color: '#333' }}>Địa chỉ liên hệ</div>
-                <Input icon="📍" value={profile.address} onChange={(v) => handleChange('address', v)} placeholder="Nhập địa chỉ" />
+                <ProfileInput icon="📍" value={profile.address} onChange={(v) => handleChange('address', v)} placeholder="Nhập địa chỉ" />
               </div>
 
               <div>

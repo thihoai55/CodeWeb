@@ -18,6 +18,7 @@ import NapTien from "./NapTien/naptien";
 import HopDongChoThue from "./HopDongChoThue/hopdongchothue";
 import Trang2 from "./ChuyenTrang/Trang2";
 import Trang3 from "./ChuyenTrang/Trang3";
+import ThongBaoSideBar from "./ThongBao/thongbaoSideBar";
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
         <Route path="/lien-he-tro-giup" element={<LienHeTroGiup />} />
         <Route path="/nap-tien" element={<NapTien />} />
         <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
+        <Route path="/thong-bao" element={<ThongBaoSideBar />} />
 
       </Routes>
     </BrowserRouter>

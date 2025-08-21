@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { createAppointmentNotification } from '../DaTa/DaTaThongBao';
 
 const LichHen = () => {
   // Dữ liệu mẫu cho các lịch hẹn
-  const appointments = [
+  const [appointments, setAppointments] = useState([
     {
       id: 1,
       listingId: 'BD001',
@@ -39,17 +40,38 @@ const LichHen = () => {
       appointmentTime: '17:00',
       phoneNumber: '0865465228'
     }
-  ];
-
+  ]);
 
   const handleConfirm = (appointmentId) => {
     console.log('Xác nhận lịch hẹn:', appointmentId);
-    // Xử lý logic xác nhận lịch hẹn
+    
+    // Tìm thông tin lịch hẹn
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    
+    // Xóa lịch hẹn khỏi danh sách
+    setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
+    
+    // Tạo thông báo mới sử dụng notificationManager
+    createAppointmentNotification(appointment.listingId, 'confirm');
+    
+    // Có thể thêm logic gửi thông báo real-time ở đây
+    alert('Đã xác nhận lịch hẹn và gửi thông báo!');
   };
 
   const handleCancel = (appointmentId) => {
     console.log('Hủy lịch hẹn:', appointmentId);
-    // Xử lý logic hủy lịch hẹn
+    
+    // Tìm thông tin lịch hẹn
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    
+    // Xóa lịch hẹn khỏi danh sách
+    setAppointments(prev => prev.filter(apt => apt.id !== appointmentId));
+    
+    // Tạo thông báo mới sử dụng notificationManager
+    createAppointmentNotification(appointment.listingId, 'cancel');
+    
+    // Có thể thêm logic gửi thông báo real-time ở đây
+    alert('Đã hủy lịch hẹn và gửi thông báo!');
   };
 
   return (
@@ -93,7 +115,7 @@ const LichHen = () => {
             {/* Appointment Details - Horizontal Layout */}
             <div style={{
               display: 'flex',
-              gap: '40px',
+              gap: '100px',
               flexWrap: 'wrap',
               paddingLeft: '15px'
               // marginleft: '50px',

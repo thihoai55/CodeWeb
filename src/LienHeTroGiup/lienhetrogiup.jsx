@@ -2,6 +2,42 @@ import React, { useState } from 'react';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 
+function ContactInput({ label, type = 'text', value, onChange, placeholder, required, error, multiline = false }) {
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <div style={{ fontSize: '16px', marginBottom: '6px', color: '#333', fontWeight: '500' }}>
+        {label} {required && <span style={{ color: '#d32f2f' }}>*</span>}
+      </div>
+      {multiline ? (
+        <textarea
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          rows="4"
+          style={{
+            width: '100%', padding: '10px 12px',
+            border: `1px solid ${error ? '#d32f2f' : '#dfe3e8'}`, borderRadius: '6px', fontSize: '15px',
+            background: '#fff', resize: 'vertical', fontFamily: 'inherit'
+          }}
+        />
+      ) : (
+        <input
+          type={type}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          style={{
+            width: '100%', padding: '10px 12px',
+            border: `1px solid ${error ? '#d32f2f' : '#dfe3e8'}`, borderRadius: '6px', fontSize: '15px',
+            background: '#fff'
+          }}
+        />
+      )}
+      {error && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>{error}</div>}
+    </div>
+  );
+}
+
 function LienHeTroGiup() {
   const [form, setForm] = useState({
     name: '',
@@ -44,40 +80,6 @@ function LienHeTroGiup() {
     }
   };
 
-  const Input = ({ label, type = 'text', value, onChange, placeholder, required, error, multiline = false }) => (
-    <div style={{ marginBottom: '16px' }}>
-      <div style={{ fontSize: '16px', marginBottom: '6px', color: '#333', fontWeight: '500' }}>
-        {label} {required && <span style={{ color: '#d32f2f' }}>*</span>}
-      </div>
-      {multiline ? (
-        <textarea
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          rows="4"
-          style={{
-            width: '100%', padding: '10px 12px',
-            border: `1px solid ${error ? '#d32f2f' : '#dfe3e8'}`, borderRadius: '6px', fontSize: '15px',
-            background: '#fff', resize: 'vertical', fontFamily: 'inherit'
-          }}
-        />
-      ) : (
-        <input
-          type={type}
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder}
-          style={{
-            width: '100%', padding: '10px 12px',
-            border: `1px solid ${error ? '#d32f2f' : '#dfe3e8'}`, borderRadius: '6px', fontSize: '15px',
-            background: '#fff'
-          }}
-        />
-      )}
-      {error && <div style={{ color: '#d32f2f', fontSize: '12px', marginTop: '4px' }}>{error}</div>}
-    </div>
-  );
-
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
       <Header />
@@ -94,7 +96,7 @@ function LienHeTroGiup() {
             {/* Form Section */}
             <div>
               <form onSubmit={handleSubmit}>
-                <Input 
+                <ContactInput 
                   label="Tên của bạn" 
                   value={form.name} 
                   onChange={(value) => handleChange('name', value)} 
@@ -103,7 +105,7 @@ function LienHeTroGiup() {
                   error={errors.name}
                 />
                 
-                <Input 
+                <ContactInput 
                   label="Email" 
                   type="email" 
                   value={form.email} 
@@ -113,7 +115,7 @@ function LienHeTroGiup() {
                   error={errors.email}
                 />
                 
-                <Input 
+                <ContactInput 
                   label="Điện thoại" 
                   type="tel" 
                   value={form.phone} 
@@ -121,7 +123,7 @@ function LienHeTroGiup() {
                   placeholder="Nhập số điện thoại"
                 />
                 
-                <Input 
+                <ContactInput 
                   label="Nội dung liên hệ" 
                   value={form.content} 
                   onChange={(value) => handleChange('content', value)} 
