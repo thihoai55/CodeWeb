@@ -1,6 +1,6 @@
 import React from "react";
 import PostCard from "./PostCard";
-import postsData from "../DaTa/DuLieuBaiDang";
+import postsData from "../DaTa/danhsachbaidangg";
 
 function PostList() {
   // Lấy danh sách bài đăng mặc định từ file dữ liệu chung
