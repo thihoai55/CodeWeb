@@ -16,9 +16,35 @@ function XemBaiDang() {
   
   const postData = getPostById(id);
 
+  // Fallbacks
+  const safeImages = Array.isArray(postData?.images) ? postData.images : [];
+  const safeMapAddress = postData?.map?.address || postData?.address || '';
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    }
+  }, [id]);
+  // Helpers
+  const allPosts = (normalizedPosts || []).filter(p => p && p.id);
+  const fromNow = (iso) => {
+    if (!iso) return '';
+    const ms = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(ms / 60000);
+    if (m < 1) return 'Mới đăng';
+    if (m < 60) return `${m} phút trước`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h} giờ trước`;
+    const d = Math.floor(h / 24);
+    return `${d} ngày trước`;
+  };
+  const cityOf = (addr = '') => {
+    const parts = String(addr).split(',');
+    return parts[parts.length - 1]?.trim().toLowerCase() || '';
+  };
+
   // Google Maps từ địa chỉ
-  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(postData.map.address)}&output=embed`;
-  const mapExternalUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(postData.map.address)}`;
+  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(safeMapAddress)}&output=embed`;
+  const mapExternalUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(safeMapAddress)}`;
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [showAllImages, setShowAllImages] = useState(false);
@@ -48,38 +74,67 @@ function XemBaiDang() {
     return () => window.removeEventListener('resize', computeHeights);
   }, []);
 
-  const featuredPosts = [
-    { id: 1, title: "Cho thuê phòng trọ ngay ĐH Khoa Học", price: "2 Triệu/tháng", image: "https://bandon.vn/uploads/posts/thiet-ke-nha-tro-dep-2020-bandon-0.jpg", time: "1 ngày trước" },
-    { id: 2, title: "Phòng trọ gần chợ Đông Ba", price: "1.5 Triệu/tháng", image: "https://s-housing.vn/wp-content/uploads/2022/09/thiet-ke-phong-tro-dep-54.jpg", time: "2 ngày trước" },
-    { id: 3, title: "Nhà trọ cho sinh viên", price: "1.8 Triệu/tháng", image: "https://bandon.vn/uploads/thiet-ke-nha-tro-dep-2020-bandon-11.jpg", time: "3 ngày trước" }
-  ];
+  // Replace old featuredPosts/nearbyPosts/latestPosts
+  const currentCity = cityOf(postData.address || postData?.map?.address || '');
 
-  const nearbyPosts = [
-    { id: 1, title: "Phòng trọ mới xây sạch sẽ, gần trung tâm thành phố", price: "1.2 Triệu/tháng", address: "Trần Phú, Thành phố Huế", image: "https://th.bing.com/th/id/OIP.8XnAKLQnuXCfnp-s2PdTDQHaFj?w=261&h=196&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" },
-    { id: 2, title: "Phòng trọ cho nữ thuê không gian được trang trí đẹp mắt", price: "2.5 Triệu/tháng", address: "Nguyễn Huệ, Tp Huế", image: "https://bandon.vn/uploads/posts/thiet-ke-nha-tro-dep-2020-bandon-0.jpg" },
-    { id: 3, title: "Phòng trọ có gác lửng, kệ bếp, phòng vệ sinh khép kín", price: "2.5 Triệu/tháng", address: "29/3, Đà Nẵng", image: "https://s-housing.vn/wp-content/uploads/2022/09/thiet-ke-phong-tro-dep-54.jpg" },
-    { id: 4, title: "Tìm người ở ghép gần trung tâm thành phố", price: "5.5 Triệu/tháng", address: "TP Vinh, Nghệ An", image: "https://bandon.vn/uploads/thiet-ke-nha-tro-dep-2020-bandon-11.jpg" }
-  ];
+  // Latest posts (newest postedDate)
+  const latestPosts = allPosts
+    .filter(p => p.id !== postData.id)
+    .sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate))
+    .slice(0, 4)
+    .map(p => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      image: p.images?.[0] || '',
+      time: fromNow(p.postedDate),
+    }));
 
-  const latestPosts = [
-    { id: '1001', title: 'Căn hộ mini trung tâm Huế, gần ĐH Khoa Học', price: '3 Triệu/tháng', image: 'https://bandon.vn/uploads/posts/thiet-ke-nha-tro-dep-2020-bandon-0.jpg', time: 'Mới đăng' },
-    { id: '1002', title: 'Phòng trọ có ban công, nội thất cơ bản', price: '2 Triệu/tháng', image: 'https://s-housing.vn/wp-content/uploads/2022/09/thiet-ke-phong-tro-dep-54.jpg', time: '30 phút trước' },
-    { id: '1003', title: 'Phòng cho nữ, gần chợ, an ninh tốt', price: '1.8 Triệu/tháng', image: 'https://bandon.vn/uploads/thiet-ke-nha-tro-dep-2020-bandon-11.jpg', time: '1 giờ trước' },
-    { id: '1004', title: 'Phòng trọ mới xây, có gác lửng, để xe rộng', price: '2.2 Triệu/tháng', image: 'https://bandon.vn/uploads/thiet-ke-nha-tro-dep-2020-bandon-28.jpg', time: '2 giờ trước' }
-  ];
+  // Nearby by city (fallback: same category if no city match)
+  let nearbyPosts = allPosts
+    .filter(p => p.id !== postData.id && cityOf(p.address) === currentCity)
+    .slice(0, 4)
+    .map(p => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      address: p.address,
+      image: p.images?.[0] || '',
+    }));
+  if (nearbyPosts.length === 0) {
+    nearbyPosts = allPosts
+      .filter(p => p.id !== postData.id && p.category === postData.category)
+      .slice(0, 4)
+      .map(p => ({
+        id: p.id,
+        title: p.title,
+        price: p.price,
+        address: p.address,
+        image: p.images?.[0] || '',
+      }));
+  }
 
-  const featuredFromImages = postData.images.map((img, index) => ({
-    id: index + 1,
-    title: `Bài viết nổi bật ${index + 1}`,
-    price: postData.price,
-    image: img,
-    time: `${index + 1} giờ trước`
-  }));
-  const baseFeatured = [...featuredPosts, ...featuredFromImages];
-  const sidebarFeatured = Array.from({ length: sidebarItemCount }, (_, i) => ({
-    ...baseFeatured[i % baseFeatured.length],
-    uid: `sf-${i}`
-  }));
+  // Featured by highest rating
+  const featuredPosts = allPosts
+    .filter(p => p.id !== postData.id)
+    .sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0))
+    .slice(0, 20)
+    .map(p => ({
+      id: p.id,
+      title: p.title,
+      price: p.price,
+      image: p.images?.[0] || '',
+      time: fromNow(p.postedDate),
+    }));
+
+  // Sidebar list
+  const baseFeatured = (featuredPosts.length ? featuredPosts : latestPosts);
+  const sidebarFeatured = baseFeatured.length
+    ? Array.from({ length: sidebarItemCount }, (_, i) => ({
+        ...baseFeatured[i % baseFeatured.length],
+        uid: `sf-${i}`,
+      }))
+    : [];
 
   const handleContact = (type) => {
     switch(type) {
@@ -123,7 +178,7 @@ function XemBaiDang() {
                 <div style={{ marginBottom: '8px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>📍</span>
-                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.map.address}</span>
+                    <span style={{ fontWeight: '600', color: '#000' }}>{safeMapAddress}</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
@@ -149,7 +204,7 @@ function XemBaiDang() {
                   <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '12px' }}>
                     <div>
                       <img
-                        src={postData.images[selectedImage]}
+                        src={safeImages[selectedImage]}
                         alt="Main"
                         style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '16px' }}
                       />
@@ -157,7 +212,7 @@ function XemBaiDang() {
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: '12px' }}>
                       {[1, 2, 3].map((i) => {
-                        const imgSrc = postData.images[i];
+                        const imgSrc = safeImages[i];
                         if (!imgSrc) return <div key={i} style={{ borderRadius: '12px', background: '#f3f4f6' }} />;
                         return (
                           <img
@@ -187,7 +242,7 @@ function XemBaiDang() {
                           overflow: 'hidden',
                           cursor: 'pointer',
                           border: '1px solid #eee',
-                          background: postData.images[4] ? `url(${postData.images[4]}) center/cover no-repeat` : '#f3f4f6'
+                          background: safeImages[4] ? `url(${safeImages[4]}) center/cover no-repeat` : '#f3f4f6'
                         }}
                       >
                         <div style={{
@@ -227,7 +282,7 @@ function XemBaiDang() {
                         <button onClick={() => setShowAllImages(false)} style={{ background: 'none', border: 'none', fontSize: '16px', cursor: 'pointer' }}>Đóng ✕</button>
                       </div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
-                        {postData.images.map((img, idx) => (
+                        {safeImages.map((img, idx) => (
                           <img
                             key={idx}
                             src={img}
@@ -286,7 +341,27 @@ function XemBaiDang() {
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                   {nearbyPosts.map(post => (
-                    <div key={post.id} style={{ border: '1px solid #eee', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer' }}>
+                    <div
+                      key={post.id}
+                      onClick={() => navigate(`/xem-bai-dang/${post.id}`)}
+                      style={{
+                        border: '1px solid #eee',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        transform: 'translateZ(0)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.045)';
+                        e.currentTarget.style.boxShadow = '0 10px 32px 0 rgba(25,118,210,0.18)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                      }}
+                    >
                       <img src={post.image} alt={post.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
                       <div style={{ padding: '12px' }}>
                         <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
@@ -310,7 +385,27 @@ function XemBaiDang() {
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                   {latestPosts.map(item => (
-                    <div key={item.id} onClick={() => navigate(`/xem-bai-dang/${item.id}`)} style={{ border: '1px solid #eee', borderRadius: '8px', overflow: 'hidden', cursor: 'pointer' }}>
+                    <div
+                      key={item.id}
+                      onClick={() => navigate(`/xem-bai-dang/${item.id}`)}
+                      style={{
+                        border: '1px solid #eee',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                        transform: 'translateZ(0)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.045)';
+                        e.currentTarget.style.boxShadow = '0 10px 32px 0 rgba(25,118,210,0.18)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                      }}
+                    >
                       <img src={item.image} alt={item.title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
                       <div style={{ padding: '12px' }}>
                         <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
@@ -385,9 +480,26 @@ function XemBaiDang() {
                   {sidebarFeatured.map(post => (
                     <div
                       key={post.uid || post.id}
-                      style={{ display: 'flex', gap: '12px', cursor: 'pointer', padding: '8px', borderRadius: '8px', transition: 'background 0.2s' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f5f5f5')}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                      onClick={() => post.id && navigate(`/xem-bai-dang/${post.id}`)}
+                      style={{
+                        display: 'flex',
+                        gap: '12px',
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '8px',
+                        transition: 'background 0.2s, transform 0.2s ease, box-shadow 0.2s ease',
+                        transform: 'translateZ(0)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#f5f5f5';
+                        e.currentTarget.style.transform = 'scale(1.02)';
+                        e.currentTarget.style.boxShadow = '0 6px 18px rgba(25,118,210,0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'transparent';
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
                     >
                       <img
                         src={post.image}
