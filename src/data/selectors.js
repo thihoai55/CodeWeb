@@ -34,3 +34,4 @@ export const normalizedPosts = postsData.map(p => ({
 
 export const getPostById = (id) =>
   normalizedPosts.find(p => p.id === String(id));
+

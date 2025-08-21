@@ -227,7 +227,7 @@ const ThongBaoSideBar = () => {
                       </div>
                       <div style={{
                         color: '#007bff',
-                        fontSize: '14px',
+                        fontSize: '15px',
                         lineHeight: '1.4',
                         cursor: 'pointer'
                       }}>

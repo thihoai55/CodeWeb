@@ -9,7 +9,7 @@ const defaultNotifications = [
   },
   {
     id: 2,
-    date: '28/02/2020 15:30',
+    date: '28/02/2020 15:31',
     message: 'Thông báo: Hệ thống sẽ bảo trì vào ngày mai',
     isRead: true,
     isSelected: false
