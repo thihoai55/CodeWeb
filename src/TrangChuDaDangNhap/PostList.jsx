@@ -1,7 +1,7 @@
 import React from "react";
 import PostCard from "./PostCard";
 import Pagination from "./Pagination";
-import postsData from "../DaTa/danhsachbaidangg";
+import { postsData } from "../DaTa/danhsachbaidangg";
 
 function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageChange }) {
   // State để quản lý trang hiện tại
@@ -56,19 +56,34 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
         color: "#333"
       }}>Tin mới đăng</h2>
       
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: gridTemplate,
-        gap: "24px",
-        justifyContent: "center"
-      }}>
-        {currentPosts.map((post, idx) => (
-          <PostCard post={post} key={idx} />
-        ))}
-      </div>
+      {currentPosts.length === 0 ? (
+        <div style={{
+          textAlign: "center",
+          padding: "40px",
+          color: "#666",
+          fontSize: "18px"
+        }}>
+          Không có bài đăng nào phù hợp với tiêu chí tìm kiếm.
+        </div>
+      ) : (
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: gridTemplate,
+          gap: "24px",
+          justifyContent: "center"
+        }}>
+          {currentPosts.map((post, idx) => (
+            <PostCard post={post} key={idx} />
+          ))}
+        </div>
+      )}
 
       {/* Sử dụng component Pagination với state */}
-      <Pagination currentPage={currentPage} onPageChange={handlePageChange} />
+      <Pagination 
+        currentPage={currentPage} 
+        onPageChange={handlePageChange} 
+        data={allPosts}
+      />
     </section>
   );
 }

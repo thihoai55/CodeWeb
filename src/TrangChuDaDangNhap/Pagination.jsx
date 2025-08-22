@@ -1,10 +1,9 @@
 import React from "react";
-import { postsData } from "../DaTa/danhsachbaidangg";
 
-function Pagination({ currentPage, onPageChange }) {
-  // Tính toán số trang dựa trên dữ liệu thực tế
+function Pagination({ currentPage, onPageChange, data = [] }) {
+  // Tính toán số trang dựa trên dữ liệu được truyền vào
   const postsPerPage = 12;
-  const totalPosts = postsData.length;
+  const totalPosts = data.length;
   const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   const goTo = (page) => {
