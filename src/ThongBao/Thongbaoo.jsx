@@ -38,7 +38,7 @@ function DropdownNotificationItem({ notification, onClick }) {
         display: "flex",
         alignItems: "flex-start",
         gap: 12,
-        padding: "12px 14px",  // Thêm padding để tăng khoảng cách giữa các thông báo
+        padding: "12px 14px",
         cursor: "pointer",
         background: isRead ? "#fff" : "#f0f8ff",
         borderBottom: "1px solid #dededeff",
@@ -118,7 +118,7 @@ export default function ThongBaoDropdown({
     >
       <div style={{ padding: "10px 14px", borderBottom: "1px solid #ebe9e9ff" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-          <div style={{ fontWeight: 700, fontSize: 18, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Thông báo</div>
+          <div style={{ fontWeight: 700, fontSize: 16, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Thông báo</div>
           <button
             onClick={onClose}
             style={{
@@ -127,14 +127,14 @@ export default function ThongBaoDropdown({
               color: "#111",
               cursor: "pointer",
               fontWeight: 700,
-              padding: "10px 10px",
+              padding: "6px 10px",
               borderRadius: 8
             }}
           >
             Đóng
           </button>
         </div>
-        <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+        <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
           <button
             onClick={() => setShowOnlyUnread(v => !v)}
             style={{
@@ -143,7 +143,7 @@ export default function ThongBaoDropdown({
               color: "#111",
               cursor: "pointer",
               fontWeight: 600,
-              padding: "8px 10px",
+              padding: "6px 10px",
               borderRadius: 8,
               flexShrink: 0
             }}
@@ -158,7 +158,7 @@ export default function ThongBaoDropdown({
               color: "#fff",
               cursor: "pointer",
               fontWeight: 600,
-              padding: "8px 10px",
+              padding: "6px 10px",
               borderRadius: 8,
               flexShrink: 0
             }}
