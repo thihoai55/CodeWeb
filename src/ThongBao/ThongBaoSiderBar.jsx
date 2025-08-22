@@ -16,14 +16,14 @@ const ThongBaoSideBar = () => {
   const navigate = useNavigate();
   
   // Thêm Font Awesome CDN vào head nếu chưa có
-  useEffect(() => {
-    if (!document.querySelector('link[href*="font-awesome"]')) {
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
-      document.head.appendChild(link);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!document.querySelector('link[href*="font-awesome"]')) {
+  //     const link = document.createElement('link');
+  //     link.rel = 'stylesheet';
+  //     link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+  //     document.head.appendChild(link);
+  //   }
+  // }, []);
 
   // Đọc thông báo từ notificationManager
   const [notifications, setNotifications] = useState(() => {
@@ -185,7 +185,7 @@ const ThongBaoSideBar = () => {
                       display: 'flex',
                       alignItems: 'flex-start',
                       padding: '15px 20px',
-                      borderBottom: '1px solid #e9ecef',
+                      borderBottom: '1px solid #dededeff',
                       transition: 'background-color 0.3s',
                       cursor: 'pointer',
                       backgroundColor: notification.isRead ? 'white' : '#f0f8ff'
@@ -218,12 +218,12 @@ const ThongBaoSideBar = () => {
                           fontSize: '14px',
                           fontWeight: '500'
                         }}>{notification.date}</span>
-                        <div style={{
+                        {/* <div style={{
                           color: '#ffc107',
                           fontSize: '16px'
                         }}>
                           <i className="fas fa-bell"></i>
-                        </div>
+                        </div> */}
                       </div>
                       <div style={{
                         color: '#007bff',
