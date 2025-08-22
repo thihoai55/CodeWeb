@@ -17,6 +17,37 @@ function Header() {
     ward: "Tất cả"
   });
 
+  // State để lưu loại bài đăng được chọn
+  const [selectedCategory, setSelectedCategory] = React.useState(() => {
+    // Xác định loại hiện tại dựa trên URL
+    const pathname = window.location.pathname;
+    if (pathname === "/phong-tro") return "Phòng trọ";
+    if (pathname === "/nha-nguyen-can") return "Nhà nguyên căn";
+    if (pathname === "/o-ghep") return "Ở ghép";
+    return "all";
+  });
+
+  // Hàm xử lý khi chọn loại bài đăng
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    // Chuyển hướng đến trang tương ứng
+    switch(category) {
+      case "Phòng trọ":
+        navigate("/phong-tro");
+        break;
+      case "Nhà nguyên căn":
+        navigate("/nha-nguyen-can");
+        break;
+      case "Ở ghép":
+        navigate("/o-ghep");
+        break;
+      case "all":
+      default:
+        navigate("/");
+        break;
+    }
+  };
+
   return (
     <>
       <header style={{
@@ -59,96 +90,143 @@ function Header() {
             display: "flex",
             gap: 10
           }}>
-            <button style={{
-              padding: "0 10px",
-              border: "none",
-              borderRadius: "12px",
-              background: "#fff",
-              color: "#222",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "6px",
-              height: "36px",
-              minWidth: 0
-            }}
-            onMouseEnter={e => {
-              e.target.style.background = "#f5f5f5";
-              e.target.style.transform = "translateY(-1.5px)";
-              e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
-            }}
-            onMouseLeave={e => {
-              e.target.style.background = "#fff";
-              e.target.style.transform = "translateY(0)";
-              e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
-            }}>
+            <button 
+              onClick={() => handleCategorySelect("all")}
+              style={{
+                padding: "0 10px",
+                border: "none",
+                borderRadius: "12px",
+                background: selectedCategory === "all" ? "#e3f2fd" : "#fff",
+                color: selectedCategory === "all" ? "#1976d2" : "#222",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                height: "36px",
+                minWidth: 0
+              }}
+              onMouseEnter={e => {
+                if (selectedCategory !== "all") {
+                  e.target.style.background = "#f5f5f5";
+                }
+                e.target.style.transform = "translateY(-1.5px)";
+                e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
+              }}
+              onMouseLeave={e => {
+                e.target.style.background = selectedCategory === "all" ? "#e3f2fd" : "#fff";
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
+              }}>
+              <span style={{fontSize: 18, display: 'flex', alignItems: 'center'}}>🏠</span>
+              Tất cả
+            </button>
+            <button 
+              onClick={() => handleCategorySelect("Phòng trọ")}
+              style={{
+                padding: "0 10px",
+                border: "none",
+                borderRadius: "12px",
+                background: selectedCategory === "Phòng trọ" ? "#e3f2fd" : "#fff",
+                color: selectedCategory === "Phòng trọ" ? "#1976d2" : "#222",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                height: "36px",
+                minWidth: 0
+              }}
+              onMouseEnter={e => {
+                if (selectedCategory !== "Phòng trọ") {
+                  e.target.style.background = "#f5f5f5";
+                }
+                e.target.style.transform = "translateY(-1.5px)";
+                e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
+              }}
+              onMouseLeave={e => {
+                e.target.style.background = selectedCategory === "Phòng trọ" ? "#e3f2fd" : "#fff";
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
+              }}>
               <i className="bi bi-grid-fill" style={{fontSize: 18, display: 'flex', alignItems: 'center'}}></i>
               Phòng trọ
             </button>
-            <button style={{
-              padding: "0 10px",
-              border: "none",
-              borderRadius: "12px",
-              background: "#fff",
-              color: "#222",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "6px",
-              height: "36px",
-              minWidth: 0
-            }}
-            onMouseEnter={e => {
-              e.target.style.background = "#f5f5f5";
-              e.target.style.transform = "translateY(-1.5px)";
-              e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
-            }}
-            onMouseLeave={e => {
-              e.target.style.background = "#fff";
-              e.target.style.transform = "translateY(0)";
-              e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
-            }}>
+            <button 
+              onClick={() => handleCategorySelect("Nhà nguyên căn")}
+              style={{
+                padding: "0 10px",
+                border: "none",
+                borderRadius: "12px",
+                background: selectedCategory === "Nhà nguyên căn" ? "#e3f2fd" : "#fff",
+                color: selectedCategory === "Nhà nguyên căn" ? "#1976d2" : "#222",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                height: "36px",
+                minWidth: 0
+              }}
+              onMouseEnter={e => {
+                if (selectedCategory !== "Nhà nguyên căn") {
+                  e.target.style.background = "#f5f5f5";
+                }
+                e.target.style.transform = "translateY(-1.5px)";
+                e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
+              }}
+              onMouseLeave={e => {
+                e.target.style.background = selectedCategory === "Nhà nguyên căn" ? "#e3f2fd" : "#fff";
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
+              }}>
               <span style={{fontSize: 18, display: 'flex', alignItems: 'center'}}>🏢</span>
               Nhà nguyên căn
             </button>
-            <button style={{
-              padding: "0 10px",
-              border: "none",
-              borderRadius: "12px",
-              background: "#fff",
-              color: "#222",
-              fontSize: "15px",
-              fontWeight: 600,
-              cursor: "pointer",
-              transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
-              boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "6px",
-              height: "36px",
-              minWidth: 0
-            }}
-            onMouseEnter={e => {
-              e.target.style.background = "#f5f5f5";
-              e.target.style.transform = "translateY(-1.5px)";
-              e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
-            }}
-            onMouseLeave={e => {
-              e.target.style.background = "#fff";
-              e.target.style.transform = "translateY(0)";
-              e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
-            }}>
+            <button 
+              onClick={() => handleCategorySelect("Ở ghép")}
+              style={{
+                padding: "0 10px",
+                border: "none",
+                borderRadius: "12px",
+                background: selectedCategory === "Ở ghép" ? "#e3f2fd" : "#fff",
+                color: selectedCategory === "Ở ghép" ? "#1976d2" : "#222",
+                fontSize: "15px",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s cubic-bezier(.4,2,.6,1)",
+                boxShadow: "0 4px 8px rgba(0,0,0,0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+                height: "36px",
+                minWidth: 0
+              }}
+              onMouseEnter={e => {
+                if (selectedCategory !== "Ở ghép") {
+                  e.target.style.background = "#f5f5f5";
+                }
+                e.target.style.transform = "translateY(-1.5px)";
+                e.target.style.boxShadow = "0 6px 16px rgba(25,118,210,0.10)";
+              }}
+              onMouseLeave={e => {
+                e.target.style.background = selectedCategory === "Ở ghép" ? "#e3f2fd" : "#fff";
+                e.target.style.transform = "translateY(0)";
+                e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
+              }}>
               <span style={{fontSize: 18, display: 'flex', alignItems: 'center'}}>👥</span>
               Tìm người ở ghép
             </button>
