@@ -7,7 +7,6 @@ import BoLoc from "../BoLoc/boloc"
 import TimKiemTheoKhuVuc from "../TimKiemTheoKhuVuc/timkiem"
 import YeuThichDropdown from "../LuuBai/YeuThich";
 import ThongBaoDropdown from "../ThongBao/Thongbaoo";
-import { getAllNotifications, markAsRead, markAllAsRead } from "../DaTa/dulieuThongBao";
 
 function Header() {
   const navigate = useNavigate();
@@ -18,22 +17,38 @@ function Header() {
   const [openNotify, setOpenNotify] = React.useState(false);
   const [openFav, setOpenFav] = React.useState(false);
 
-  // Thông báo: đồng bộ với kho dữ liệu chung trong dulieuThongBao
-  const [notifications, setNotifications] = React.useState(() => getAllNotifications());
+  const loadInitialNotifications = () => {
+    try {
+      const raw = localStorage.getItem("app_notifications");
+      if (raw) return JSON.parse(raw);
+    } catch (_) { }
+    const seed = [
+      {
+        id: "seed-1",
+        title: "Có lịch hẹn xem phòng mới",
+        message: "Người dùng A đặt lịch xem phòng vào 15:00 hôm nay.",
+        time: new Date().toISOString(),
+        read: false,
+        avatar: "/anh/avt.jpg"
+      },
+      {
+        id: "seed-2",
+        title: "Bài đăng đã được duyệt",
+        message: "Tin #1023 đã được phê duyệt và hiển thị.",
+        time: new Date(Date.now() - 3600 * 1000 * 5).toISOString(),
+        read: true,
+        icon: "📃"
+      }
+    ];
+    try { localStorage.setItem("app_notifications", JSON.stringify(seed)); } catch (_) { }
+    return seed;
+  };
+
+  const [notifications, setNotifications] = React.useState(loadInitialNotifications);
 
   React.useEffect(() => {
-    function onStorage() {
-      setNotifications(getAllNotifications());
-    }
-    window.addEventListener("storage", onStorage);
-    const interval = setInterval(() => {
-      setNotifications(getAllNotifications());
-    }, 1000);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      clearInterval(interval);
-    };
-  }, []);
+    try { localStorage.setItem("app_notifications", JSON.stringify(notifications)); } catch (_) { }
+  }, [notifications]);
 
   React.useEffect(() => {
     function handleWindowClick() {
@@ -119,7 +134,7 @@ function Header() {
               marginTop: "1px",
               fontWeight: 500
             }}>
-              
+
             </div>
           </div>
           {/* Menu giữa */}
@@ -296,7 +311,7 @@ function Header() {
                 }}
               >
                 <span style={{ fontSize: 18 }}>🔔</span>
-                {notifications.some(n => !n.isRead) && (
+                {notifications.some(n => !n.read) && (
                   <span style={{
                     position: "absolute",
                     top: -2,
@@ -312,7 +327,7 @@ function Header() {
                     alignItems: "center",
                     justifyContent: "center",
                     lineHeight: 1
-                  }}>{notifications.filter(n => !n.isRead).length}</span>
+                  }}>{notifications.filter(n => !n.read).length}</span>
                 )}
               </button>
               <ThongBaoDropdown
@@ -320,13 +335,9 @@ function Header() {
                 onClose={() => setOpenNotify(false)}
                 notifications={notifications}
                 onItemClick={(id) => {
-                  const updated = markAsRead(id);
-                  setNotifications(updated);
+                  setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
                 }}
-                onMarkAllRead={() => {
-                  const updated = markAllAsRead();
-                  setNotifications(updated);
-                }}
+                onMarkAllRead={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
               />
             </div>
             <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
