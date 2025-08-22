@@ -75,7 +75,7 @@ function Header() {
           }}
             onClick={() => navigate("/")}
           >
-            <img src="/anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
+            <img src="anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
             <div style={{
               fontSize: "10px",
               color: "#888",

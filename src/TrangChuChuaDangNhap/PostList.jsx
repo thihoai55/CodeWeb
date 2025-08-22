@@ -1,9 +1,13 @@
 import React from "react";
 import PostCard from "./PostCard";
+import Pagination from "./Pagination";
 import postsData from "../DaTa/danhsachbaidangg";
 
+function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageChange, title = "Tin mới đăng" }) {
+  // State để quản lý trang hiện tại
+  const [currentPage, setCurrentPage] = React.useState(1);
+  const postsPerPage = 12;
 
-function PostList({ posts: customPosts, fixedColumns }) {
   // Ưu tiên danh sách truyền vào; nếu không có, lấy từ file dữ liệu chung
   const defaultPosts = postsData.map(p => ({
     title: p.title,
@@ -13,11 +17,57 @@ function PostList({ posts: customPosts, fixedColumns }) {
     address: p.address,
     id: p.id,
     postedAt: p.postedAt,
-    owner: p.owner
+    owner: p.owner,
+    category: p.category
   }));
 
-  const posts = customPosts && customPosts.length > 0 ? customPosts : defaultPosts;
+  const allPosts = customPosts && customPosts.length > 0 ? customPosts : defaultPosts;
+
+  // Tính toán bài đăng cho trang hiện tại
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = allPosts.slice(indexOfFirstPost, indexOfLastPost);
+
+  // Hàm chuyển trang
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    // Gọi callback từ component cha nếu có
+    if (parentPageChange) {
+      parentPageChange(pageNumber);
+    }
+    // Cuộn lên đầu trang
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const gridTemplate = fixedColumns ? `repeat(${fixedColumns}, 1fr)` : "repeat(auto-fill, minmax(280px, 1fr))";
+
+  // Hiển thị thông báo nếu không có bài đăng
+  if (allPosts.length === 0) {
+    return (
+      <section style={{
+        margin: "40px 0",
+        padding: "0 32px",
+        maxWidth: "1200px",
+        marginLeft: "auto",
+        marginRight: "auto",
+        textAlign: "center"
+      }}>
+        <h2 style={{
+          fontSize: "28px",
+          fontWeight: "bold",
+          marginBottom: "24px",
+          color: "#333"
+        }}>{title}</h2>
+        <p style={{
+          fontSize: "18px",
+          color: "#666",
+          marginBottom: "20px"
+        }}>
+          Không có bài đăng nào phù hợp với tiêu chí tìm kiếm.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section style={{
@@ -32,17 +82,21 @@ function PostList({ posts: customPosts, fixedColumns }) {
         fontWeight: "bold",
         marginBottom: "24px",
         color: "#333"
-      }}>Tin mới đăng</h2>
+      }}>{title}</h2>
+      
       <div style={{
         display: "grid",
         gridTemplateColumns: gridTemplate,
         gap: "24px",
         justifyContent: "center"
       }}>
-        {posts.map((post, idx) => (
+        {currentPosts.map((post, idx) => (
           <PostCard post={post} key={idx} />
         ))}
       </div>
+
+      {/* Sử dụng component Pagination với state */}
+      <Pagination currentPage={currentPage} onPageChange={handlePageChange} />
     </section>
   );
 }

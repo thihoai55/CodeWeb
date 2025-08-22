@@ -135,8 +135,8 @@ export const getUnreadCount = () => {
 // Tạo thông báo cho lịch hẹn
 export const createAppointmentNotification = (listingId, action) => {
   const message = action === 'confirm' 
-    ? 'Đơn đặt lịch xem phòng với mã bài đăng ${listingId} đã được xác nhận'
-    : 'Đơn đặt lịch xem phòng với mã bài đăng ${listingId} đã bị hủy';
+    ? `Đơn đặt lịch xem phòng với mã bài đăng ${listingId} đã được xác nhận`
+    : `Đơn đặt lịch xem phòng với mã bài đăng ${listingId} đã bị hủy`;
   
   return addNotification(message);
 };
@@ -144,8 +144,8 @@ export const createAppointmentNotification = (listingId, action) => {
 // Tạo thông báo cho yêu cầu thuê
 export const createRentalRequestNotification = (listingId, action) => {
   const message = action === 'approve'
-    ? 'Yêu cầu thuê phòng với mã bài đăng ${listingId} đã được chấp nhận'
-    : 'Yêu cầu thuê phòng với mã bài đăng ${listingId} đã bị từ chối';
+    ? `Yêu cầu thuê phòng với mã bài đăng ${listingId} đã được chấp nhận`
+    : `Yêu cầu thuê phòng với mã bài đăng ${listingId} đã bị từ chối`;
   
   return addNotification(message);
 };

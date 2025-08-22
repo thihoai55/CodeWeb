@@ -21,7 +21,7 @@ function Header() {
     try {
       const raw = localStorage.getItem("app_notifications");
       if (raw) return JSON.parse(raw);
-    } catch (_) {}
+    } catch (_) { }
     const seed = [
       {
         id: "seed-1",
@@ -40,14 +40,14 @@ function Header() {
         icon: "📃"
       }
     ];
-    try { localStorage.setItem("app_notifications", JSON.stringify(seed)); } catch (_) {}
+    try { localStorage.setItem("app_notifications", JSON.stringify(seed)); } catch (_) { }
     return seed;
   };
 
   const [notifications, setNotifications] = React.useState(loadInitialNotifications);
 
   React.useEffect(() => {
-    try { localStorage.setItem("app_notifications", JSON.stringify(notifications)); } catch (_) {}
+    try { localStorage.setItem("app_notifications", JSON.stringify(notifications)); } catch (_) { }
   }, [notifications]);
 
   React.useEffect(() => {
@@ -165,7 +165,7 @@ function Header() {
               marginTop: "1px",
               fontWeight: 500
             }}>
-              
+
             </div>
           </div>
           {/* Menu giữa */}
