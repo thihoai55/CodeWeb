@@ -16,6 +16,8 @@ function Header() {
   const [openTimKiem, setOpenTimKiem] = React.useState(false);
   const [openNotify, setOpenNotify] = React.useState(false);
   const [openFav, setOpenFav] = React.useState(false);
+  const [openProfile, setOpenProfile] = React.useState(false);
+  const profileRef = React.useRef(null);
 
   const loadInitialNotifications = () => {
     try {
@@ -54,6 +56,7 @@ function Header() {
     function handleWindowClick() {
       setOpenNotify(false);
       setOpenFav(false);
+      setOpenProfile(false);
     }
     window.addEventListener("click", handleWindowClick);
     return () => window.removeEventListener("click", handleWindowClick);
@@ -65,6 +68,7 @@ function Header() {
     setOpenTimKiem(false);
     setOpenNotify(false);
     setOpenFav(false);
+    setOpenProfile(false);
   }, [location.pathname]);
 
   const loadSavedPosts = () => {
@@ -84,12 +88,28 @@ function Header() {
         setFavorites(loadSavedPosts());
       }
     }
+    const handleSavedPostsUpdated = () => setFavorites(loadSavedPosts());
     window.addEventListener("storage", handleStorage);
-    window.addEventListener("saved-posts-updated", () => setFavorites(loadSavedPosts()));
+    window.addEventListener("saved-posts-updated", handleSavedPostsUpdated);
     return () => {
       window.removeEventListener("storage", handleStorage);
-      window.removeEventListener("saved-posts-updated", () => setFavorites(loadSavedPosts()));
+      window.removeEventListener("saved-posts-updated", handleSavedPostsUpdated);
     };
+  }, []);
+
+  // Đóng các popup bằng phím Escape
+  React.useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        setOpenBoLoc(false);
+        setOpenTimKiem(false);
+        setOpenNotify(false);
+        setOpenFav(false);
+        setOpenProfile(false);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // State để lưu thông tin khu vực được chọn
@@ -481,24 +501,146 @@ function Header() {
             </div>
 
             {/* Avatar hình tròn */}
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: "50%",
-                background: "#e5e7eb",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-                marginRight: 2
-              }}
-            >
-              <img
-                src="/anh/avt.jpg"
-                alt="avatar"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              />
+            <div style={{ position: "relative", display: "inline-block" }} ref={profileRef} onClick={e => e.stopPropagation()}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "50%",
+                  background: "#e5e7eb",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  marginRight: 2,
+                  cursor: "pointer"
+                }}
+                onClick={() => setOpenProfile(prev => !prev)}
+              >
+                <img
+                  src="/anh/avt.jpg"
+                  alt="avatar"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                />
+              </div>
+              {openProfile && (
+                <div
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "calc(100% + 8px)",
+                    width: 340,
+                    background: "#fff",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    borderRadius: 8,
+                    zIndex: 100,
+                    padding: 16
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <img src="/anh/avt.jpg" alt="avatar" style={{ width: 48, height: 48, borderRadius: "50%" }} />
+                    <div>
+                      <div style={{ fontWeight: "bold", fontSize: 16 }}>Hehe</div>
+                      <div style={{ color: "#000000ff", fontSize: 14 }}>0878772943</div>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 16,
+                      background: "#f5f5f5",
+                      padding: 12,
+                      borderRadius: 6,
+                      border: "1px solid #000",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: 13, color: "#000000ff" }}>Số dư tài khoản:</div>
+                      <div style={{ fontWeight: "bold", fontSize: 16 }}>100.000 VND</div>
+                    </div>
+                    <button
+                      style={{
+                        padding: "10px 12px",
+                        background: "#2196f3",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 15,
+                        fontSize: 13,
+                        cursor: "pointer"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        navigate("/nap-tien");
+                      }}
+                    >
+                      Nạp tiền
+                      <span style={{
+                        marginLeft: "6px",
+                        color: "#070707ff",
+                        fontSize: 18,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <i className="bi bi-credit-card-2-back"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div style={{ marginTop: 16 }}>
+                    <div
+                      style={{
+                        alignItems: "center",
+                        padding: "8px 0",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        display: "flex"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        navigate("/thong-tin-ca-nhan");
+                      }}
+                    >
+                      <i className="bi bi-person-fill" style={{ fontSize: 22, marginRight: 8 }}></i>
+                      Thông tin cá nhân
+                    </div>
+                    <div
+                      style={{
+                        padding: "8px 0",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        display: "flex"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        navigate("/lien-he-tro-giup");
+                      }}
+                    >
+                      <i className="bi bi-question-circle" style={{ fontSize: 22, marginRight: 8 }}></i>
+                      Liên hệ và trợ giúp
+                    </div>
+                    <div
+                      style={{
+                        padding: "8px 0",
+                        cursor: "pointer",
+                        color: "#000000ff",
+                        fontWeight: "bold",
+                        display: "flex"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        // Tùy ý: xóa token đăng nhập nếu có
+                        try { localStorage.removeItem("authToken"); } catch (_) {}
+                        navigate("/");
+                      }}
+                    >
+                      <i className="bi bi-box-arrow-left" style={{ color: " #000000ff", fontSize: 20, marginRight: 8 }}></i>
+                      Đăng xuất
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             {/* Đăng bài */}
             <button style={{
