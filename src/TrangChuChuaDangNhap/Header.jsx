@@ -44,7 +44,7 @@ function Header() {
           }}
             onClick={() => navigate("/")}
           >
-            <img src="/anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
+            <img src="anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
             <div style={{
               fontSize: "10px",
               color: "#888",
@@ -87,7 +87,7 @@ function Header() {
               e.target.style.transform = "translateY(0)";
               e.target.style.boxShadow = "0 4px 8px rgba(0,0,0,0.12)";
             }}>
-              <i className="bi bi-grid-fill" style={{fontSize: 18, display: 'flex', alignItems: 'center'}}></i>
+              <span style={{ fontSize: 18, display: 'flex', alignItems: 'center' }}><i class="bi bi-house-door"></i></span>
               Phòng trọ
             </button>
             <button style={{

@@ -1,8 +1,21 @@
 import React from "react";
 
-function formatTimeAgo(date) {
+function parseViDateStringToDate(dateStr) {
+  // dateStr ví dụ: '01/03/2020 23:39'
+  try {
+    const [d, t] = dateStr.split(" ");
+    const [day, month, year] = d.split("/").map(Number);
+    const [hour, minute] = t.split(":").map(Number);
+    return new Date(year, month - 1, day, hour, minute);
+  } catch (_) {
+    return new Date();
+  }
+}
+
+function formatTimeAgoFromVi(dateStr) {
+  const base = parseViDateStringToDate(dateStr);
   const now = new Date();
-  const diffMs = now - new Date(date);
+  const diffMs = now - base;
   const seconds = Math.floor(diffMs / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);
@@ -15,59 +28,52 @@ function formatTimeAgo(date) {
   return `${weeks} tuần`;
 }
 
-function NotificationItem({ notification, onClick }) {
-  const {
-    id,
-    title,
-    message,
-    time,
-    read,
-    avatar,
-    icon
-  } = notification;
+function DropdownNotificationItem({ notification, onClick }) {
+  const { id, message, date, isRead } = notification;
 
   return (
     <div
       onClick={() => onClick(id)}
       style={{
         display: "flex",
-        alignItems: "center",
-        gap: 10,
-        padding: "10px 12px",
+        alignItems: "flex-start",
+        gap: 12,
+        padding: "12px 14px",  // Thêm padding để tăng khoảng cách giữa các thông báo
         cursor: "pointer",
-        background: read ? "#fff" : "#eef6ff",
-        borderBottom: "1px solid #f1f1f1"
+        background: isRead ? "#fff" : "#f0f8ff",
+        borderBottom: "1px solid #dededeff",
+        transition: "background 0.2s"
       }}
     >
-      <div
-        style={{
-          width: 44,
-          height: 44,
-          borderRadius: "50%",
-          background: "#e5e7eb",
-          overflow: "hidden",
+      <div style={{
+        width: 10,
+        height: 10,
+        borderRadius: 20,
+        background: isRead ? "transparent" : "#1a73e8",
+        marginTop: 6,
+        flex: "0 0 10px"
+      }} />
+
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          flex: "0 0 44px"
-        }}
-      >
-        {avatar ? (
-          <img src={avatar} alt="avt" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-        ) : (
-          <span style={{ fontSize: 22 }}>{icon || "🔔"}</span>
-        )}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 600, color: "#222", marginBottom: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{title}</div>
+          justifyContent: "space-between",
+          marginBottom: 6
+        }}>
+          <span style={{ color: "#333", fontSize: 13, fontWeight: 500 }}>
+            {date}
+          </span>
+          <span style={{ color: "#888", fontSize: 12 }}>
+            {formatTimeAgoFromVi(date)} trước
+          </span>
+        </div>
         {message && (
-          <div style={{ color: "#555", fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{message}</div>
+          <div style={{ color: "#007bff", fontSize: 14, lineHeight: 1.4, whiteSpace: "normal" }}>
+            {message}
+          </div>
         )}
-        <div style={{ color: "#888", fontSize: 12, marginTop: 4 }}>{formatTimeAgo(time)} trước</div>
       </div>
-      {!read && (
-        <div style={{ width: 10, height: 10, borderRadius: 20, background: "#1a73e8" }} />
-      )}
     </div>
   );
 }
@@ -79,7 +85,7 @@ export default function ThongBaoDropdown({
   onItemClick,
   onMarkAllRead
 }) {
-  const [tab, setTab] = React.useState("all");
+  const [showOnlyUnread, setShowOnlyUnread] = React.useState(false);
 
   React.useEffect(() => {
     function handleEsc(e) {
@@ -91,7 +97,7 @@ export default function ThongBaoDropdown({
 
   if (!open) return null;
 
-  const list = tab === "all" ? notifications : notifications.filter(n => !n.read);
+  const list = showOnlyUnread ? notifications.filter(n => !n.isRead) : notifications;
 
   return (
     <div
@@ -99,10 +105,10 @@ export default function ThongBaoDropdown({
         position: "absolute",
         top: 44,
         right: 0,
-        width: 360,
+        width: 380,
         maxHeight: 520,
         background: "#fff",
-        borderRadius: 12,
+        borderRadius: 10,
         boxShadow: "0 12px 32px rgba(0,0,0,0.18)",
         border: "1px solid #e5e7eb",
         overflow: "hidden",
@@ -110,79 +116,78 @@ export default function ThongBaoDropdown({
       }}
       onClick={e => e.stopPropagation()}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #eee" }}>
-        <div style={{ fontWeight: 700, fontSize: 16 }}>Thông báo</div>
-        <button
-          onClick={onMarkAllRead}
-          style={{
-            border: "none",
-            background: "transparent",
-            color: "#1a73e8",
-            cursor: "pointer",
-            fontWeight: 600
-          }}
-        >
-          Đánh dấu đã đọc tất cả
-        </button>
-      </div>
-
-      <div style={{ display: "flex", gap: 8, padding: 8, borderBottom: "1px solid #f1f1f1" }}>
-        <button
-          onClick={() => setTab("all")}
-          style={{
-            flex: 1,
-            padding: "8px 10px",
-            borderRadius: 20,
-            border: "1px solid #e5e7eb",
-            background: tab === "all" ? "#f5faff" : "#fff",
-            fontWeight: 600,
-            cursor: "pointer"
-          }}
-        >
-          Tất cả
-        </button>
-        <button
-          onClick={() => setTab("unread")}
-          style={{
-            flex: 1,
-            padding: "8px 10px",
-            borderRadius: 20,
-            border: "1px solid #e5e7eb",
-            background: tab === "unread" ? "#f5faff" : "#fff",
-            fontWeight: 600,
-            cursor: "pointer"
-          }}
-        >
-          Chưa đọc
-        </button>
+      <div style={{ padding: "10px 14px", borderBottom: "1px solid #ebe9e9ff" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+          <div style={{ fontWeight: 700, fontSize: 18, color: "#111", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>Thông báo</div>
+          <button
+            onClick={onClose}
+            style={{
+              border: "none",
+              background: "#f5f5f5",
+              color: "#111",
+              cursor: "pointer",
+              fontWeight: 700,
+              padding: "10px 10px",
+              borderRadius: 8
+            }}
+          >
+            Đóng
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+          <button
+            onClick={() => setShowOnlyUnread(v => !v)}
+            style={{
+              border: "1px solid #e5e7eb",
+              background: showOnlyUnread ? "#f5faff" : "#fff",
+              color: "#111",
+              cursor: "pointer",
+              fontWeight: 600,
+              padding: "8px 10px",
+              borderRadius: 8,
+              flexShrink: 0
+            }}
+          >
+            {showOnlyUnread ? "Hiện tất cả" : "Chỉ chưa đọc"}
+          </button>
+          <button
+            onClick={onMarkAllRead}
+            style={{
+              border: "none",
+              background: "#007bff",
+              color: "#fff",
+              cursor: "pointer",
+              fontWeight: 600,
+              padding: "8px 10px",
+              borderRadius: 8,
+              flexShrink: 0
+            }}
+          >
+            Đánh dấu đã đọc tất cả
+          </button>
+        </div>
       </div>
 
       <div style={{ maxHeight: 420, overflowY: "auto" }}>
         {list.length === 0 ? (
-          <div style={{ padding: 16, color: "#666" }}>Không có thông báo.</div>
+          <div style={{ padding: 16, color: "#6c757d", textAlign: "center" }}>Không có thông báo nào</div>
         ) : (
           list.map(n => (
-            <NotificationItem key={n.id} notification={n} onClick={onItemClick} />
+            <DropdownNotificationItem key={n.id} notification={n} onClick={onItemClick} />
           ))
         )}
       </div>
 
-      <div style={{ padding: 10, borderTop: "1px solid #eee", display: "flex", justifyContent: "flex-end", gap: 8 }}>
-        <button
-          onClick={onClose}
-          style={{
-            border: "none",
-            padding: "8px 12px",
-            borderRadius: 8,
-            background: "#f5f5f5",
-            cursor: "pointer",
-            fontWeight: 600
-          }}
-        >
-          Đóng
-        </button>
-      </div>
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
 

@@ -200,7 +200,7 @@ function NapTien() {
                 </label>
               </div>
 
-              <button onClick={handleContinue} style={{ width: '100%', padding: '14px', background: '#ff6d2d', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}>
+              <button onClick={handleContinue} style={{ width: '100%', padding: '14px', background: '#4d9ff2ff', color: '#fff', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: 700, cursor: 'pointer' }}>
                 Tiếp tục
               </button>
             </div>
