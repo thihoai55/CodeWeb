@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import Header from '../TrangChuDaDangNhap/Header';
+// Thay đổi import header để kiểm tra đăng nhập
+import HeaderDaDangNhap from '../TrangChuDaDangNhap/Header';
+import HeaderChuaDangNhap from '../TrangChuChuaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 import Danhgia from './Danhgia';
 import LuuBaiViet from './Luubaiviet';
@@ -14,6 +16,59 @@ function XemBaiDang() {
   const navigate = useNavigate();
   const { id } = useParams();
   
+  // Kiểm tra trạng thái đăng nhập
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
+
+  useEffect(() => {
+    // Kiểm tra trạng thái đăng nhập từ localStorage
+    const checkLoginStatus = () => {
+      const loginStatus = localStorage.getItem('isLoggedIn');
+      const userData = localStorage.getItem('userInfo');
+      const userRole = localStorage.getItem('userRole');
+      
+      console.log('Login Status:', loginStatus);
+      console.log('User Data:', userData);
+      console.log('User Role:', userRole);
+      
+      // Kiểm tra cả 3 điều kiện
+      if (loginStatus === 'true' && userData && userRole) {
+        try {
+          const parsedUserData = JSON.parse(userData);
+          setIsLoggedIn(true);
+          setUserInfo(parsedUserData);
+          console.log('User logged in:', parsedUserData);
+        } catch (error) {
+          console.error('Error parsing user data:', error);
+          // Nếu parse lỗi, xóa localStorage và reset state
+          localStorage.removeItem('isLoggedIn');
+          localStorage.removeItem('userInfo');
+          localStorage.removeItem('userRole');
+          setIsLoggedIn(false);
+          setUserInfo(null);
+        }
+      } else {
+        // Nếu thiếu bất kỳ thông tin nào, reset state
+        setIsLoggedIn(false);
+        setUserInfo(null);
+        console.log('User not logged in - missing data');
+      }
+    };
+
+    checkLoginStatus();
+    
+    // Lắng nghe sự thay đổi localStorage
+    window.addEventListener('storage', checkLoginStatus);
+    
+    // Kiểm tra mỗi khi component mount
+    const interval = setInterval(checkLoginStatus, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus);
+      clearInterval(interval);
+    };
+  }, []);
+
   const postData = getPostById(id);
 
   // Fallbacks
@@ -154,7 +209,25 @@ function XemBaiDang() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
-      <Header />
+      {/* Debug info */}
+      <div style={{ 
+        position: 'fixed', 
+        top: '10px', 
+        right: '10px', 
+        background: 'rgba(0,0,0,0.8)', 
+        color: 'white', 
+        padding: '10px', 
+        borderRadius: '5px', 
+        fontSize: '12px',
+        zIndex: 1000
+      }}>
+        <div>Login Status: {isLoggedIn ? '✅ Logged In' : '❌ Not Logged In'}</div>
+        <div>User: {userInfo ? userInfo.username : 'None'}</div>
+        <div>Role: {userInfo ? userInfo.role : 'None'}</div>
+      </div>
+
+      {/* Sử dụng header phù hợp dựa trên trạng thái đăng nhập */}
+      {isLoggedIn ? <HeaderDaDangNhap /> : <HeaderChuaDangNhap />}
       
       <main style={{ padding: '20px 0' }}>
         <div style={{ maxWidth: '1600px', margin: '0 auto', padding: '0 20px' }}>
