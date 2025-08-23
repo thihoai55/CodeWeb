@@ -18,7 +18,11 @@ function Header() {
   const [openNotify, setOpenNotify] = React.useState(false);
   const [openFav, setOpenFav] = React.useState(false);
   const [openProfile, setOpenProfile] = React.useState(false);
+  
+  // Thêm refs để kiểm tra click outside
   const profileRef = React.useRef(null);
+  const notifyRef = React.useRef(null);
+  const favRef = React.useRef(null);
 
   // Thông báo: đồng bộ với kho dữ liệu chung trong dulieuThongBao
   const [notifications, setNotifications] = React.useState(() => getAllNotifications());
@@ -37,15 +41,34 @@ function Header() {
     };
   }, []);
 
+  // Sửa lại logic đóng dropdown khi click outside
   React.useEffect(() => {
-    function handleWindowClick() {
-      setOpenNotify(false);
-      setOpenFav(false);
-      setOpenProfile(false);
+    function handleClickOutside(event) {
+      // Kiểm tra click có nằm ngoài dropdown thông báo không
+      if (openNotify && notifyRef.current && !notifyRef.current.contains(event.target)) {
+        setOpenNotify(false);
+      }
+      
+      // Kiểm tra click có nằm ngoài dropdown yêu thích không
+      if (openFav && favRef.current && !favRef.current.contains(event.target)) {
+        setOpenFav(false);
+      }
+      
+      // Kiểm tra click có nằm ngoài dropdown profile không
+      if (openProfile && profileRef.current && !profileRef.current.contains(event.target)) {
+        setOpenProfile(false);
+      }
     }
-    window.addEventListener("click", handleWindowClick);
-    return () => window.removeEventListener("click", handleWindowClick);
-  }, []);
+
+    // Chỉ thêm event listener khi có dropdown nào đó mở
+    if (openNotify || openFav || openProfile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [openNotify, openFav, openProfile]);
 
   // Đóng tất cả popup/modal khi chuyển route để tránh che phủ nội dung trang mới
   React.useEffect(() => {
@@ -361,7 +384,8 @@ function Header() {
               Trang quản lý
             </button>
 
-            <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
+            {/* Thêm ref cho dropdown thông báo */}
+            <div style={{ position: "relative" }} ref={notifyRef}>
               <button
                 onClick={() => setOpenNotify(v => !v)}
                 style={{
@@ -427,7 +451,9 @@ function Header() {
                 }}
               />
             </div>
-            <div style={{ position: "relative" }} onClick={e => e.stopPropagation()}>
+
+            {/* Thêm ref cho dropdown yêu thích */}
+            <div style={{ position: "relative" }} ref={favRef}>
               <button style={{
                 padding: "0 10px",
                 border: "none",
@@ -450,7 +476,7 @@ function Header() {
                 onMouseEnter={e => {
                   e.target.style.background = "#f5f5f5";
                   e.target.style.transform = "translateY(-1.5px)";
-                  e.target.style.boxShadow = "0 4px 10px rgba(25,118,210,0.10)";
+                  e.target.style.boxShadow = "0 6px 10px rgba(25,118,210,0.10)";
                 }}
                 onMouseLeave={e => {
                   e.target.style.background = "#fff";
