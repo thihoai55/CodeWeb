@@ -83,6 +83,43 @@ function ThongTinCaNhan() {
     setProfile(prev => ({ ...prev, avatarFile: file, avatarPreview: previewUrl }));
   };
 
+  // Hàm cập nhật account data trực tiếp
+  const updateAccountData = (updatedUserInfo) => {
+    try {
+      // Import accounts từ file account.js
+      const { accounts } = require('../DaTa/account.js');
+      
+      // Tìm account cần cập nhật
+      const accountIndex = accounts.findIndex(acc => 
+        acc.username === updatedUserInfo.username ||
+        acc.email === updatedUserInfo.email ||
+        acc.phone === updatedUserInfo.phone
+      );
+      
+      if (accountIndex !== -1) {
+        // Cập nhật thông tin account
+        accounts[accountIndex] = {
+          ...accounts[accountIndex],
+          name: updatedUserInfo.name,
+          email: updatedUserInfo.email,
+          phone: updatedUserInfo.phone
+        };
+        
+        // Lưu vào localStorage để các component khác có thể sử dụng
+        localStorage.setItem('updatedAccounts', JSON.stringify(accounts));
+        
+        console.log('Account data updated successfully:', accounts[accountIndex]);
+        return true;
+      } else {
+        console.error('Account not found for update');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating account data:', error);
+      return false;
+    }
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     
@@ -99,12 +136,25 @@ function ThongTinCaNhan() {
           avatar: profile.avatarPreview
         };
         
+        // Cập nhật localStorage
         localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
         
-        // Cập nhật account data (nếu cần)
-        // TODO: Gọi API cập nhật thông tin cá nhân ở đây
+        // Cập nhật account data
+        const accountUpdated = updateAccountData(updatedUserInfo);
         
-        alert('Cập nhật thông tin thành công');
+        if (accountUpdated) {
+          alert('Cập nhật thông tin thành công! Thông tin đã được đồng bộ với tài khoản.');
+          
+          // Trigger event để các component khác biết có thay đổi
+          window.dispatchEvent(new CustomEvent('userInfoUpdated', {
+            detail: updatedUserInfo
+          }));
+          
+          // Trigger event để cập nhật accounts
+          window.dispatchEvent(new CustomEvent('accountsUpdated'));
+        } else {
+          alert('Cập nhật thông tin thành công! Nhưng có lỗi khi đồng bộ với tài khoản.');
+        }
       }
     } catch (error) {
       console.error('Error updating user info:', error);

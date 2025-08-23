@@ -1,7 +1,7 @@
 import React from "react";
 
 function FavoriteItem({ item, onClick }) {
-  const { id, title, image } = item;
+  const { id, title, image, price, address, category } = item;
   return (
     <div
       onClick={() => onClick(id)}
@@ -12,8 +12,11 @@ function FavoriteItem({ item, onClick }) {
         borderBottom: "1px solid #f1f1f1",
         cursor: "pointer",
         alignItems: "center",
-        background: "#fff"
+        background: "#fff",
+        transition: "background 0.2s"
       }}
+      onMouseEnter={(e) => e.currentTarget.style.background = "#f5f5f5"}
+      onMouseLeave={(e) => e.currentTarget.style.background = "#fff"}
     >
       <div
         style={{
@@ -35,10 +38,42 @@ function FavoriteItem({ item, onClick }) {
         )}
       </div>
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div style={{ fontWeight: 600, color: "#222", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <div style={{ 
+          fontWeight: 600, 
+          color: "#222", 
+          whiteSpace: "nowrap", 
+          overflow: "hidden", 
+          textOverflow: "ellipsis",
+          marginBottom: "2px"
+        }}>
           {title || `Bài viết #${id}`}
         </div>
-        <div style={{ color: "#666", fontSize: 12 }}>Nhấn để mở chi tiết</div>
+        {price && (
+          <div style={{ 
+            color: "#52b4f9", 
+            fontSize: "12px", 
+            fontWeight: "600",
+            marginBottom: "2px"
+          }}>
+            {price}
+          </div>
+        )}
+        {address && (
+          <div style={{ 
+            color: "#666", 
+            fontSize: "11px",
+            whiteSpace: "nowrap", 
+            overflow: "hidden", 
+            textOverflow: "ellipsis"
+          }}>
+            📍 {address}
+          </div>
+        )}
+        {!price && !address && (
+          <div style={{ color: "#666", fontSize: "12px" }}>
+            Nhấn để mở chi tiết
+          </div>
+        )}
       </div>
       <span style={{ color: "#e53935", fontSize: 16 }}>❤</span>
     </div>
@@ -65,11 +100,13 @@ export default function YeuThichDropdown({ open, onClose, items, onItemClick }) 
       onClick={e => e.stopPropagation()}
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid #eee" }}>
-        <div style={{ fontWeight: 700, fontSize: 16 }}>Bài viết đã lưu</div>
+        <div style={{ fontWeight: 700, fontSize: 16 }}>Bài viết đã lưu ({items.length})</div>
       </div>
       <div style={{ maxHeight: 440, overflowY: "auto" }}>
         {items.length === 0 ? (
-          <div style={{ padding: 16, color: "#666" }}>Chưa có bài viết nào được lưu.</div>
+          <div style={{ padding: 16, color: "#666", textAlign: "center" }}>
+            Chưa có bài viết nào được lưu.
+          </div>
         ) : (
           items.map(it => <FavoriteItem key={it.id} item={it} onClick={onItemClick} />)
         )}
@@ -77,7 +114,17 @@ export default function YeuThichDropdown({ open, onClose, items, onItemClick }) 
       <div style={{ padding: 10, borderTop: "1px solid #eee", display: "flex", justifyContent: "flex-end" }}>
         <button
           onClick={onClose}
-          style={{ border: "none", padding: "8px 12px", borderRadius: 8, background: "#f5f5f5", cursor: "pointer", fontWeight: 600 }}
+          style={{ 
+            border: "none", 
+            padding: "8px 12px", 
+            borderRadius: 8, 
+            background: "#f5f5f5", 
+            cursor: "pointer", 
+            fontWeight: 600,
+            transition: "background 0.2s"
+          }}
+          onMouseEnter={(e) => e.target.style.background = "#e0e0e0"}
+          onMouseLeave={(e) => e.target.style.background = "#f5f5f5"}
         >
           Đóng
         </button>
