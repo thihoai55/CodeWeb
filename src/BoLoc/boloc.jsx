@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearch } from "../contexts/ngucanhtimkiem";
 
 const btnGroupStyle = {
   display: "flex",
@@ -68,12 +69,110 @@ const selectStyle = {
 };
 
 function BoLoc({ onClose, selectedArea, onAreaChange }) {
+  const { searchFilters, updateSearchFilters } = useSearch();
+  
   const [hoveredCategory, setHoveredCategory] = React.useState(null);
   const [hoveredPrice, setHoveredPrice] = React.useState(null);
   const [hoveredArea, setHoveredArea] = React.useState(null);
-  const [activeCategory, setActiveCategory] = React.useState("Phòng trọ");
-  const [activePrice, setActivePrice] = React.useState("Tất cả");
-  const [activeArea, setActiveArea] = React.useState("Tất cả");
+  
+  // Sử dụng state từ SearchContext thay vì state local
+  const [activeCategory, setActiveCategory] = React.useState(
+    searchFilters.category === 'phongtro' ? 'Phòng trọ' :
+    searchFilters.category === 'nha' ? 'Nhà nguyên căn' :
+    searchFilters.category === 'oghep' ? 'Tìm người ở ghép' : 'Phòng trọ'
+  );
+  const [activePrice, setActivePrice] = React.useState(
+    searchFilters.priceRange.min === 0 && searchFilters.priceRange.max === 10000000 ? "Tất cả" :
+    searchFilters.priceRange.min === 0 && searchFilters.priceRange.max === 1000000 ? "Dưới 1 triệu" :
+    searchFilters.priceRange.min === 1000000 && searchFilters.priceRange.max === 2000000 ? "1 - 2 triệu" :
+    searchFilters.priceRange.min === 2000000 && searchFilters.priceRange.max === 3000000 ? "2 - 3 triệu" :
+    searchFilters.priceRange.min === 3000000 && searchFilters.priceRange.max === 5000000 ? "3 - 5 triệu" :
+    searchFilters.priceRange.min === 5000000 && searchFilters.priceRange.max === 7000000 ? "5 - 7 triệu" :
+    searchFilters.priceRange.min === 7000000 && searchFilters.priceRange.max === 10000000 ? "7 - 10 triệu" :
+    searchFilters.priceRange.min === 10000000 && searchFilters.priceRange.max === 15000000 ? "10 - 15 triệu" :
+    searchFilters.priceRange.min === 15000000 ? "Trên 15 triệu" : "Tất cả"
+  );
+  const [activeSize, setActiveSize] = React.useState(
+    searchFilters.sizeRange.min === 0 && searchFilters.sizeRange.max === 200 ? "Tất cả" :
+    searchFilters.sizeRange.min === 0 && searchFilters.sizeRange.max === 20 ? "Dưới 20m²" :
+    searchFilters.sizeRange.min === 20 && searchFilters.sizeRange.max === 30 ? "20m² - 30m²" :
+    searchFilters.sizeRange.min === 30 && searchFilters.sizeRange.max === 50 ? "30m² - 50m²" :
+    searchFilters.sizeRange.min === 50 && searchFilters.sizeRange.max === 70 ? "50m² - 70m²" :
+    searchFilters.sizeRange.min === 70 && searchFilters.sizeRange.max === 90 ? "70m² - 90m²" :
+    searchFilters.sizeRange.min === 90 ? "Trên 90m²" : "Tất cả"
+  );
+
+  // Hàm chuyển đổi giá từ label sang range
+  const getPriceRange = (priceLabel) => {
+    switch (priceLabel) {
+      case "Dưới 1 triệu":
+        return { min: 0, max: 1000000 };
+      case "1 - 2 triệu":
+        return { min: 1000000, max: 2000000 };
+      case "2 - 3 triệu":
+        return { min: 2000000, max: 3000000 };
+      case "3 - 5 triệu":
+        return { min: 3000000, max: 5000000 };
+      case "5 - 7 triệu":
+        return { min: 5000000, max: 7000000 };
+      case "7 - 10 triệu":
+        return { min: 7000000, max: 10000000 };
+      case "10 - 15 triệu":
+        return { min: 10000000, max: 15000000 };
+      case "Trên 15 triệu":
+        return { min: 15000000, max: 100000000 };
+      default:
+        return { min: 0, max: 10000000 };
+    }
+  };
+
+  // Hàm chuyển đổi diện tích từ label sang range
+  const getSizeRange = (sizeLabel) => {
+    switch (sizeLabel) {
+      case "Dưới 20m²":
+        return { min: 0, max: 20 };
+      case "20m² - 30m²":
+        return { min: 20, max: 30 };
+      case "30m² - 50m²":
+        return { min: 30, max: 50 };
+      case "50m² - 70m²":
+        return { min: 50, max: 70 };
+      case "70m² - 90m²":
+        return { min: 70, max: 90 };
+      case "Trên 90m²":
+        return { min: 90, max: 200 };
+      default:
+        return { min: 0, max: 200 };
+    }
+  };
+
+  // Hàm chuyển đổi category từ label sang value
+  const getCategoryValue = (categoryLabel) => {
+    switch (categoryLabel) {
+      case "Phòng trọ":
+        return "phongtro";
+      case "Nhà nguyên căn":
+        return "nha";
+      case "Tìm người ở ghép":
+        return "oghep";
+      default:
+        return "all";
+    }
+  };
+
+  // Hàm áp dụng bộ lọc
+  const handleApplyFilters = () => {
+    const newFilters = {
+      province: selectedArea?.province || "",
+      district: selectedArea?.district || "",
+      category: getCategoryValue(activeCategory),
+      priceRange: getPriceRange(activePrice),
+      sizeRange: getSizeRange(activeSize)
+    };
+
+    updateSearchFilters(newFilters);
+    onClose();
+  };
 
   return (
     <div style={{ 
@@ -81,10 +180,8 @@ function BoLoc({ onClose, selectedArea, onAreaChange }) {
       maxWidth: "95vw", 
       height: 600, 
       overflowY: "auto", 
-      // borderRadius: 10, 
       position: "relative", 
       background: "#fff",   
-      // boxShadow: "0 8px 32px rgba(0,0,0,0.12)"
     }}>
       {/* Tiêu đề và nút đóng */}
       <div style={{ 
@@ -124,6 +221,34 @@ function BoLoc({ onClose, selectedArea, onAreaChange }) {
         >
           ✕
         </button>
+      </div>
+
+      {/* Thông tin về cách bộ lọc hoạt động */}
+      <div style={{ 
+        marginBottom: 24, 
+        padding: "16px", 
+        background: "#e3f2fd", 
+        borderRadius: "12px", 
+        border: "1px solid #bbdefb" 
+      }}>
+        <div style={{ 
+          display: "flex", 
+          alignItems: "center", 
+          gap: "8px", 
+          marginBottom: "8px" 
+        }}>
+          <span style={{ fontSize: "18px" }}>💡</span>
+          <span style={{ fontWeight: 600, color: "#1976d2" }}>Cách bộ lọc hoạt động:</span>
+        </div>
+        <p style={{ 
+          margin: 0, 
+          fontSize: "14px", 
+          color: "#1976d2", 
+          lineHeight: "1.4" 
+        }}>
+          Bộ lọc sẽ hiển thị các bài đăng thỏa mãn <strong>ít nhất một tiêu chí</strong> bạn chọn. 
+          Không cần phải thỏa mãn tất cả các tiêu chí cùng lúc.
+        </p>
       </div>
 
       {/* Danh mục cho thuê */}
@@ -279,10 +404,10 @@ function BoLoc({ onClose, selectedArea, onAreaChange }) {
           {["Tất cả", "Dưới 20m²", "20m² - 30m²", "30m² - 50m²", "50m² - 70m²", "70m² - 90m²", "Trên 90m²"].map((label, idx) => (
             <button
               key={label}
-              style={filterBtnStyle(activeArea === label, hoveredArea === label)}
+              style={filterBtnStyle(activeSize === label, hoveredArea === label)}
               onMouseEnter={() => setHoveredArea(label)}
               onMouseLeave={() => setHoveredArea(null)}
-              onClick={() => setActiveArea(label)}
+              onClick={() => setActiveSize(label)}
             >
               {label}
             </button>
@@ -292,6 +417,7 @@ function BoLoc({ onClose, selectedArea, onAreaChange }) {
 
       {/* Nút áp dụng */}
       <button
+        onClick={handleApplyFilters}
         style={{
           width: "100%",
           background: "#2196f3",

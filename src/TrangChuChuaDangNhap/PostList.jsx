@@ -2,11 +2,16 @@ import React from "react";
 import PostCard from "./PostCard";
 import Pagination from "./Pagination";
 import postsData from "../DaTa/danhsachbaidangg";
+import { useSearch } from "../contexts/ngucanhtimkiem";
+import { applyAllFilters } from "../utils/searchUtils";
 
 function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageChange, title = "Tin mới đăng" }) {
   // State để quản lý trang hiện tại
   const [currentPage, setCurrentPage] = React.useState(1);
   const postsPerPage = 12;
+  
+  // Sử dụng SearchContext
+  const { searchFilters, isSearchActive } = useSearch();
 
   // Ưu tiên danh sách truyền vào; nếu không có, lấy từ file dữ liệu chung
   const defaultPosts = postsData.map(p => ({
@@ -21,7 +26,10 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
     category: p.category
   }));
 
-  const allPosts = customPosts && customPosts.length > 0 ? customPosts : defaultPosts;
+  // Lọc bài đăng theo filter
+  const filteredPosts = applyAllFilters(defaultPosts, searchFilters);
+  
+  const allPosts = customPosts && customPosts.length > 0 ? customPosts : filteredPosts;
 
   // Tính toán bài đăng cho trang hiện tại
   const indexOfLastPost = currentPage * postsPerPage;
@@ -57,14 +65,43 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
           fontWeight: "bold",
           marginBottom: "24px",
           color: "#333"
-        }}>{title}</h2>
+        }}>
+          {isSearchActive ? "Kết quả tìm kiếm" : title}
+        </h2>
         <p style={{
           fontSize: "18px",
           color: "#666",
           marginBottom: "20px"
         }}>
-          Không có bài đăng nào phù hợp với tiêu chí tìm kiếm.
+                     {isSearchActive 
+             ? `Không có bài đăng nào phù hợp với tiêu chí tìm kiếm: ${searchFilters.province}`
+             : "Không có bài đăng nào phù hợp với tiêu chí tìm kiếm."
+           }
         </p>
+        {isSearchActive && (
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: "12px 24px",
+              border: "none",
+              borderRadius: "12px",
+              background: "#1976d2",
+              color: "#fff",
+              fontSize: "16px",
+              fontWeight: "600",
+              cursor: "pointer",
+              transition: "all 0.2s ease"
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = "#1565c0";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = "#1976d2";
+            }}
+          >
+            Xóa bộ lọc
+          </button>
+        )}
       </section>
     );
   }
@@ -82,7 +119,131 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
         fontWeight: "bold",
         marginBottom: "24px",
         color: "#333"
-      }}>{title}</h2>
+      }}>
+        {isSearchActive ? "Kết quả tìm kiếm" : title}
+      </h2>
+      
+      {/* Hiển thị thông tin filter nếu đang tìm kiếm */}
+      {isSearchActive && (
+        <div style={{
+          background: "#e3f2fd",
+          padding: "16px",
+          borderRadius: "12px",
+          marginBottom: "24px",
+          border: "1px solid #bbdefb"
+        }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "12px"
+          }}>
+            <div style={{ 
+              display: "flex", 
+              flexDirection: "column", 
+              gap: "8px",
+              flex: 1 
+            }}>
+              <div style={{ 
+                fontSize: "16px", 
+                color: "#1976d2", 
+                fontWeight: "600" 
+              }}>
+                Bộ lọc đang áp dụng:
+              </div>
+              <div style={{ 
+                display: "flex", 
+                flexWrap: "wrap", 
+                gap: "8px" 
+              }}>
+                {searchFilters.province && searchFilters.province !== 'Toàn quốc' && (
+                  <span style={{
+                    background: "#1976d2",
+                    color: "#fff",
+                    padding: "4px 12px",
+                    borderRadius: "16px",
+                    fontSize: "12px",
+                    fontWeight: "500"
+                  }}>
+                    📍 {searchFilters.province}
+                  </span>
+                )}
+                {searchFilters.category && searchFilters.category !== 'all' && (
+                  <span style={{
+                    background: "#4caf50",
+                    color: "#fff",
+                    padding: "4px 12px",
+                    borderRadius: "16px",
+                    fontSize: "12px",
+                    fontWeight: "500"
+                  }}>
+                    🏠 {searchFilters.category === 'phongtro' ? 'Phòng trọ' : 
+                         searchFilters.category === 'nha' ? 'Nhà nguyên căn' : 
+                         searchFilters.category === 'oghep' ? 'Ở ghép' : searchFilters.category}
+                  </span>
+                )}
+                {searchFilters.priceRange && (searchFilters.priceRange.min > 0 || searchFilters.priceRange.max < 10000000) && (
+                  <span style={{
+                    background: "#ff9800",
+                    color: "#fff",
+                    padding: "4px 12px",
+                    borderRadius: "16px",
+                    fontSize: "12px",
+                    fontWeight: "500"
+                  }}>
+                    💰 {searchFilters.priceRange.min > 0 ? `${(searchFilters.priceRange.min / 1000000).toFixed(1)}M` : '0'} - 
+                    {searchFilters.priceRange.max < 10000000 ? `${(searchFilters.priceRange.max / 1000000).toFixed(1)}M` : '∞'}
+                  </span>
+                )}
+                {searchFilters.sizeRange && (searchFilters.sizeRange.min > 0 || searchFilters.sizeRange.max < 200) && (
+                  <span style={{
+                    background: "#9c27b0",
+                    color: "#fff",
+                    padding: "4px 12px",
+                    borderRadius: "16px",
+                    fontSize: "12px",
+                    fontWeight: "500"
+                  }}>
+                    📏 {searchFilters.sizeRange.min > 0 ? `${searchFilters.sizeRange.min}m²` : '0m²'} - 
+                    {searchFilters.sizeRange.max < 200 ? `${searchFilters.sizeRange.max}m²` : '∞'}
+                  </span>
+                )}
+              </div>
+              <div style={{ 
+                fontSize: "12px", 
+                color: "#1976d2", 
+                fontStyle: "italic" 
+              }}>
+                💡 Hiển thị bài đăng thỏa mãn ít nhất một tiêu chí trên
+              </div>
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                padding: "8px 16px",
+                border: "none",
+                borderRadius: "8px",
+                background: "#1976d2",
+                color: "#fff",
+                fontSize: "14px",
+                fontWeight: "500",
+                cursor: "pointer",
+                transition: "all 0.2s ease",
+                whiteSpace: "nowrap"
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = "#1565c0";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "#1976d2";
+              }}
+            >
+              Xóa bộ lọc
+            </button>
+          </div>
+        </div>
+      )}
       
       <div style={{
         display: "grid",

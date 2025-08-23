@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SearchProvider } from "./contexts/ngucanhtimkiem";
 import DangNhap from "./DangNhap/dangnhap";
 import DangKy from "./DangKy/dangky";
 
@@ -30,38 +31,40 @@ import ThongBaoSideBar from "./ThongBao/ThongBaoSiderBar";
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Chưa đăng nhập */}
-        <Route path="/" element={<TrangChuChuaDangNhap />} />
-        <Route path="/phong-tro" element={<TrangPhongTro />} />
-        <Route path="/nha-nguyen-can" element={<TrangNhaNguyenCan />} />
-        <Route path="/o-ghep" element={<TrangOGhep />} />
-        <Route path="/dang-nhap" element={<DangNhap />} />
-        <Route path="/dang-ky" element={<DangKy />} />
+    <SearchProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Chưa đăng nhập */}
+          <Route path="/" element={<TrangChuChuaDangNhap />} />
+          <Route path="/phong-tro" element={<TrangPhongTro />} />
+          <Route path="/nha-nguyen-can" element={<TrangNhaNguyenCan />} />
+          <Route path="/o-ghep" element={<TrangOGhep />} />
+          <Route path="/dang-nhap" element={<DangNhap />} />
+          <Route path="/dang-ky" element={<DangKy />} />
 
-        {/* Đã đăng nhập */}
-        <Route path="/trang-chu-da-dang-nhap" element={<TrangChuDaDangNhap />} />
-        <Route path="/phong-tro-da-dang-nhap" element={<TrangPhongTro />} />
-        <Route path="/nha-nguyen-can-da-dang-nhap" element={<TrangNhaNguyenCan />} />
-        <Route path="/o-ghep-da-dang-nhap" element={<TrangOGhep />} />
+          {/* Đã đăng nhập */}
+          <Route path="/trang-chu-da-dang-nhap" element={<TrangChuDaDangNhap />} />
+          <Route path="/phong-tro-da-dang-nhap" element={<TrangPhongTro />} />
+          <Route path="/nha-nguyen-can-da-dang-nhap" element={<TrangNhaNguyenCan />} />
+          <Route path="/o-ghep-da-dang-nhap" element={<TrangOGhep />} />
 
-        {/* Khác */}
-        <Route path="/dang-bai" element={<DangBai />} />
-        <Route path="/thanh-toan" element={<ThanhToan />} />
-        <Route path="/xem-bai-dang/:id" element={<XemBaiDang />} />
-        <Route path="/quan-ly-bai-dang/" element={<QuanLyBaiDang />} />
-        <Route path="/sua-bai/" element={<SuaBai />} />
-        <Route path="/lich-su-giao-dich" element={<QuanLyGiaoDich />} />
-        <Route path="/lich-su-nap-tien" element={<LichSuNapTien />} />
-        <Route path="/thong-tin-ca-nhan" element={<ThongTinCaNhan />} />
-        <Route path="/doi-mat-khau" element={<DoiMatKhau />} />
-        <Route path="/lien-he-tro-giup" element={<LienHeTroGiup />} />
-        <Route path="/nap-tien" element={<NapTien />} />
-        <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
-        <Route path="/thong-bao" element={<ThongBaoSideBar />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Khác */}
+          <Route path="/dang-bai" element={<DangBai />} />
+          <Route path="/thanh-toan" element={<ThanhToan />} />
+          <Route path="/xem-bai-dang/:id" element={<XemBaiDang />} />
+          <Route path="/quan-ly-bai-dang/" element={<QuanLyBaiDang />} />
+          <Route path="/sua-bai/" element={<SuaBai />} />
+          <Route path="/lich-su-giao-dich" element={<QuanLyGiaoDich />} />
+          <Route path="/lich-su-nap-tien" element={<LichSuNapTien />} />
+          <Route path="/thong-tin-ca-nhan" element={<ThongTinCaNhan />} />
+          <Route path="/doi-mat-khau" element={<DoiMatKhau />} />
+          <Route path="/lien-he-tro-giup" element={<LienHeTroGiup />} />
+          <Route path="/nap-tien" element={<NapTien />} />
+          <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
+          <Route path="/thong-bao" element={<ThongBaoSideBar />} />
+        </Routes>
+      </BrowserRouter>
+    </SearchProvider>
   );
 }
 

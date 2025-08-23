@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useSearch } from "../contexts/ngucanhtimkiem";
 import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
 import BoLoc from "../BoLoc/boloc"
@@ -12,6 +13,7 @@ import { getAllNotifications, markAsRead, markAllAsRead } from "../DaTa/dulieuTh
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { searchFilters, updateSearchFilters, clearSearch, isSearchActive } = useSearch();
 
   const [openBoLoc, setOpenBoLoc] = React.useState(false);
   const [openTimKiem, setOpenTimKiem] = React.useState(false);
@@ -140,6 +142,10 @@ function Header() {
   // Hàm xử lý khi chọn loại bài đăng
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+    
+    // Cập nhật filter category trong SearchContext
+    updateSearchFilters({ category });
+    
     // Chuyển hướng đến trang tương ứng (dùng chung với Chuyentrang)
     switch(category) {
       case "Phòng trọ":
@@ -711,31 +717,55 @@ function Header() {
               setOpenTimKiem(true);
             }}
           >
-            <input
-              type="text"
-              placeholder="Tìm kiếm"
+                         <input
+               type="text"
+               placeholder={isSearchActive 
+                 ? searchFilters.province
+                 : "Tìm kiếm theo khu vực"
+               }
               style={{
                 padding: "8px 16px",
                 paddingRight: "44px",
                 borderRadius: "16px",
-                border: "1px solid #e0e0e0",
+                border: isSearchActive ? "2px solid #1976d2" : "1px solid #e0e0e0",
                 fontSize: "16px",
                 width: "100%",
                 outline: "none",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.10)",
+                boxShadow: isSearchActive 
+                  ? "0 4px 12px rgba(25,118,210,0.15)" 
+                  : "0 4px 12px rgba(0,0,0,0.10)",
                 fontWeight: 300,
                 height: "36px",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
+                background: isSearchActive ? "#f8fbff" : "#fff"
               }}
+              readOnly
             />
             <span style={{
               position: "absolute",
               right: "16px",
-              color: "#222",
+              color: isSearchActive ? "#1976d2" : "#222",
               fontSize: "18px"
             }}>
               🔍
             </span>
+            
+            {/* Hiển thị badge khi có filter */}
+            {isSearchActive && (
+              <div style={{
+                position: "absolute",
+                top: "-8px",
+                right: "12px",
+                background: "#1976d2",
+                color: "#fff",
+                fontSize: "10px",
+                padding: "2px 6px",
+                borderRadius: "10px",
+                fontWeight: "600"
+              }}>
+                ✓
+              </div>
+            )}
           </div>
           <button
             onClick={() => {
@@ -787,14 +817,21 @@ function Header() {
           onClose={() => setOpenTimKiem(false)}
           onSelect={(result) => {
             console.log('Kết quả tìm kiếm:', result);
-            // Cập nhật thông tin khu vực vào bộ lọc
-            if (result.province && result.district) {
-              setSelectedArea({
-                province: result.province,
-                district: result.district,
-                ward: "Tất cả" // Mặc định là "Tất cả" cho phường xã
-              });
-            }
+            
+                          // Cập nhật thông tin khu vực vào bộ lọc
+              if (result.province) {
+                setSelectedArea({
+                  province: result.province,
+                  district: "Tất cả",
+                  ward: "Tất cả" // Mặc định là "Tất cả" cho phường xã
+                });
+                
+                // Cập nhật filter khu vực trong SearchContext - chỉ cần province
+                updateSearchFilters({
+                  province: result.province,
+                  district: "" // Không cần district nữa
+                });
+              }
             setOpenTimKiem(false);
           }}
         />
