@@ -56,8 +56,21 @@ function Header() {
           const parsedUserInfo = JSON.parse(storedUserInfo);
           setUserInfo(parsedUserInfo);
           
-          // Lấy số dư từ account data
-          const accounts = require('../DaTa/account.js').accounts;
+          // Lấy số dư từ account data (có thể là updated hoặc gốc)
+          let accounts;
+          try {
+            const updatedAccounts = localStorage.getItem('updatedAccounts');
+            if (updatedAccounts) {
+              accounts = JSON.parse(updatedAccounts);
+            } else {
+              const { accounts: originalAccounts } = require('../DaTa/account.js');
+              accounts = originalAccounts;
+            }
+          } catch (error) {
+            const { accounts: originalAccounts } = require('../DaTa/account.js');
+            accounts = originalAccounts;
+          }
+          
           const userAccount = accounts.find(acc => 
             acc.username === parsedUserInfo.username ||
             acc.email === parsedUserInfo.email ||
@@ -74,15 +87,17 @@ function Header() {
 
     loadUserInfo();
     
-    // Lắng nghe sự thay đổi localStorage
+    // Lắng nghe sự thay đổi
     window.addEventListener('storage', loadUserInfo);
-    
-    // Kiểm tra mỗi giây để đảm bảo đồng bộ
-    const interval = setInterval(loadUserInfo, 1000);
+    window.addEventListener('userInfoUpdated', loadUserInfo);
+    window.addEventListener('accountsUpdated', loadUserInfo);
+    window.addEventListener('passwordUpdated', loadUserInfo); // Thêm event mới
     
     return () => {
       window.removeEventListener('storage', loadUserInfo);
-      clearInterval(interval);
+      window.removeEventListener('userInfoUpdated', loadUserInfo);
+      window.removeEventListener('accountsUpdated', loadUserInfo);
+      window.removeEventListener('passwordUpdated', loadUserInfo); // Thêm event mới
     };
   }, []);
 
@@ -127,8 +142,30 @@ function Header() {
   const loadSavedPosts = () => {
     try {
       const ids = JSON.parse(localStorage.getItem("savedPosts") || "[]");
-      const detailsMap = JSON.parse(localStorage.getItem("savedPostsDetails") || "{}");
-      return ids.map(id => ({ id, ...(detailsMap[id] || {}) }));
+      
+      // Lấy danh sách bài viết thực tế từ data
+      const { normalizedPosts } = require('../DaTa/selector');
+      const actualPosts = normalizedPosts || [];
+      
+      // Lấy thông tin thực tế của các bài viết đã lưu
+      const savedPostsWithDetails = ids
+        .map(id => {
+          const actualPost = actualPosts.find(post => post && post.id === id);
+          if (actualPost) {
+            return {
+              id: actualPost.id,
+              title: actualPost.title,
+              image: actualPost.images && actualPost.images.length > 0 ? actualPost.images[0] : null,
+              price: actualPost.price,
+              address: actualPost.address,
+              category: actualPost.category
+            };
+          }
+          return null;
+        })
+        .filter(post => post !== null); // Loại bỏ bài viết không tồn tại
+      
+      return savedPostsWithDetails;
     } catch (_) {
       return [];
     }
@@ -207,6 +244,35 @@ function Header() {
     }
   };
 
+  // Hàm xóa bài viết đã lưu
+  const removeSavedPost = (postId) => {
+    try {
+      const ids = JSON.parse(localStorage.getItem("savedPosts") || "[]");
+      const detailsMap = JSON.parse(localStorage.getItem("savedPostsDetails") || "{}");
+      
+      // Xóa ID khỏi danh sách
+      const updatedIds = ids.filter(id => id !== postId);
+      
+      // Xóa details khỏi map
+      delete detailsMap[postId];
+      
+      // Cập nhật localStorage
+      localStorage.setItem("savedPosts", JSON.stringify(updatedIds));
+      localStorage.setItem("savedPostsDetails", JSON.stringify(detailsMap));
+      
+      // Cập nhật state
+      setFavorites(loadSavedPosts());
+      
+      // Trigger event để các component khác biết có thay đổi
+      window.dispatchEvent(new CustomEvent("saved-posts-updated"));
+      
+      return true;
+    } catch (error) {
+      console.error('Error removing saved post:', error);
+      return false;
+    }
+  };
+
   return (
     <>
 
@@ -236,7 +302,7 @@ function Header() {
             cursor: 'pointer'
           }} onClick={() => navigate('/trang-chu-da-dang-nhap')}>
             <img 
-              src="/anh/Logotrang.png" 
+              src="anh/Logotrang.png" 
               alt="Motel Home" 
               style={{ height: 60, marginBottom: 1 }}
               onError={(e) => {
@@ -571,6 +637,9 @@ function Header() {
                   setOpenFav(false);
                   // Điều hướng tới chi tiết bài viết
                   navigate(`/xem-bai-dang/${id}`);
+                }}
+                onRemove={(id) => {
+                  removeSavedPost(id);
                 }}
               />
             </div>

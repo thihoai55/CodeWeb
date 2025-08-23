@@ -19,8 +19,21 @@ function Sidebar() {
           const parsedUserInfo = JSON.parse(storedUserInfo);
           setUserInfo(parsedUserInfo);
           
-          // Lấy số dư từ account data
-          const accounts = require('../DaTa/account.js').accounts;
+          // Lấy số dư từ account data (có thể là updated hoặc gốc)
+          let accounts;
+          try {
+            const updatedAccounts = localStorage.getItem('updatedAccounts');
+            if (updatedAccounts) {
+              accounts = JSON.parse(updatedAccounts);
+            } else {
+              const { accounts: originalAccounts } = require('../DaTa/account.js');
+              accounts = originalAccounts;
+            }
+          } catch (error) {
+            const { accounts: originalAccounts } = require('../DaTa/account.js');
+            accounts = originalAccounts;
+          }
+          
           const userAccount = accounts.find(acc => 
             acc.username === parsedUserInfo.username ||
             acc.email === parsedUserInfo.email ||
@@ -37,15 +50,17 @@ function Sidebar() {
 
     loadUserInfo();
     
-    // Lắng nghe sự thay đổi localStorage
+    // Lắng nghe sự thay đổi
     window.addEventListener('storage', loadUserInfo);
-    
-    // Kiểm tra mỗi giây để đảm bảo đồng bộ
-    const interval = setInterval(loadUserInfo, 1000);
+    window.addEventListener('userInfoUpdated', loadUserInfo);
+    window.addEventListener('accountsUpdated', loadUserInfo);
+    window.addEventListener('passwordUpdated', loadUserInfo);
     
     return () => {
       window.removeEventListener('storage', loadUserInfo);
-      clearInterval(interval);
+      window.removeEventListener('userInfoUpdated', loadUserInfo);
+      window.removeEventListener('accountsUpdated', loadUserInfo);
+      window.removeEventListener('passwordUpdated', loadUserInfo);
     };
   }, []);
 
