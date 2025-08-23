@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
@@ -30,14 +30,47 @@ function ProfileInput({ icon, type = 'text', value, onChange, placeholder, readO
 function ThongTinCaNhan() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState({
-    accountId: '115777',
-    fullName: 'Hihjj',
-    email: 'nguyenthihoai552004@gmail.com',
-    phone: '0819923174',
+    accountId: '',
+    fullName: '',
+    email: '',
+    phone: '',
     address: '',
     avatarPreview: 'anh/avt.jpg',
     avatarFile: null
   });
+
+  // Thêm useEffect để load thông tin user từ localStorage
+  useEffect(() => {
+    const loadUserInfo = () => {
+      try {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+          const parsedUserInfo = JSON.parse(storedUserInfo);
+          
+          // Cập nhật profile với thông tin từ localStorage
+          setProfile(prev => ({
+            ...prev,
+            accountId: parsedUserInfo.username || '',
+            fullName: parsedUserInfo.name || '',
+            email: parsedUserInfo.email || '',
+            phone: parsedUserInfo.phone || '',
+            avatarPreview: parsedUserInfo.avatar || 'anh/avt.jpg'
+          }));
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+      }
+    };
+
+    loadUserInfo();
+    
+    // Lắng nghe sự thay đổi localStorage
+    window.addEventListener('storage', loadUserInfo);
+    
+    return () => {
+      window.removeEventListener('storage', loadUserInfo);
+    };
+  }, []);
 
   const handleChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }));
@@ -52,8 +85,31 @@ function ThongTinCaNhan() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: Gọi API cập nhật thông tin cá nhân ở đây
-    alert('Cập nhật thông tin thành công');
+    
+    // Cập nhật localStorage với thông tin mới
+    try {
+      const storedUserInfo = localStorage.getItem('userInfo');
+      if (storedUserInfo) {
+        const parsedUserInfo = JSON.parse(storedUserInfo);
+        const updatedUserInfo = {
+          ...parsedUserInfo,
+          name: profile.fullName,
+          email: profile.email,
+          phone: profile.phone,
+          avatar: profile.avatarPreview
+        };
+        
+        localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
+        
+        // Cập nhật account data (nếu cần)
+        // TODO: Gọi API cập nhật thông tin cá nhân ở đây
+        
+        alert('Cập nhật thông tin thành công');
+      }
+    } catch (error) {
+      console.error('Error updating user info:', error);
+      alert('Có lỗi xảy ra khi cập nhật thông tin');
+    }
   };
 
   

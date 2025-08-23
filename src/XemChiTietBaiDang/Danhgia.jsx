@@ -1,9 +1,38 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useEffect } from 'react';
 
 function DanhGia({ ownerAvatar, ratingAverage, initialReviews = [] }) {
   const [showReviews, setShowReviews] = useState(false);
   const [reviews, setReviews] = useState(initialReviews);
-  const newReviewName = 'Ngô Thị Thanh Nhàn';
+  
+  // Lấy thông tin user từ localStorage
+  const [userInfo, setUserInfo] = useState(null);
+  
+  useEffect(() => {
+    const loadUserInfo = () => {
+      try {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+          const parsedUserInfo = JSON.parse(storedUserInfo);
+          setUserInfo(parsedUserInfo);
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+      }
+    };
+
+    loadUserInfo();
+    
+    // Lắng nghe sự thay đổi localStorage
+    window.addEventListener('storage', loadUserInfo);
+    
+    return () => {
+      window.removeEventListener('storage', loadUserInfo);
+    };
+  }, []);
+
+  // Sử dụng tên user từ localStorage thay vì hardcode
+  const newReviewName = userInfo ? userInfo.name : 'Khách';
+  
   const [newReviewRating, setNewReviewRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [newReviewComment, setNewReviewComment] = useState('');
@@ -88,16 +117,27 @@ function DanhGia({ ownerAvatar, ratingAverage, initialReviews = [] }) {
       alert('Vui lòng chấm sao và nhập nội dung đánh giá.');
       return;
     }
+    
+    // Kiểm tra user đã đăng nhập chưa
+    if (!userInfo) {
+      alert('Vui lòng đăng nhập để đánh giá!');
+      return;
+    }
+    
     const newReview = {
       id: Date.now(),
-      user: newReviewName,
+      user: userInfo.name, // Sử dụng tên từ localStorage
+      userAvatar: userInfo.avatar || '/anh/avt.jpg', // Thêm avatar user
       rating: newReviewRating,
       comment: newReviewComment.trim(),
       date: new Date().toLocaleDateString('vi-VN'),
-      images: selectedImages,     // Lưu file ảnh
-      video: selectedVideo        // Lưu file video
+      images: selectedImages,
+      video: selectedVideo
     };
+    
     setReviews([newReview, ...reviews]);
+    
+    // Reset form
     setNewReviewRating(0);
     setNewReviewComment('');
     setSelectedImages([]);

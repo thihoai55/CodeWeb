@@ -1,10 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeIdx, setActiveIdx] = useState(0);
+  
+  // Thêm state để lưu thông tin user
+  const [userInfo, setUserInfo] = useState(null);
+  const [userBalance, setUserBalance] = useState(0);
+
+  // Thêm useEffect để load thông tin user từ localStorage
+  useEffect(() => {
+    const loadUserInfo = () => {
+      try {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+          const parsedUserInfo = JSON.parse(storedUserInfo);
+          setUserInfo(parsedUserInfo);
+          
+          // Lấy số dư từ account data
+          const accounts = require('../DaTa/account.js').accounts;
+          const userAccount = accounts.find(acc => 
+            acc.username === parsedUserInfo.username ||
+            acc.email === parsedUserInfo.email ||
+            acc.phone === parsedUserInfo.phone
+          );
+          if (userAccount && userAccount.balance) {
+            setUserBalance(userAccount.balance);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+      }
+    };
+
+    loadUserInfo();
+    
+    // Lắng nghe sự thay đổi localStorage
+    window.addEventListener('storage', loadUserInfo);
+    
+    // Kiểm tra mỗi giây để đảm bảo đồng bộ
+    const interval = setInterval(loadUserInfo, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', loadUserInfo);
+      clearInterval(interval);
+    };
+  }, []);
 
   const menuItems = [
     { label: 'Quản lý bài đăng', icon: '📋', path: '/quan-ly-bai-dang' },
@@ -63,10 +106,10 @@ function Sidebar() {
         />
         <div>
           <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '7px', color: '#3181d0ff' }}>
-            Hehe
+            {userInfo ? userInfo.name : 'Đang tải...'}
           </div>
           <div style={{ fontSize: '15px', color: '#666' }}>
-            0819923174
+            {userInfo ? userInfo.phone : 'Đang tải...'}
           </div>
         </div>
       </div>
@@ -80,7 +123,9 @@ function Sidebar() {
         boxShadow: '0 2px 8px rgba(25, 118, 210, 0.1)'
       }}>
         <div style={{ fontSize: '14px', color: '#666' }}>Số dư tài khoản</div>
-        <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px', color: '#333' }}>0 đ</div>
+        <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px', color: '#333' }}>
+          {userBalance ? `${userBalance.toLocaleString('vi-VN')} đ` : 'Đang tải...'}
+        </div>
 
         <div style={{ fontSize: '14px', color: '#666' }}>Mã tài khoản</div>
         <div style={{
@@ -92,26 +137,32 @@ function Sidebar() {
           marginBottom: '12px',
           color: '#333'
         }}>
-          <span>115777</span>
+          <span>{userInfo ? userInfo.username : 'Đang tải...'}</span>
           <span style={{
             cursor: 'pointer',
             fontSize: '18px'
           }}>📋</span>
         </div>
 
-        <button style={{
-          width: '100%',
-          padding: '10px',
-          background: '#4d9ff2ff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '6px',
-          fontSize: '15px',
-          fontWeight: '600',
-          cursor: 'pointer',
-          boxShadow: '0 2px 8px rgba(25, 118, 210, 0.1)'
-        }} onClick={() => navigate('/nap-tien')}>
-          Nạp tiền
+        {/* Thêm nút nạp tiền */}
+        <button
+          onClick={() => navigate('/nap-tien')}
+          style={{
+            width: '100%',
+            padding: '8px 12px',
+            background: '#2196f3',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'background 0.2s'
+          }}
+          onMouseEnter={(e) => e.target.style.background = '#1976d2'}
+          onMouseLeave={(e) => e.target.style.background = '#2196f3'}
+        >
+          💰 Nạp tiền
         </button>
       </div>
 
