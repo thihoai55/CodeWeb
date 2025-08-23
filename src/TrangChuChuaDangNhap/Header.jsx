@@ -81,14 +81,25 @@ function Header() {
           }}
             onClick={() => navigate("/")}
           >
-            <img src="anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
+            <img 
+              src="/anh/Logotrang.png" 
+              alt="Motel Home" 
+              style={{ height: 60, marginBottom: 1 }}
+              onError={(e) => {
+                console.error('Logo load error:', e);
+                // Fallback nếu logo không load được
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'block';
+              }}
+            />
             <div style={{
-              fontSize: "10px",
-              color: "#888",
+              fontSize: "16px",
+              color: "#52b4f9",
               marginTop: "1px",
-              fontWeight: 500
+              fontWeight: "700",
+              display: "none" // Ẩn mặc định, chỉ hiện khi logo lỗi
             }}>
-              
+              Motel Home
             </div>
           </div>
           {/* Menu giữa */}

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { accounts } from '../DaTa/account.js';
 
 const googleIcon = "anh/gg.jpg";
 const facebookIcon = "anh/fb.png";
@@ -21,19 +22,106 @@ const DangNhap = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
+  // Hàm đăng nhập sử dụng toán tử 3 ngôi
+  const loginWithTernary = (identifier, password) => {
+    // Validation đầu vào
+    if (!identifier || !password) {
+      return { 
+        success: false, 
+        message: "Vui lòng nhập đầy đủ thông tin đăng nhập!" 
+      };
+    }
+
+    // Loại bỏ khoảng trắng thừa
+    const cleanIdentifier = identifier.trim();
+    const cleanPassword = password.trim();
+
+    // Tìm account trong danh sách
+    const account = accounts.find(acc => 
+      acc.username === cleanIdentifier || 
+      acc.email === cleanIdentifier || 
+      acc.phone === cleanIdentifier
+    );
+    
+    // Sử dụng toán tử 3 ngôi để kiểm tra đăng nhập
+    return account 
+      ? (account.password === cleanPassword 
+          ? { 
+              success: true, 
+              account: {
+                username: account.username,
+                role: account.role,
+                name: account.name,
+                phone: account.phone,
+                email: account.email
+              }, 
+              message: "Đăng nhập thành công!" 
+            }
+          : { success: false, message: "Mật khẩu không đúng!" })
+      : { success: false, message: "Tài khoản không tồn tại!" };
+  };
+
   const handleLogin = (e) => {
     e.preventDefault();
     if (!email || !matKhau) {
       setError("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
-    setError("");
-    localStorage.setItem('isLoggedIn', 'true');
-    navigate("/trang-chu-da-dang-nhap"); // Chuyển về trang TrangChuDaDangNhap
+    
+    // Kiểm tra đăng nhập với data thực tế
+    const loginResult = loginWithTernary(email, matKhau);
+    
+    if (loginResult.success) {
+      setError("");
+      // Lưu thông tin đăng nhập
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userInfo', JSON.stringify(loginResult.account));
+      localStorage.setItem('userRole', loginResult.account.role);
+      
+      // Chuyển hướng dựa trên role
+      if (loginResult.account.role === "admin") {
+        navigate("/admin");
+      } else if (loginResult.account.role === "host") {
+        navigate("/host");
+      } else {
+        navigate("/trang-chu-da-dang-nhap");
+      }
+    } else {
+      setError(loginResult.message);
+    }
   };
 
   const handleRegister = (e) => {
     e.preventDefault();
+    
+    // Validation đăng ký
+    if (!registerPhone || !registerEmail || !registerPassword || !registerRePassword || !registerRole) {
+      setError("Vui lòng nhập đầy đủ thông tin đăng ký!");
+      return;
+    }
+    
+    if (registerPassword !== registerRePassword) {
+      setError("Mật khẩu nhập lại không khớp!");
+      return;
+    }
+    
+    if (!registerAgree) {
+      setError("Vui lòng đồng ý với điều khoản!");
+      return;
+    }
+    
+    // Kiểm tra email và số điện thoại đã tồn tại chưa
+    const existingAccount = accounts.find(acc => 
+      acc.email === registerEmail || acc.phone === registerPhone
+    );
+    
+    if (existingAccount) {
+      setError("Email hoặc số điện thoại đã được sử dụng!");
+      return;
+    }
+    
+    // Đăng ký thành công
+    setError("");
     localStorage.setItem('isLoggedIn', 'true');
     navigate("/trang-chu-da-dang-nhap");
   };
@@ -193,8 +281,8 @@ const DangNhap = () => {
               </label>
               <input
                 type="password"
-                value={registerPassword}
-                onChange={e => setRegisterPassword(e.target.value)}
+                value={matKhau}
+                onChange={(e) => setMatKhau(e.target.value)}
                 placeholder="Mật khẩu"
                 style={{
                   width: "100%",
@@ -306,8 +394,8 @@ const DangNhap = () => {
               </label>
               <input
                 type="password"
-                value={registerPassword}
-                onChange={e => setRegisterPassword(e.target.value)}
+                value={matKhau}
+                onChange={(e) => setMatKhau(e.target.value)}
                 placeholder="Mật khẩu"
                 style={{
                   width: "100%",
