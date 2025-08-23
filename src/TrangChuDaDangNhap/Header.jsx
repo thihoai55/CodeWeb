@@ -15,6 +15,10 @@ function Header() {
   const location = useLocation();
   const { searchFilters, updateSearchFilters, clearSearch, isSearchActive } = useSearch();
 
+  // Thêm state để lưu thông tin user
+  const [userInfo, setUserInfo] = React.useState(null);
+  const [userBalance, setUserBalance] = React.useState(0);
+
   const [openBoLoc, setOpenBoLoc] = React.useState(false);
   const [openTimKiem, setOpenTimKiem] = React.useState(false);
   const [openNotify, setOpenNotify] = React.useState(false);
@@ -39,6 +43,45 @@ function Header() {
     }, 1000);
     return () => {
       window.removeEventListener("storage", onStorage);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Thêm useEffect để lấy thông tin user từ localStorage
+  React.useEffect(() => {
+    const loadUserInfo = () => {
+      try {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+          const parsedUserInfo = JSON.parse(storedUserInfo);
+          setUserInfo(parsedUserInfo);
+          
+          // Lấy số dư từ account data
+          const accounts = require('../DaTa/account.js').accounts;
+          const userAccount = accounts.find(acc => 
+            acc.username === parsedUserInfo.username ||
+            acc.email === parsedUserInfo.email ||
+            acc.phone === parsedUserInfo.phone
+          );
+          if (userAccount && userAccount.balance) {
+            setUserBalance(userAccount.balance);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+      }
+    };
+
+    loadUserInfo();
+    
+    // Lắng nghe sự thay đổi localStorage
+    window.addEventListener('storage', loadUserInfo);
+    
+    // Kiểm tra mỗi giây để đảm bảo đồng bộ
+    const interval = setInterval(loadUserInfo, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', loadUserInfo);
       clearInterval(interval);
     };
   }, []);
@@ -572,8 +615,12 @@ function Header() {
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <img src="/anh/avt.jpg" alt="avatar" style={{ width: 48, height: 48, borderRadius: "50%" }} />
                     <div>
-                      <div style={{ fontWeight: "bold", fontSize: 16 }}>Hehe</div>
-                      <div style={{ color: "#000000ff", fontSize: 14 }}>0878772943</div>
+                      <div style={{ fontWeight: "bold", fontSize: 16 }}>
+                        {userInfo ? userInfo.name : 'Đang tải...'}
+                      </div>
+                      <div style={{ color: "#000000ff", fontSize: 14 }}>
+                        {userInfo ? userInfo.phone : 'Đang tải...'}
+                      </div>
                     </div>
                   </div>
                   <div
@@ -590,7 +637,9 @@ function Header() {
                   >
                     <div>
                       <div style={{ fontSize: 13, color: "#000000ff" }}>Số dư tài khoản:</div>
-                      <div style={{ fontWeight: "bold", fontSize: 16 }}>100.000 VND</div>
+                      <div style={{ fontWeight: "bold", fontSize: 16 }}>
+                        {userBalance ? `${userBalance.toLocaleString('vi-VN')} VND` : 'Đang tải...'}
+                      </div>
                     </div>
                     <button
                       style={{
