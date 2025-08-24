@@ -90,7 +90,7 @@ const DangNhap = () => {
       if (loginResult.account.role === "admin") {
         navigate("/admin");
       } else if (loginResult.account.role === "host") {
-        navigate("/host");
+        navigate("/trang-quan-ly");
       } else {
         navigate("/trang-chu-da-dang-nhap");
       }

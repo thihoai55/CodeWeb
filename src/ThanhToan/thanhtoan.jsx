@@ -4,13 +4,18 @@ import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 
 function ThanhToan() {
+  // State cho phương thức thanh toán và xuất hóa đơn
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('bank-transfer');
   const [exportInvoice, setExportInvoice] = useState(false);
 
-  // Lấy thông tin từ localStorage
+  // Lấy thông tin đăng bài từ localStorage
   const postData = JSON.parse(localStorage.getItem('postData') || '{}');
-  const paymentAmount = postData.totalAmount ? `${postData.totalAmount.toLocaleString()}₫` : '50.000₫';
-  const transferContent = `BĐĐ001 ${Math.floor(Math.random() * 100000)} VIP ${postData.postType?.includes('Vip 1') ? '1' : '2'} ${postData.numberOfDays?.split(' ')[0]} NGAY`;
+  
+  // Tính toán số tiền thanh toán
+  const paymentAmount = postData.totalAmount ? `${postData.totalAmount.toLocaleString('vi-VN')} VNĐ` : '0 VNĐ';
+  
+  // Tạo nội dung chuyển khoản tự động
+  const transferContent = `BĐĐ ${Math.floor(Math.random() * 100000)} ${postData.postType?.includes('Vip 1') ? 'VIP1' : postData.postType?.includes('Vip 2') ? 'VIP2' : postData.postType?.includes('Vip 3') ? 'VIP3' : 'THUONG'} ${postData.numberOfDays?.split(' ')[0]} NGAY`;
 
   const paymentMethods = [
     {
@@ -41,7 +46,7 @@ function ThanhToan() {
       id: 'international-card',
       name: 'Thẻ quốc tế',
       description: 'Visa, Mastercard, JCB',
-      image: 'anh/thequote.jpg'
+      image: 'anh/thequocte.jpg'
     },
     {
       id: 'bank-transfer',
@@ -51,15 +56,37 @@ function ThanhToan() {
     }
   ];
 
+  // Xử lý thanh toán
   const handlePayment = () => {
     console.log('Thanh toán với phương thức:', selectedPaymentMethod);
     console.log('Thông tin đăng bài:', postData);
+    
+    // Xử lý theo từng phương thức thanh toán
     if (selectedPaymentMethod === 'bank-transfer') {
+      // Hiển thị thông tin chuyển khoản
       alert(`Vui lòng chuyển khoản ${paymentAmount} với nội dung: ${transferContent}`);
+    } else if (selectedPaymentMethod === 'account-balance') {
+      // Kiểm tra số dư tài khoản
+      const userBalance = parseInt(localStorage.getItem('userBalance') || '0');
+      if (userBalance >= postData.totalAmount) {
+        alert('Thanh toán thành công từ số dư tài khoản!');
+        // Cập nhật số dư
+        const newBalance = userBalance - postData.totalAmount;
+        localStorage.setItem('userBalance', newBalance.toString());
+      } else {
+        alert('Số dư tài khoản không đủ để thanh toán!');
+        return;
+      }
     } else {
-      alert('Chức năng thanh toán sẽ được tích hợp sau!');
+      alert('Chức năng thanh toán này sẽ được tích hợp sau!');
+      return;
     }
+    
+    // Xóa thông tin đăng bài sau khi thanh toán thành công
     localStorage.removeItem('postData');
+    
+    // Chuyển hướng về trang quản lý bài đăng
+    window.location.href = '/quan-ly-bai-dang';
   };
 
   return (
@@ -69,20 +96,20 @@ function ThanhToan() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      {/* Header */}
+      {/* Header trang */}
       <Header />
 
-      {/* Main Content with Sidebar */}
+      {/* Nội dung chính với sidebar */}
       <div style={{
         display: 'flex',
         flex: 1
       }}>
-        {/* Sidebar */}
+        {/* Sidebar điều hướng */}
         <Sidebar />
 
-        {/* Main Content Area */}
+        {/* Khu vực nội dung chính */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '20px 0 0 0' }}>
-          {/* Title & Breadcrumbs */}
+          {/* Tiêu đề và breadcrumb */}
           <div style={{
             marginBottom: '20px',
             background: 'transparent',
@@ -96,7 +123,7 @@ function ThanhToan() {
             }}>
               Thanh toán đăng bài
             </h1>
-            {/* Breadcrumbs */}
+            {/* Đường dẫn điều hướng */}
             <div style={{
               fontSize: '16px',
               color: '#666',
@@ -106,12 +133,12 @@ function ThanhToan() {
             </div>
           </div>
 
-          {/* Payment Content */}
+          {/* Nội dung thanh toán */}
           <div style={{
             padding: '0 32px',
             flex: 1
           }}>
-            {/* Order Summary */}
+            {/* Tóm tắt thông tin đăng bài */}
             {postData.title && (
               <div style={{
                 marginBottom: '32px',
@@ -122,9 +149,11 @@ function ThanhToan() {
                 fontWeight: 700,
                 color: '#111'
               }}>
-                <div style={{ fontWeight: 700, fontSize: '25px', marginBottom: '20px' }}>
+                <div style={{ fontWeight: 700, fontSize: '24px', marginBottom: '20px' }}>
                   Thông tin đăng bài
                 </div>
+                
+                {/* Tiêu đề bài đăng */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Tiêu đề:</div>
                   <div style={{ fontWeight: 500, fontSize: '16px' }}>{postData.title}</div>
@@ -133,6 +162,8 @@ function ThanhToan() {
                   borderTop: '0.3px solid #222',
                   margin: '10px 0'
                 }} />
+                
+                {/* Loại tin */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Loại tin:</div>
                   <div style={{ fontWeight: 500, fontSize: '16px' }}>{postData.postType}</div>
@@ -141,6 +172,8 @@ function ThanhToan() {
                   borderTop: '0.3px solid #222',
                   margin: '10px 0'
                 }} />
+                
+                {/* Số ngày đăng */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Số ngày:</div>
                   <div style={{ fontWeight: 500, fontSize: '16px' }}>{postData.numberOfDays}</div>
@@ -149,6 +182,8 @@ function ThanhToan() {
                   borderTop: '0.3px solid #222',
                   margin: '10px 0'
                 }} />
+                
+                {/* Tổng tiền thanh toán */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Tổng tiền:</div>
                   <div style={{ fontWeight: 500, fontSize: '16px' }}>{paymentAmount}</div>
@@ -156,15 +191,13 @@ function ThanhToan() {
               </div>
             )}
 
-            {/* Payment phương thức thanh toán */}
+            {/* Phương thức thanh toán */}
             <div style={{
               background: '#fff',
               borderRadius: '12px',
               padding: '24px',
               marginBottom: '24px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-              // width: '100%',
-              // maxWidth: '1000px'
+              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
             }}>
               <h3 style={{
                 fontSize: '20px',
@@ -193,12 +226,13 @@ function ThanhToan() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      width: '100%',
+                      // width: '100%',
                       // maxWidth: '1110px'
                     }}
                     onClick={() => setSelectedPaymentMethod(method.id)}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
+                      {/* Icon hoặc ảnh của phương thức thanh toán */}
                       <div style={{
                         width: '48px',
                         height: '48px',
@@ -211,6 +245,7 @@ function ThanhToan() {
                         border: '1px solid #e9ecef',
                         overflow: 'hidden'
                       }}>
+                        {/* Hiển thị ảnh nếu có, nếu không thì hiển thị emoji */}
                         {method.image.startsWith('public/') || method.image.startsWith('anh/') ? (
                           <img 
                             src={method.image.startsWith('public/') ? method.image.replace('public/', '/') : `/${method.image}`}
@@ -243,7 +278,7 @@ function ThanhToan() {
                       </div>
                     </div>
                     
-                    {/* Radio Button */}
+                    {/* Nút radio để chọn phương thức */}
                     <div style={{
                       width: '20px',
                       height: '20px',
@@ -269,7 +304,7 @@ function ThanhToan() {
               </div>
             </div>
 
-            {/* Invoice Option */}
+            {/* Tùy chọn xuất hóa đơn */}
             <div style={{
               background: '#fff',
               borderRadius: '12px',
@@ -307,12 +342,13 @@ function ThanhToan() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Các nút hành động */}
             <div style={{
               display: 'flex',
               gap: '16px',
               marginTop: '32px'
             }}>
+              {/* Nút quay lại */}
               <button
                 onClick={() => window.history.back()}
                 style={{
@@ -332,12 +368,14 @@ function ThanhToan() {
               >
                 Quay lại
               </button>
+              
+              {/* Nút thanh toán */}
               <button
                 onClick={handlePayment}
                 style={{
                   flex: 1,
                   padding: '16px',
-                  background: '#4d9ff2ff',
+                  background: '#2196f3',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '8px',
@@ -347,7 +385,7 @@ function ThanhToan() {
                   transition: 'background 0.2s'
                 }}
                 onMouseEnter={(e) => e.target.style.background = '#1565c0'}
-                onMouseLeave={(e) => e.target.style.background = '#4d9ff2ff'}
+                onMouseLeave={(e) => e.target.style.background = '#2196f3'}
               >
                 Thanh toán {paymentAmount}
               </button>
@@ -356,7 +394,7 @@ function ThanhToan() {
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer trang */}
       <Footer />
     </div>
   );

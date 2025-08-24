@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from './sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
+import { addressData } from '../DaTa/addressData';
 
 function DangBai() {
   const navigate = useNavigate();
@@ -26,13 +27,58 @@ function DangBai() {
 
   const [titleCharCount, setTitleCharCount] = useState(0);
   const [descCharCount, setDescCharCount] = useState(0);
-  const [activeTab, setActiveTab] = useState('khu-vuc'); // Thêm dòng này
+  const [activeTab, setActiveTab] = useState('khu-vuc');
+  const [currentUserRole, setCurrentUserRole] = useState('host');
+
+  // Dữ liệu địa chỉ đã được import từ file addressData.js
+
+  // Lấy thông tin user từ localStorage
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const parsedUserInfo = JSON.parse(userInfo);
+      // Tìm role trong accounts
+      const accounts = JSON.parse(localStorage.getItem('accounts') || '[]');
+      const userAccount = accounts.find(acc => acc.username === parsedUserInfo.username);
+      if (userAccount) {
+        setCurrentUserRole(userAccount.role);
+        // Tự động set category theo role
+        if (userAccount.role === 'renter') {
+          setFormData(prev => ({ ...prev, category: 'timnguoioghep' }));
+        }
+      }
+    }
+  }, []);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
+
+    // Reset các trường phụ thuộc khi thay đổi trường chính
+    if (field === 'province') {
+      setFormData(prev => ({
+        ...prev,
+        district: '',
+        ward: '',
+        street: '',
+        [field]: value
+      }));
+    } else if (field === 'district') {
+      setFormData(prev => ({
+        ...prev,
+        ward: '',
+        street: '',
+        [field]: value
+      }));
+    } else if (field === 'ward') {
+      setFormData(prev => ({
+        ...prev,
+        street: '',
+        [field]: value
+      }));
+    }
   };
 
   const handleTitleChange = (value) => {
@@ -62,17 +108,75 @@ function DangBai() {
     }));
   };
 
+  // Tính toán giá theo loại tin và số ngày
   const calculateTotal = () => {
-    const unitPrice = 30000;
-    const days = 3;
-    return unitPrice * days;
+    let basePrice = 0;
+    let dayPrice = 0;
+
+    // Giá theo loại tin
+    if (formData.postType === 'Tin Vip 1 (30.000/ngày)') {
+      basePrice = 30000;
+    } else if (formData.postType === 'Tin Vip 2 (50.000/ngày)') {
+      basePrice = 50000;
+    } else if (formData.postType === 'Tin Vip 3 (80.000/ngày)') {
+      basePrice = 80000;
+    }
+
+    // Giá theo số ngày
+    if (formData.numberOfDays === '3 ngày') {
+      dayPrice = 50000;
+    } else if (formData.numberOfDays === '7 ngày') {
+      dayPrice = 150000;
+    } else if (formData.numberOfDays === '15 ngày') {
+      dayPrice = 300000;
+    }
+
+    return basePrice + dayPrice;
   };
 
+  // Tính ngày hết hạn
   const getExpirationDate = () => {
     const today = new Date();
     const expiration = new Date(today);
-    expiration.setDate(today.getDate() + 3);
+    
+    if (formData.numberOfDays === '3 ngày') {
+      expiration.setDate(today.getDate() + 3);
+    } else if (formData.numberOfDays === '7 ngày') {
+      expiration.setDate(today.getDate() + 7);
+    } else if (formData.numberOfDays === '15 ngày') {
+      expiration.setDate(today.getDate() + 15);
+    }
+    
     return expiration.toLocaleDateString('vi-VN');
+  };
+
+  // Lấy giá theo loại tin
+  const getPostTypePrice = () => {
+    if (formData.postType === 'Tin Vip 1 (30.000/ngày)') {
+      return '30.000';
+    } else if (formData.postType === 'Tin Vip 2 (50.000/ngày)') {
+      return '50.000';
+    } else if (formData.postType === 'Tin Vip 3 (80.000/ngày)') {
+      return '80.000';
+    }
+    return '30.000';
+  };
+
+  // Lấy số ngày
+  const getNumberOfDays = () => {
+    return formData.numberOfDays.split(' ')[0];
+  };
+
+  // Lấy giá theo số ngày
+  const getDayPrice = () => {
+    if (formData.numberOfDays === '3 ngày') {
+      return '50.000';
+    } else if (formData.numberOfDays === '7 ngày') {
+      return '150.000';
+    } else if (formData.numberOfDays === '15 ngày') {
+      return '300.000';
+    }
+    return '50.000';
   };
 
   const scrollToSection = (sectionId) => {
@@ -135,7 +239,6 @@ function DangBai() {
           {/* Title & Tabs */}
           <div style={{
             marginBottom: '20px',
-            // width: '100%',
             background: 'transparent',
             padding: '0 32px'
           }}>
@@ -268,9 +371,11 @@ function DangBai() {
                     }}
                   >
                     <option value="">Chọn Tỉnh/TP</option>
-                    <option value="hanoi">Hà Nội</option>
-                    <option value="hcm">TP. Hồ Chí Minh</option>
-                    <option value="danang">Đà Nẵng</option>
+                    {Object.keys(addressData).map(provinceKey => (
+                      <option key={provinceKey} value={provinceKey}>
+                        {addressData[provinceKey].name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -291,10 +396,16 @@ function DangBai() {
                       outline: 'none',
                       marginBottom: 0
                     }}
+                    disabled={!formData.province}
                   >
                     <option value="">Chọn quận huyện</option>
-                    <option value="tayho">Quận Tây Hồ</option>
-                    <option value="hoankiem">Quận Hoàn Kiếm</option>
+                    {formData.province && addressData[formData.province] && 
+                      Object.keys(addressData[formData.province].districts).map(districtKey => (
+                        <option key={districtKey} value={districtKey}>
+                          {addressData[formData.province].districts[districtKey].name}
+                        </option>
+                      ))
+                    }
                   </select>
                 </div>
                 <div>
@@ -315,10 +426,17 @@ function DangBai() {
                       outline: 'none',
                       marginBottom: 0
                     }}
+                    disabled={!formData.district}
                   >
                     <option value="">Chọn phường xã</option>
-                    <option value="phuong1">Phường 1</option>
-                    <option value="phuong2">Phường 2</option>
+                    {formData.district && formData.province && addressData[formData.province] && 
+                      addressData[formData.province].districts[formData.district] &&
+                      Object.keys(addressData[formData.province].districts[formData.district].wards).map(wardKey => (
+                        <option key={wardKey} value={wardKey}>
+                          {addressData[formData.province].districts[formData.district].wards[wardKey].name}
+                        </option>
+                      ))
+                    }
                   </select>
                 </div>
                 <div>
@@ -339,10 +457,18 @@ function DangBai() {
                       outline: 'none',
                       marginBottom: 0
                     }}
+                    disabled={!formData.ward}
                   >
                     <option value="">Chọn đường phố</option>
-                    <option value="tranphu">Trần Phú</option>
-                    <option value="nguyenhuu">Nguyễn Hữu Thọ</option>
+                    {formData.ward && formData.district && formData.province && addressData[formData.province] && 
+                      addressData[formData.province].districts[formData.district] &&
+                      addressData[formData.province].districts[formData.district].wards[formData.ward] &&
+                      Object.keys(addressData[formData.province].districts[formData.district].wards[formData.ward].streets).map(streetKey => (
+                        <option key={streetKey} value={streetKey}>
+                          {addressData[formData.province].districts[formData.district].wards[formData.ward].streets[streetKey]}
+                        </option>
+                      ))
+                    }
                   </select>
                 </div>
                 <div>
@@ -421,12 +547,29 @@ function DangBai() {
                   outline: 'none',
                   marginBottom: 0
                 }}
+                disabled={currentUserRole === 'renter'}
               >
                 <option value="">Chọn chuyên mục</option>
-                <option value="phongtro">Phòng trọ</option>
-                <option value="nhanguyencan">Nhà nguyên căn</option>
-                <option value="timnguoioghep">Tìm người ở ghép</option>
+                {currentUserRole === 'renter' ? (
+                  <option value="timnguoioghep">Tìm người ở ghép</option>
+                ) : (
+                  <>
+                    <option value="phongtro">Phòng trọ</option>
+                    <option value="nhanguyencan">Nhà nguyên căn</option>
+                  </>
+                )}
               </select>
+              {currentUserRole === 'renter' && (
+                <div style={{ 
+                  marginTop: '8px', 
+                  fontSize: '14px', 
+                  color: '#666', 
+                  fontStyle: 'italic',
+                  textAlign: 'center'
+                }}>
+                  Tài khoản renter chỉ được đăng bài "Tìm người ở ghép"
+                </div>
+              )}
             </div>
 
             {/* Thông tin mô tả, Giá, Diện tích */}
@@ -742,55 +885,57 @@ function DangBai() {
                 <h3 style={{ marginBottom: '20px', fontSize: '25px', fontWeight: '700' }}>
                   Chọn gói đăng tin
                 </h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
-                      Loại tin
-                    </label>
-                    <select
-                      value={formData.postType}
-                      onChange={(e) => handleInputChange('postType', e.target.value)}
-                      style={{
-                        width: '90%',
-                        padding: '10px 8px',
-                        border: '2px solid #cfd8dc',
-                        borderRadius: '10px',
-                        fontSize: '18px',
-                        color: '#222',
-                        background: '#fff',
-                        outline: 'none',
-                        marginBottom: 0
-                      }}
-                    >
-                      <option value="Tin Vip 1 (30.000/ngày)">Tin Vip 1 (30.000/ngày)</option>
-                      <option value="Tin Vip 2 (50.000/ngày)">Tin Vip 2 (50.000/ngày)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
-                      Số ngày
-                    </label>
-                    <select
-                      value={formData.numberOfDays}
-                      onChange={(e) => handleInputChange('numberOfDays', e.target.value)}
-                      style={{
-                        width: '90%',
-                        padding: '10px 8px',
-                        border: '2px solid #cfd8dc',
-                        borderRadius: '10px',
-                        fontSize: '18px',
-                        color: '#222',
-                        background: '#fff',
-                        outline: 'none',
-                        marginBottom: 0
-                      }}
-                    >
-                      <option value="3 ngày">3 ngày</option>
-                      <option value="7 ngày">7 ngày</option>
-                      <option value="15 ngày">15 ngày</option>
-                    </select>
-                  </div>
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
+                    Loại tin
+                  </label>
+                  <select
+                    value={formData.postType}
+                    onChange={(e) => handleInputChange('postType', e.target.value)}
+                    style={{
+                      width: '90%',
+                      padding: '10px 8px',
+                      border: '2px solid #cfd8dc',
+                      borderRadius: '10px',
+                      fontSize: '18px',
+                      color: '#222',
+                      background: '#fff',
+                      outline: 'none',
+                      marginBottom: 0
+                    }}
+                  >
+                    <option value="Tin Thường (10.000/ngày)">Tin Thường (110.000/ngày)</option>
+                    <option value="Tin Vip 1 (30.000/ngày)">Tin Vip 1 (30.000/ngày)</option>
+                    <option value="Tin Vip 2 (50.000/ngày)">Tin Vip 2 (50.000/ngày)</option>
+                    <option value="Tin Vip 3 (80.000/ngày)">Tin Vip 3 (80.000/ngày)</option>
+                  </select>
                 </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
+                    Số ngày
+                  </label>
+                  <select
+                    value={formData.numberOfDays}
+                    onChange={(e) => handleInputChange('numberOfDays', e.target.value)}
+                    style={{
+                      width: '90%',
+                      padding: '10px 8px',
+                      border: '2px solid #cfd8dc',
+                      borderRadius: '10px',
+                      fontSize: '18px',
+                      color: '#222',
+                      background: '#fff',
+                      outline: 'none',
+                      marginBottom: 0
+                    }}
+                  >
+                    <option value="3 ngày">3 ngày (+50.000đ)</option>
+                    <option value="7 ngày">7 ngày (+150.000đ)</option>
+                    <option value="15 ngày">15 ngày (+300.000đ)</option>
+                  </select>
+                </div>
+              </div>
               </div>
             </div>
 
@@ -799,39 +944,47 @@ function DangBai() {
               marginBottom: '32px',
               background: '#c8f1fc',
               borderRadius: '25px',
-              padding: '25px 24px',
-              fontSize: '32px',
-              fontWeight: 700,
+              padding: '20px 30px',
+              // fontSize: '32px',
+              // fontWeight: 700,
               color: '#111'
             }}>
-              <div style={{ fontWeight: 700, fontSize: '25px', marginBottom: '20px' }}>
+              <div style={{ fontWeight: 700, fontSize: '25px', marginBottom: '10px' }}>
                 Thông tin thanh toán
               </div>
-              {/* <div style={{
+              <div style={{
                 borderTop: '0.5px solid #222',
                 margin: '10px 0'
-              }} /> */}
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start', marginBottom: '10px' }}>
+              }} />
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Loại tin:</div>
                 <div style={{ fontWeight: 500, fontSize: '16px', lineHeight: 1.2 }}>
-                  Đứng đầu danh sách các tin đăng. TIÊU ĐỀ MÀU ĐỎ, IN HOA
+                  {formData.postType}
                 </div>
               </div>
               <div style={{
                 borderTop: '0.3px solid #222',
                 margin: '10px 0'
               }} />
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Đơn giá:</div>
-                <div style={{ fontWeight: 500, fontSize: '16px' }}>{'30.000'}</div>
+                <div style={{ fontWeight: 500, fontSize: '16px' }}>{getPostTypePrice()} VNĐ</div>
               </div>
               <div style={{
                 borderTop: '0.3px solid #222',
                 margin: '10px 0'
               }} />
-              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '10px' }}>
                 <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Số ngày:</div>
-                <div style={{ fontWeight: 500, fontSize: '16px' }}>{'3'}</div>
+                <div style={{ fontWeight: 500, fontSize: '16px' }}>{getNumberOfDays()} ngày</div>
+              </div>
+              <div style={{
+                borderTop: '0.3px solid #222',
+                margin: '10px 0'
+              }} />
+              <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '10px' }}>
+                <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Phí số ngày:</div>
+                <div style={{ fontWeight: 500, fontSize: '16px' }}>{getDayPrice()} VNĐ</div>
               </div>
               <div style={{
                 borderTop: '0.3px solid #222',
@@ -847,7 +1000,7 @@ function DangBai() {
               }} />
               <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                 <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Thành tiền:</div>
-                <div style={{ fontWeight: 500, fontSize: '16px' }}>{calculateTotal().toLocaleString()}</div>
+                <div style={{ fontWeight: 700, fontSize: '16px'}}>{calculateTotal().toLocaleString('vi-VN')} VNĐ</div>
               </div>
             </div>
 
@@ -857,7 +1010,7 @@ function DangBai() {
               style={{
                 width: '100%',
                 padding: '16px',
-                background: '#4d9ff2ff',
+                background: '#2196f3',
                 color: '#fff',
                 border: 'none',
                 borderRadius: '8px',
@@ -867,7 +1020,7 @@ function DangBai() {
                 transition: 'background 0.2s'
               }}
               onMouseEnter={(e) => e.target.style.background = '#1565c0'}
-              onMouseLeave={(e) => e.target.style.background = '#4d9ff2ff'}>
+              onMouseLeave={(e) => e.target.style.background = '#2196f3'}>
               Đăng tin và thanh toán
             </button>
           </div>
