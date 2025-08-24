@@ -11,8 +11,37 @@ function HeaderLuaChon({
     onVipTypeFilterChange,
     tabs = [],
     selectedTab,
-    onTabChange
+    onTabChange,
+    currentUserRole = 'host' // Thêm prop để biết role của user
 }) {
+    // Tùy chọn lọc theo loại tin dựa trên role
+    const getPostTypeOptions = () => {
+        if (currentUserRole === 'renter') {
+            return [
+                { value: "", label: "Tất cả loại tin" },
+                { value: "timnguoioghep", label: "Tìm người ở ghép" }
+            ];
+        } else {
+            // host và admin
+            return [
+                { value: "", label: "Tất cả loại tin" },
+                { value: "phongtro", label: "Phòng trọ" },
+                { value: "nha", label: "Nhà nguyên căn" }
+            ];
+        }
+    };
+
+    // Tùy chọn lọc theo loại VIP
+    const getVipTypeOptions = () => {
+        return [
+            { value: "", label: "Tất cả loại VIP" },
+            { value: "thuong", label: "Tin thường" },
+            { value: "vip1", label: "Tin VIP 1" },
+            { value: "vip2", label: "Tin VIP 2" },
+            { value: "vip3", label: "Tin VIP 3" }
+        ];
+    };
+
     return (
         <div>
             {/* Title & Breadcrumbs */}
@@ -52,10 +81,11 @@ function HeaderLuaChon({
                                     background: '#fff'
                                 }}
                             >
-                                <option value="">Tất cả loại tin</option>
-                                <option value="phongtro">Phòng trọ</option>
-                                <option value="chungcu">Chung cư</option>
-                                <option value="nha">Nhà nguyên căn</option>
+                                {getPostTypeOptions().map(option => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div style={{ flex: 1 }}>
@@ -74,10 +104,11 @@ function HeaderLuaChon({
                                     background: '#fff'
                                 }}
                             >
-                                <option value="">Tất cả loại VIP</option>
-                                <option value="thuong">Tin thường</option>
-                                <option value="vip1">Tin VIP 1</option>
-                                <option value="vip2">Tin VIP 2</option>
+                                {getVipTypeOptions().map(option => (
+                                    <option key={option.value} value={option.value}>
+                                        {option.label}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>

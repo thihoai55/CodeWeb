@@ -5,7 +5,7 @@ function Sidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeIdx, setActiveIdx] = useState(0);
-  
+
   // Thêm state để lưu thông tin user
   const [userInfo, setUserInfo] = useState(null);
   const [userBalance, setUserBalance] = useState(0);
@@ -18,7 +18,7 @@ function Sidebar() {
         if (storedUserInfo) {
           const parsedUserInfo = JSON.parse(storedUserInfo);
           setUserInfo(parsedUserInfo);
-          
+
           // Lấy số dư từ account data (có thể là updated hoặc gốc)
           let accounts;
           try {
@@ -33,8 +33,8 @@ function Sidebar() {
             const { accounts: originalAccounts } = require('../DaTa/account.js');
             accounts = originalAccounts;
           }
-          
-          const userAccount = accounts.find(acc => 
+
+          const userAccount = accounts.find(acc =>
             acc.username === parsedUserInfo.username ||
             acc.email === parsedUserInfo.email ||
             acc.phone === parsedUserInfo.phone
@@ -49,13 +49,13 @@ function Sidebar() {
     };
 
     loadUserInfo();
-    
+
     // Lắng nghe sự thay đổi
     window.addEventListener('storage', loadUserInfo);
     window.addEventListener('userInfoUpdated', loadUserInfo);
     window.addEventListener('accountsUpdated', loadUserInfo);
     window.addEventListener('passwordUpdated', loadUserInfo);
-    
+
     return () => {
       window.removeEventListener('storage', loadUserInfo);
       window.removeEventListener('userInfoUpdated', loadUserInfo);
@@ -96,7 +96,7 @@ function Sidebar() {
       padding: '24px 16px',
       fontFamily: 'Arial, sans-serif',
       minHeight: '100vh',
-      boxSizing: 'border-box', 
+      boxSizing: 'border-box',
       // position: 'fixed'
     }}>
       {/* User Info */}
@@ -169,7 +169,7 @@ function Sidebar() {
             color: '#fff',
             border: 'none',
             borderRadius: '8px',
-            fontSize: '14px',
+            fontSize: '16px',
             fontWeight: '600',
             cursor: 'pointer',
             transition: 'background 0.2s'
@@ -177,7 +177,17 @@ function Sidebar() {
           onMouseEnter={(e) => e.target.style.background = '#1976d2'}
           onMouseLeave={(e) => e.target.style.background = '#2196f3'}
         >
-          💰 Nạp tiền
+          Nạp tiền
+          <span style={{
+            marginLeft: "6px",
+            color: "#070707ff",
+            fontSize: 16,
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
+            <i className="bi bi-credit-card-2-back"></i>
+          </span>
         </button>
       </div>
 

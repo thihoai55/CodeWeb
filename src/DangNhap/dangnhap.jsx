@@ -73,10 +73,18 @@ const DangNhap = () => {
     
     if (loginResult.success) {
       setError("");
+      // Lấy thông tin đầy đủ từ accounts để có số dư
+      const fullAccount = accounts.find(acc => acc.username === loginResult.account.username);
+      
       // Lưu thông tin đăng nhập
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('userInfo', JSON.stringify(loginResult.account));
       localStorage.setItem('userRole', loginResult.account.role);
+      
+      // Lưu thêm số dư tài khoản nếu có
+      if (fullAccount) {
+        localStorage.setItem('userBalance', fullAccount.balance.toString());
+      }
       
       // Chuyển hướng dựa trên role
       if (loginResult.account.role === "admin") {

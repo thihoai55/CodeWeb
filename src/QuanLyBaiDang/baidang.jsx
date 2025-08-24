@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
@@ -8,6 +8,7 @@ import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
 import LichHen from '../NhanVaXuLyLichHen/lichhen';
 import YeuCauThue from '../NhanVaXuLyYeuCauThue/yeucauthue';
+import { postsData } from '../DaTa/posts.js';
 
 function QuanLyBaiDang() {
   const navigate = useNavigate();
@@ -17,48 +18,24 @@ function QuanLyBaiDang() {
   const [openHideModal, setOpenHideModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  const [posts, setPosts] = useState([
-    {
-      id: 'BD001',
-      type: 'Phòng trọ',
-      vipType: 'Tin thường',
-      title: 'Phòng trọ mới đã trang trí đầy đủ tiện nghi, full nội thất',
-      price: '800.000',
-      area: '30 m²',
-      description: 'Phòng sạch sẽ, thoáng mát, có cửa Có nhà vệ sinh riêng, máy nước nóng/lạCó chỗ để xe rộng rãi, wifi miễn  Giờ giấc tự do, không chung chủ',
-      image: 'https://bandon.vn/uploads/thiet-ke-nha-tro-dep-2020-bandon-28.jpg',
-      status: 'Đang hiển thị',
-      startDate: '06/07/2025',
-      endDate: '09/07/2025'
-    },
-    {
-      id: 'BD002',
-      type: 'Chung cư',
-      vipType: 'Tin VIP 1',
-      title: 'Chung cư vừa mới xây đã có đầy đủ tiện nghi, có thể ở được cả hộ gia đình',
-      price: '4.5 triệu',
-      area: '50 m²',
-      description: 'Cho hộ gia đình thuê căn chung cư vừa mới xây xong có đầy đủ các tiện nghi chỉ cần dọn vào ở.',
-      image: 'https://kientructrangkim.com/wp-content/uploads/2022/11/thiet-ke-noi-that-phong-tro-41.jpg',
-      status: 'Đã hết hạn',
-      startDate: '12/07/2024',
-      endDate: '18/07/2024'
-    },
-    {
-      id: 'BD003',
-      type: 'Phòng trọ',
-      vipType: 'Tin VIP 1',
-      title: 'Phòng trọ có gác lửng, tủ lạnh, gần các trường đại học ở trung tâm thành phố',
-      price: '1.5 triệu',
-      area: '45 m²',
-      description: 'Cho các bạn sinh viên thuê trọ ở trung tâm thành phố gần các trường đại học có gác lửng và tủ lạnh',
-      image: 'https://spacet-release.s3.ap-southeast-1.amazonaws.com/img/blog/2023-10-04/thiet-ke-phong-tro-co-khu-vuc-bep-651cda6dc9649b0ef5c6f6d0.webp',
-      status: 'Đã cho thuê',
-      startDate: '09/07/2025',
-      endDate: '15/07/2025'
+  // Lấy thông tin người dùng đăng nhập và bài đăng tương ứng
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const parsedUserInfo = JSON.parse(userInfo);
+      setCurrentUser(parsedUserInfo);
+
+      // Lấy bài đăng theo username của người dùng
+      const userPosts = postsData[parsedUserInfo.username] || [];
+      setPosts(userPosts);
+    } else {
+      // Nếu không có thông tin đăng nhập, chuyển về trang đăng nhập
+      navigate('/dang-nhap');
     }
-  ]);
+  }, [navigate]);
 
   // Đếm số lượng theo trạng thái
   const statusCounts = useMemo(() => {
@@ -86,21 +63,48 @@ function QuanLyBaiDang() {
 
   // Lọc bài đăng theo tab
   const displayPosts = useMemo(() => {
+    let filteredPosts = posts;
+    
+    // Lọc theo loại tin
+    if (postTypeFilter) {
+      if (postTypeFilter === 'phongtro') {
+        filteredPosts = filteredPosts.filter(p => p.type === 'Phòng trọ');
+      } else if (postTypeFilter === 'nha') {
+        filteredPosts = filteredPosts.filter(p => p.type === 'Nhà nguyên căn');
+      } else if (postTypeFilter === 'timnguoioghep') {
+        filteredPosts = filteredPosts.filter(p => p.type === 'Tìm người ở ghép');
+      }
+    }
+    
+    // Lọc theo loại VIP
+    if (vipTypeFilter) {
+      if (vipTypeFilter === 'thuong') {
+        filteredPosts = filteredPosts.filter(p => p.vipType === 'Tin thường');
+      } else if (vipTypeFilter === 'vip1') {
+        filteredPosts = filteredPosts.filter(p => p.vipType === 'Tin VIP 1');
+      } else if (vipTypeFilter === 'vip2') {
+        filteredPosts = filteredPosts.filter(p => p.vipType === 'Tin VIP 2');
+      } else if (vipTypeFilter === 'vip3') {
+        filteredPosts = filteredPosts.filter(p => p.vipType === 'Tin VIP 3');
+      }
+    }
+    
+    // Lọc theo tab
     switch (selectedTab) {
       case 'displaying':
-        return posts.filter(p => p.status === 'Đang hiển thị');
+        return filteredPosts.filter(p => p.status === 'Đang hiển thị');
       case 'rented':
-        return posts.filter(p => p.status === 'Đã cho thuê');
+        return filteredPosts.filter(p => p.status === 'Đã cho thuê');
       case 'expired':
-        return posts.filter(p => p.status === 'Đã hết hạn');
+        return filteredPosts.filter(p => p.status === 'Đã hết hạn');
       case 'hidden':
-        return posts.filter(p => p.status === 'Đã ẩn');
+        return filteredPosts.filter(p => p.status === 'Đã ẩn');
       case 'all':
       default:
         // Tất cả trừ đã ẩn
-        return posts.filter(p => p.status !== 'Đã ẩn');
+        return filteredPosts.filter(p => p.status !== 'Đã ẩn');
     }
-  }, [selectedTab, posts]);
+  }, [selectedTab, posts, postTypeFilter, vipTypeFilter]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -116,6 +120,31 @@ function QuanLyBaiDang() {
         return '#6c757d';
     }
   };
+
+  // Hàm cập nhật trạng thái bài đăng
+  const updatePostStatus = (postId, newStatus) => {
+    setPosts(prev => prev.map(p => p.id === postId ? { ...p, status: newStatus } : p));
+  };
+
+  // Hàm xóa bài đăng
+  const deletePost = (postId) => {
+    setPosts(prev => prev.filter(p => p.id !== postId));
+  };
+
+  // Nếu chưa có thông tin người dùng, hiển thị loading
+  if (!currentUser) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: '#f5f5f5',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ fontSize: '18px', color: '#666' }}>Đang tải...</div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -146,6 +175,7 @@ function QuanLyBaiDang() {
             tabs={tabs}
             selectedTab={selectedTab}
             onTabChange={setSelectedTab}
+            currentUserRole={currentUser?.role}
           />
 
           {/* Main Content */}
@@ -163,215 +193,253 @@ function QuanLyBaiDang() {
                 flexDirection: 'column',
                 gap: '16px'
               }}>
-                {displayPosts.map((post) => (
-                <div key={post.id} style={{
-                  background: '#fff',
-                  borderRadius: '10px',
-                  padding: '16px 16px 12px 16px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                  display: 'flex',
-                  gap: '22px',
-                  border: '1px solid #ECEBEB'
-                }}>
-                  {/* Post Image */}
+                {displayPosts.length === 0 ? (
                   <div style={{
-                    width: '260px',
-                    height: '200px',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                    // borderRadius: '4px'
+                    textAlign: 'center',
+                    padding: '40px',
+                    color: '#666',
+                    fontSize: '16px'
                   }}>
-                    <img
-                      src={post.image}
-                      alt={post.title}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                      }}
-                      onError={(e) => {
-                        e.target.style.background = '#f8f9fa';
-                        e.target.style.display = 'flex';
-                        e.target.style.alignItems = 'center';
-                        e.target.style.justifyContent = 'center';
-                        e.target.style.fontSize = '24px';
-                        e.target.style.color = '#6c757d';
-                        e.target.src = '';
-                        e.target.textContent = '📷';
-                      }}
-                    />
+                    {(() => {
+                      let message = '';
+                      if (selectedTab === 'all') {
+                        if (postTypeFilter || vipTypeFilter) {
+                          message = `Không có bài đăng nào phù hợp với bộ lọc đã chọn`;
+                          if (postTypeFilter) {
+                            const postTypeLabel = postTypeFilter === 'phongtro' ? 'Phòng trọ' : 
+                                                 postTypeFilter === 'nha' ? 'Nhà nguyên căn' : 'Tìm người ở ghép';
+                            message += ` (Loại tin: ${postTypeLabel})`;
+                          }
+                          if (vipTypeFilter) {
+                            const vipTypeLabel = vipTypeFilter === 'thuong' ? 'Tin thường' : 
+                                               vipTypeFilter === 'vip1' ? 'Tin VIP 1' : 
+                                               vipTypeFilter === 'vip2' ? 'Tin VIP 2' : 'Tin VIP 3';
+                            message += ` (VIP: ${vipTypeLabel})`;
+                          }
+                        } else {
+                          message = 'Bạn chưa có bài đăng nào';
+                        }
+                      } else {
+                        const tabLabel = tabs.find(t => t.id === selectedTab)?.label;
+                        message = `Không có bài đăng nào ở trạng thái "${tabLabel}"`;
+                        if (postTypeFilter || vipTypeFilter) {
+                          message += ' phù hợp với bộ lọc đã chọn';
+                        }
+                      }
+                      return message;
+                    })()}
                   </div>
-
-                  {/* Post Content */}
-                  <div style={{ flex: 1 }}>
-                    {/* Post Header */}
-                    <div style={{
+                ) : (
+                  displayPosts.map((post) => (
+                    <div key={post.id} style={{
+                      background: '#fff',
+                      borderRadius: '10px',
+                      padding: '16px 16px 12px 16px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
                       display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'flex-start',
-                      // marginBottom: '5px'
+                      gap: '22px',
+                      border: '1px solid #ECEBEB'
                     }}>
-                      <div>
+                      {/* Post Image */}
+                      <div style={{
+                        width: '260px',
+                        height: '200px',
+                        overflow: 'hidden',
+                        flexShrink: 0,
+                        // borderRadius: '4px'
+                      }}>
+                        <img
+                          src={post.image}
+                          alt={post.title}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                          onError={(e) => {
+                            e.target.style.background = '#f8f9fa';
+                            e.target.style.display = 'flex';
+                            e.target.style.alignItems = 'center';
+                            e.target.style.justifyContent = 'center';
+                            e.target.style.fontSize = '24px';
+                            e.target.style.color = '#6c757d';
+                            e.target.src = '';
+                            e.target.textContent = '📷';
+                          }}
+                        />
+                      </div>
+
+                      {/* Post Content */}
+                      <div style={{ flex: 1 }}>
+                        {/* Post Header */}
                         <div style={{
                           display: 'flex',
-                          gap: '12px',
-                          alignItems: 'center',
-                          marginBottom: '8px',
-
+                          justifyContent: 'space-between',
+                          alignItems: 'flex-start',
+                          // marginBottom: '5px'
                         }}>
-                          <span style={{
-                            background: '#ECEBEB',
-                            color: '#666',
-                            padding: '5px 12px',
-                            borderRadius: '16px',
-                            fontSize: '12px',
-                            fontWeight: '600'
-                          }}>
-                            {post.type}
-                          </span>
-                          <span style={{
-                            background: '#ECEBEB',
-                            color: '#666',
-                            padding: '5px 12px',
-                            borderRadius: '16px',
-                            fontSize: '12px',
-                            fontWeight: '600'
-                          }}>
-                            {post.vipType}
-                          </span>
+                          <div>
+                            <div style={{
+                              display: 'flex',
+                              gap: '12px',
+                              alignItems: 'center',
+                              marginBottom: '8px',
+
+                            }}>
+                              <span style={{
+                                background: '#ECEBEB',
+                                color: '#666',
+                                padding: '5px 12px',
+                                borderRadius: '16px',
+                                fontSize: '12px',
+                                fontWeight: '600'
+                              }}>
+                                {post.type}
+                              </span>
+                              <span style={{
+                                background: '#ECEBEB',
+                                color: '#666',
+                                padding: '5px 12px',
+                                borderRadius: '16px',
+                                fontSize: '12px',
+                                fontWeight: '600'
+                              }}>
+                                {post.vipType}
+                              </span>
+                            </div>
+                            <h3 style={{
+                              fontSize: '18px',
+                              fontWeight: '600',
+                              color: '#1a73e8',
+                              margin: '0 0 5px 0',
+                              lineHeight: '1.5'
+                            }}>
+                              {post.title}
+                            </h3>
+                          </div>
+                          {/* Empty right area in header on purpose */}
                         </div>
-                        <h3 style={{
-                          fontSize: '18px',
-                          fontWeight: '600',
-                          color: '#1a73e8',
-                          margin: '0 0 5px 0',
+
+                        {/* Post Details */}
+                        <div style={{
+                          display: 'flex',
+                          gap: '24px',
+                          marginBottom: '5px',
+                        }}>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}>
+                            <span style={{
+                              fontSize: '15px',
+                              fontWeight: '500',
+                              color: '#222'
+                            }}>
+                              {post.price} đồng/tháng
+                            </span>
+                          </div>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                          }}>
+                            <span style={{
+                              fontSize: '15px',
+                              fontWeight: '500',
+                              color: '#222'
+                            }}>
+                              {post.area}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Description */}
+                        <p style={{
+                          fontSize: '15px',
+                          fontWeight: '500',
+                          color: '#222',
+                          margin: '0 0 8px 0',
                           lineHeight: '1.5'
                         }}>
-                          {post.title}
-                        </h3>
-                      </div>
-                      {/* Empty right area in header on purpose */}
-                    </div>
+                          {post.description}
+                        </p>
 
-                    {/* Post Details */}
-                    <div style={{
-                      display: 'flex',
-                      gap: '24px',
-                      marginBottom: '5px',
-                    }}>
+                        {/* Post Info - 3 column grid like preview */}
+                        <div style={{
+                          display: 'grid',
+                          gridTemplateColumns: '150px 150px 150px',
+                          gap: '10px',
+                          alignItems: 'start'
+                        }}>
+                          <div>
+                            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>Mã tin</div>
+                            <div style={{ fontSize: '14px', color: '#333' }}>{post.id}</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>Ngày bắt đầu</div>
+                            <div style={{ fontSize: '14px', color: '#333' }}>{post.startDate}</div>
+                          </div>
+                          <div>
+                            <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>Ngày hết hạn</div>
+                            <div style={{ fontSize: '14px', color: '#333' }}>{post.endDate}</div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
                       <div style={{
                         display: 'flex',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        flexShrink: 0,
                         alignItems: 'center',
-                        gap: '8px'
+                        marginRight: '15px',
+                        // minWidth: '160px'
                       }}>
-                        <span style={{
-                          fontSize: '15px',
-                          fontWeight: '500',
-                          color: '#222'
-                        }}>
-                          {post.price} đồng/tháng
-                        </span>
-                      </div>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
-                      }}>
-                        <span style={{
-                          fontSize: '15px',
-                          fontWeight: '500',
-                          color: '#222'
-                        }}>
-                          {post.area}
-                        </span>
+                        <div style={{
+                          fontSize: '14px',
+                          fontWeight: 700,
+                          color: getStatusColor(post.status),
+                          marginBottom: '4px'
+                        }}>{post.status}</div>
+
+                        {(post.status === 'Đã ẩn'
+                          ? ['Đăng lại', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
+                          : ['Ẩn bài', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
+                        ).map((label) => (
+                          <button key={label} style={{
+                            padding: '5px 12px',
+                            background: '#f5f5f5',
+                            color: '#333',
+                            border: '1px solid #d9d9d9',
+                            borderRadius: '18px',
+                            fontSize: '14px',
+                            cursor: 'pointer',
+                            width: '100%',
+                            transition: 'background 0.2s, border-color 0.2s'
+                          }}
+                            onClick={() => {
+                              if (label === 'Ẩn bài') { setSelectedPost(post); setOpenHideModal(true); }
+                              else if (label === 'Đăng lại') {
+                                updatePostStatus(post.id, 'Đang hiển thị');
+                                setSelectedTab('displaying');
+                              }
+                              else if (label === 'Xóa bài') { setSelectedPost(post); setOpenDeleteModal(true); }
+                              else if (label === 'Sửa bài') { navigate('/sua-bai', { state: { post } }); }
+                              else if (label === 'Lịch hẹn') { setSelectedTab('appointments'); }
+                              else if (label === 'Yêu cầu thuê') { setSelectedTab('requests'); }
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.background = '#efefef'; e.currentTarget.style.borderColor = '#cfcfcf'; }}
+                            onMouseLeave={(e) => { e.currentTarget.style.background = '#f5f5f5'; e.currentTarget.style.borderColor = '#d9d9d9'; }}
+                          >
+                            {label}
+                          </button>
+                        ))}
                       </div>
                     </div>
-
-                    {/* Description */}
-                    <p style={{
-                      fontSize: '15px',
-                      fontWeight: '500',
-                      color: '#222',
-                      margin: '0 0 8px 0',
-                      lineHeight: '1.5'
-                    }}>
-                      {post.description}
-                    </p>
-
-                    {/* Post Info - 3 column grid like preview */}
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: '150px 150px 150px',
-                      gap: '10px',
-                      alignItems: 'start'
-                    }}>
-                      <div>
-                        <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>Mã tin</div>
-                        <div style={{ fontSize: '14px', color: '#333' }}>{post.id}</div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>Ngày bắt đầu</div>
-                        <div style={{ fontSize: '14px', color: '#333' }}>{post.startDate}</div>
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '14px', color: '#666', marginBottom: '6px' }}>Ngày hết hạn</div>
-                        <div style={{ fontSize: '14px', color: '#333' }}>{post.endDate}</div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '8px',
-                    flexShrink: 0,
-                    alignItems: 'center',
-                    marginRight: '15px',
-                    // minWidth: '160px'
-                  }}>
-                    <div style={{
-                      fontSize: '14px',
-                      fontWeight: 700,
-                      color: getStatusColor(post.status),
-                      marginBottom: '4px'
-                    }}>{post.status}</div>
-
-                    {(post.status === 'Đã ẩn' 
-                        ? ['Đăng lại', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
-                        : ['Ẩn bài', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
-                      ).map((label) => (
-                      <button key={label} style={{
-                        padding: '5px 12px',
-                        background: '#f5f5f5',
-                        color: '#333',
-                        border: '1px solid #d9d9d9',
-                        borderRadius: '18px',
-                        fontSize: '14px',
-                        cursor: 'pointer',
-                        width: '100%',
-                        transition: 'background 0.2s, border-color 0.2s'
-                      }}
-                        onClick={() => {
-                          if (label === 'Ẩn bài') { setSelectedPost(post); setOpenHideModal(true); }
-                          else if (label === 'Đăng lại') {
-                            setPosts(prev => prev.map(p => p.id === post.id ? { ...p, status: 'Đang hiển thị' } : p));
-                            setSelectedTab('displaying');
-                          }
-                          else if (label === 'Xóa bài') { setSelectedPost(post); setOpenDeleteModal(true); }
-                          else if (label === 'Sửa bài') { navigate('/sua-bai', { state: { post } }); }
-                          else if (label === 'Lịch hẹn') { setSelectedTab('appointments'); }
-                          else if (label === 'Yêu cầu thuê') { setSelectedTab('requests'); }
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.background = '#efefef'; e.currentTarget.style.borderColor = '#cfcfcf'; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.background = '#f5f5f5'; e.currentTarget.style.borderColor = '#d9d9d9'; }}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>
@@ -388,7 +456,7 @@ function QuanLyBaiDang() {
         onConfirm={() => {
           // Cập nhật trạng thái bài viết thành "Đã ẩn"
           if (selectedPost?.id) {
-            setPosts(prev => prev.map(p => p.id === selectedPost.id ? { ...p, status: 'Đã ẩn' } : p));
+            updatePostStatus(selectedPost.id, 'Đã ẩn');
           }
           setOpenHideModal(false);
           setSelectedPost(null);
@@ -400,7 +468,10 @@ function QuanLyBaiDang() {
         open={openDeleteModal}
         onCancel={() => { setOpenDeleteModal(false); setSelectedPost(null); }}
         onConfirm={() => {
-          // TODO: gọi API xóa bài với selectedPost?.id
+          // Xóa bài đăng
+          if (selectedPost?.id) {
+            deletePost(selectedPost.id);
+          }
           setOpenDeleteModal(false);
           setSelectedPost(null);
         }}
