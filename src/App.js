@@ -29,6 +29,12 @@ import NapTien from "./NapTien/naptien";
 import HopDongChoThue from "./HopDongChoThue/hopdongchothue";
 import ThongBaoSideBar from "./ThongBao/ThongBaoSiderBar";
 
+// Admin pages
+import XemThongTinNguoiDung from "./Admin/xemthongtinnguoidung";
+import SuaThongTinNguoiDung from "./Admin/suathongtinnguoidung";
+import AdThongTinCaNhan from "./Admin/ad_thongtincanhan";
+import AdDoiMatKhau from "./Admin/ad_doimatkhau";
+
 function App() {
   return (
     <SearchProvider>
@@ -62,6 +68,12 @@ function App() {
           <Route path="/nap-tien" element={<NapTien />} />
           <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
           <Route path="/thong-bao" element={<ThongBaoSideBar />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin/quan-ly-nguoi-dung" element={<XemThongTinNguoiDung />} />
+          <Route path="/admin/sua-thong-tin-nguoi-dung" element={<SuaThongTinNguoiDung />} />
+          <Route path="/admin/thong-tin-ca-nhan" element={<AdThongTinCaNhan />} />
+          <Route path="/admin/doi-mat-khau" element={<AdDoiMatKhau />} />
         </Routes>
       </BrowserRouter>
     </SearchProvider>
