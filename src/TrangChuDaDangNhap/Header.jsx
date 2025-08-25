@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
-import BoLoc from "../BoLoc/boloc"
+import BoLoc from "../ModalBoLoc/boloc"
 import TimKiemTheoKhuVuc from "../TimKiemTheoKhuVuc/timkiem"
 import YeuThichDropdown from "../LuuBai/YeuThich";
 import ThongBaoDropdown from "../ThongBao/Thongbaoo";

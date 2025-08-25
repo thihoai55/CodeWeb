@@ -8,7 +8,6 @@ import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
 import LichHen from '../NhanVaXuLyLichHen/lichhen';
 import YeuCauThue from '../NhanVaXuLyYeuCauThue/yeucauthue';
-import { postsData } from '../DaTa/posts.js';
 
 function QuanLyBaiDang() {
   const navigate = useNavigate();
@@ -28,14 +27,41 @@ function QuanLyBaiDang() {
       const parsedUserInfo = JSON.parse(userInfo);
       setCurrentUser(parsedUserInfo);
 
-      // Lấy bài đăng theo username của người dùng
-      const userPosts = postsData[parsedUserInfo.username] || [];
+      // Lấy bài đăng từ localStorage
+      let userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+
+      
       setPosts(userPosts);
     } else {
       // Nếu không có thông tin đăng nhập, chuyển về trang đăng nhập
       navigate('/dang-nhap');
     }
   }, [navigate]);
+
+  // Lắng nghe thay đổi trong localStorage để cập nhật danh sách bài đăng
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      setPosts(userPosts);
+    };
+
+    // Lắng nghe sự kiện storage
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Lắng nghe sự kiện từ cùng tab
+    const handleLocalStorageChange = (e) => {
+      if (e.key === 'userPosts') {
+        handleStorageChange();
+      }
+    };
+    
+    window.addEventListener('storage', handleLocalStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('storage', handleLocalStorageChange);
+    };
+  }, []);
 
   // Đếm số lượng theo trạng thái
   const statusCounts = useMemo(() => {
@@ -123,12 +149,16 @@ function QuanLyBaiDang() {
 
   // Hàm cập nhật trạng thái bài đăng
   const updatePostStatus = (postId, newStatus) => {
-    setPosts(prev => prev.map(p => p.id === postId ? { ...p, status: newStatus } : p));
+    const updatedPosts = posts.map(p => p.id === postId ? { ...p, status: newStatus } : p);
+    setPosts(updatedPosts);
+    localStorage.setItem('userPosts', JSON.stringify(updatedPosts));
   };
 
   // Hàm xóa bài đăng
   const deletePost = (postId) => {
-    setPosts(prev => prev.filter(p => p.id !== postId));
+    const updatedPosts = posts.filter(p => p.id !== postId);
+    setPosts(updatedPosts);
+    localStorage.setItem('userPosts', JSON.stringify(updatedPosts));
   };
 
   // Nếu chưa có thông tin người dùng, hiển thị loading
@@ -349,7 +379,11 @@ function QuanLyBaiDang() {
                               fontWeight: '500',
                               color: '#222'
                             }}>
-                              {post.area}
+                              {(() => {
+                                const areaStr = String(post.area || '').trim();
+                                if (!areaStr) return '';
+                                return /m\s*²|m2|m\^2/i.test(areaStr) ? areaStr : `${areaStr} m²`;
+                              })()}
                             </span>
                           </div>
                         </div>

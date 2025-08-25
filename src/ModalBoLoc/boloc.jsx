@@ -223,33 +223,6 @@ function BoLoc({ onClose, selectedArea, onAreaChange }) {
         </button>
       </div>
 
-      {/* Thông tin về cách bộ lọc hoạt động */}
-      <div style={{ 
-        marginBottom: 24, 
-        padding: "16px", 
-        background: "#e3f2fd", 
-        borderRadius: "12px", 
-        border: "1px solid #bbdefb" 
-      }}>
-        <div style={{ 
-          display: "flex", 
-          alignItems: "center", 
-          gap: "8px", 
-          marginBottom: "8px" 
-        }}>
-          <span style={{ fontSize: "18px" }}>💡</span>
-          <span style={{ fontWeight: 600, color: "#1976d2" }}>Cách bộ lọc hoạt động:</span>
-        </div>
-        <p style={{ 
-          margin: 0, 
-          fontSize: "14px", 
-          color: "#1976d2", 
-          lineHeight: "1.4" 
-        }}>
-          Bộ lọc sẽ hiển thị các bài đăng thỏa mãn <strong>ít nhất một tiêu chí</strong> bạn chọn. 
-          Không cần phải thỏa mãn tất cả các tiêu chí cùng lúc.
-        </p>
-      </div>
 
       {/* Danh mục cho thuê */}
       <div style={{ marginBottom: 32 }}>
