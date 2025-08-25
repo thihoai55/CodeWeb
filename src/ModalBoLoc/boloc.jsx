@@ -424,3 +424,5 @@ function BoLoc({ onClose, selectedArea, onAreaChange }) {
 }
 
 export default BoLoc;
+
+
