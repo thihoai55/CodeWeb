@@ -169,9 +169,17 @@ function DoiMatKhau() {
     }
   };
 
+  // Lấy role để ẩn header/footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
         <div style={{ flex: 1, padding: '20px 0 0 0' }}>
@@ -225,7 +233,7 @@ function DoiMatKhau() {
           </form>
         </div>
       </div>
-      <Footer />
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 }

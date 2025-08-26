@@ -99,9 +99,17 @@ function NapTien() {
     }, 1200);
   };
 
+  // Ẩn Header/Footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
         <div style={{ flex: 1, padding: '20px 0 0 0' }}>
@@ -188,7 +196,6 @@ function NapTien() {
                 </div>
               </div>
 
-
               {/* {amountInWords && (
                 <div style={{ color: '#ef5350', fontSize: '12px', marginTop: '6px' }}>{amountInWords}</div>
               )} */}
@@ -220,7 +227,6 @@ function NapTien() {
                 <div style={{ fontWeight: 700, color: '#333', fontSize: '20px', marginBottom: '8px', textTransform: 'uppercase' }}>
                   Hướng dẫn thanh toán bằng QR Code
                 </div>
-                {/* <div style={{ height: '4px', background: '#1976d2', marginBottom: '12px' }} /> */}
 
                 <div style={{ background: '#1976d2', borderRadius: '8px', padding: '16px', color: '#fff', marginBottom: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
@@ -249,7 +255,6 @@ function NapTien() {
                   <img src="anh/myVIB.png" alt="bank2" style={{ width: '90px', height: '90px' }} />
                   <img src="anh/agribank.png" alt="bank2" style={{ width: '90px', height: '90px' }} />
                   <img src="anh/abbank.jpg" alt="bank2" style={{ width: '90px', height: '90px' }} />
-
                 </div>
               </div>
             </div>
@@ -267,11 +272,9 @@ function NapTien() {
         </div>
       )}
 
-      <Footer />
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 }
 
 export default NapTien;
-
-

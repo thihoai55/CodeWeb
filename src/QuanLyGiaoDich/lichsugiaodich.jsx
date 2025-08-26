@@ -22,8 +22,15 @@ function LichSuGiaoDich() {
     { id: 12, time: '20:55 05/09/2025', fee: 150000, balanceStart: 2050000, balanceEnd: 1900000, action: 'Đăng lại tin', code: 'TX100012', type: 'Tin thường' },
   ]), []);
 
-
   const formatVND = (num) => num.toLocaleString('vi-VN') + ' VND';
+
+  // Ẩn Header/Footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
 
   return (
     <div style={{
@@ -32,7 +39,7 @@ function LichSuGiaoDich() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
 
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
@@ -76,7 +83,7 @@ function LichSuGiaoDich() {
               </div>
 
               {/* Rows */}
-              {transactions.map((tran, idx) => (
+              {transactions.map((tran) => (
                 <div key={tran.id} style={{
                   display: 'grid',
                   gridTemplateColumns: '220px 160px 160px 160px 200px 120px 120px',
@@ -114,7 +121,7 @@ function LichSuGiaoDich() {
         </div>
       </div>
 
-      <Footer />
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 }

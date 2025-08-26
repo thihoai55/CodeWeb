@@ -52,7 +52,6 @@ function LienHeTroGiup() {
 
   const handleChange = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -73,16 +72,23 @@ function LienHeTroGiup() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      // TODO: Gọi API gửi liên hệ
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
       setForm({ name: '', email: '', phone: '', content: '', captcha: '' });
     }
   };
 
+  // Ẩn Header/Footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
       
       <div style={{ flex: 1, padding: '40px 20px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', background: '#fff', borderRadius: '8px', padding: '30px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
@@ -193,27 +199,13 @@ function LienHeTroGiup() {
                 <div style={{ fontSize: '16px', color: '#333' }}>
                   <strong>Zalo:</strong> 0819 923 174
                 </div>
-                {/* <div style={{ fontSize: '14px', color: '#333' }}>
-                  <strong>Viber:</strong> 09678.333.78
-                </div> */}
               </div>
             </div>
           </div>
         </div>
       </div>
       
-      {/* Success Toast */}
-      {showToast && (
-        <div style={{
-          position: 'fixed', top: '20px', right: '20px', background: '#4caf50', color: '#fff',
-          padding: '16px 24px', borderRadius: '6px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          zIndex: 1000, fontSize: '14px', fontWeight: '500'
-        }}>
-          Thông tin liên hệ của bạn đã được gửi thành công
-        </div>
-      )}
-      
-      <Footer />
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 }

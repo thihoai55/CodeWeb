@@ -19,12 +19,19 @@ function LichSuNapTien() {
 		{ id: 10, status: 'pending', time: '22:10 10/07/2025', amount: 2000000, tx: 'AT03244410', method: 'Banking', note: 'Đang xử lý' }
 	]), []);
 
-
 	const formatVND = (num) => num.toLocaleString('vi-VN') + ' VND';
+
+	// Ẩn Header/Footer khi là host
+	const currentUserRole = (() => {
+		try {
+			const userInfo = localStorage.getItem('userInfo');
+			return userInfo ? JSON.parse(userInfo).role : null;
+		} catch (e) { return null; }
+	})();
 
 	return (
 		<div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-			<Header />
+			{currentUserRole !== 'host' && <Header />}
 			<div style={{ display: 'flex', flex: 1 }}>
 				<Sidebar />
 				<div style={{ flex: 1, paddingBottom: 24 }}>
@@ -50,7 +57,7 @@ function LichSuNapTien() {
 								<div>Phương thức</div>
 								<div>Ghi chú</div>
 							</div>
-							{topups.map((row, idx) => (
+							{topups.map((row) => (
 								<div key={row.id} style={{
 									display: 'grid', gridTemplateColumns: '120px 220px 180px 200px 140px 1fr',
 									padding: '12px 15px', alignItems: 'center', borderBottom: '1px solid #e7e4e4ff', background: '#fff'
@@ -72,7 +79,7 @@ function LichSuNapTien() {
 					</div>
 				</div>
 			</div>
-			<Footer />
+			{currentUserRole !== 'host' && <Footer />}
 		</div>
 	);
 }

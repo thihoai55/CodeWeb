@@ -29,6 +29,13 @@ function DangBai() {
   const [descCharCount, setDescCharCount] = useState(0);
   const [activeTab, setActiveTab] = useState('khu-vuc');
   const [currentUserRole, setCurrentUserRole] = useState('host');
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const parsedUserInfo = JSON.parse(userInfo);
+      setCurrentUserRole(parsedUserInfo.role); // dùng trực tiếp role đã lưu khi login
+    }
+  }, []);
 
   // Dữ liệu địa chỉ đã được import từ file addressData.js
 
@@ -240,8 +247,8 @@ function DangBai() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      {/* Header */}
-      <Header />
+      {/* Header (ẩn khi là host) */}
+      {currentUserRole !== 'host' && <Header />}
 
       {/* Main Content with Sidebar */}
       <div style={{
@@ -1054,8 +1061,8 @@ function DangBai() {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer (ẩn khi là host) */}
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 }

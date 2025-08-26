@@ -10,7 +10,7 @@ export const accounts = [
     },
     {
       username: "mod01",
-      password: "Mod@12345",
+      password: "654321",
       role: "host",
       name: "Nguyễn Thị Mai",
       phone: "0900000002",
@@ -46,7 +46,7 @@ export const accounts = [
     },
     {
       username: "nguoidung02",
-      password: "User#5678",
+      password: "123456",
       role: "renter",
       name: "Hoàng Thị Yến",
       phone: "0900000006",
