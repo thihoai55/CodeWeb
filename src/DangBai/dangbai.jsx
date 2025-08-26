@@ -1063,8 +1063,8 @@ function DangBai() {
         </div>
       </div>
 
-      {/* Footer (ẩn khi là host) */}
-      {currentUserRole !== 'host' && <Footer />}
+      <Footer />
+      {/* {currentUserRole !== 'host' && <Footer />} */}
     </div>
   );
 }

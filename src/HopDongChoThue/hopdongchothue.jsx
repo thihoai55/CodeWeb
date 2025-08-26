@@ -264,7 +264,7 @@ function HopDongChoThue() {
         </div>
       </div>
 
-      {currentUserRole !== 'host' && <Footer />}
+      <Footer />
     </div>
   );
 }

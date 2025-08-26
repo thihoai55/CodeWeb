@@ -1,12 +1,14 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../TrangChuDaDangNhap/Footer';
+import Header from '../TrangChuDaDangNhap/Header';
 import Sidebar from '../DangBai/sidebar';
 import ModalAnTin from '../ModalAnTin/antin';
 import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
 import LichHen from '../NhanVaXuLyLichHen/lichhen';
 import YeuCauThue from '../NhanVaXuLyYeuCauThue/yeucauthue';
-import { postsData } from '../DaTa/posts';
+import { postsData } from '../DaTa/posts';    
 
 function QuanLyBaiDang() {
   const navigate = useNavigate();
@@ -19,8 +21,16 @@ function QuanLyBaiDang() {
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [storageKey, setStorageKey] = useState('');
+  const showHeader = useMemo(() => {
+    try {
+      const ui = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      return ui?.role !== 'host';
+    } catch {
+      return true;
+    }
+  }, []);
 
-  // Lấy thông tin người dùng và bảo vệ route cho host
+  // Lấy thông tin người dùng và nạp bài theo tài khoản
   useEffect(() => {
     const userInfoStr = localStorage.getItem('userInfo');
     if (!userInfoStr) {
@@ -30,22 +40,36 @@ function QuanLyBaiDang() {
     const user = JSON.parse(userInfoStr);
     setCurrentUser(user);
 
-    // Nếu không phải host thì đưa về trang đã đăng nhập
-    if (user?.role !== 'host') {
-      navigate('/trang-chu-da-dang-nhap');
-      return;
-    }
+    const key = `userPosts_${user.username}`;
+    setStorageKey(key);
 
-    // Lấy danh sách bài đăng của user từ localStorage
-    const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
-    setPosts(userPosts);
+    try {
+      const stored = localStorage.getItem(key);
+      const parsed = stored ? JSON.parse(stored) : null;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setPosts(parsed);
+      } else {
+        // Migrate từ khóa cũ 'userPosts' nếu có; nếu không, seed từ postsData theo tài khoản
+        const legacy = JSON.parse(localStorage.getItem('userPosts') || '[]');
+        const seed = (Array.isArray(legacy) && legacy.length > 0)
+          ? legacy
+          : (postsData[user.username] || []);
+        setPosts(seed);
+        localStorage.setItem(key, JSON.stringify(seed));
+      }
+    } catch (e) {
+      const seed = postsData[user.username] || [];
+      setPosts(seed);
+      localStorage.setItem(key, JSON.stringify(seed));
+    }
   }, [navigate]);
 
-  // Lắng nghe thay đổi localStorage để đồng bộ bài đăng
+  // Lắng nghe thay đổi localStorage để đồng bộ bài đăng của tài khoản hiện tại
   useEffect(() => {
+    if (!storageKey) return;
     const handleStorageChange = (e) => {
-      if (e.key === 'userPosts') {
-        const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      if (e.key === storageKey) {
+        const userPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
         setPosts(userPosts);
       }
     };
@@ -175,6 +199,7 @@ function QuanLyBaiDang() {
       display: 'flex',
       flexDirection: 'column'
     }}>
+      {showHeader && <Header />}
       {/* Layout quản lý: KHÔNG Header/Footer cho host */}
       <div style={{
         display: 'flex',
@@ -485,6 +510,7 @@ function QuanLyBaiDang() {
           setSelectedPost(null);
         }}
       />
+      <Footer />
     </div>
   );
 }

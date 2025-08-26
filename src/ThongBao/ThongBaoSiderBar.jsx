@@ -250,7 +250,7 @@ const ThongBaoSideBar = () => {
         </div>
       </div>
 
-      {currentUserRole !== 'host' && <Footer />}
+      <Footer />
     </div>
   );
 };

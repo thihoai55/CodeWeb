@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
@@ -13,6 +13,16 @@ function ThanhToan() {
   const [exportInvoice, setExportInvoice] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+
+  // Xác định role hiện tại để điều khiển Header (host: ẩn, renter: hiện)
+  const showHeader = useMemo(() => {
+    try {
+      const ui = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      return ui?.role !== 'host';
+    } catch {
+      return true; // mặc định hiện nếu không xác định được
+    }
+  }, []);
 
   // Lấy thông tin đăng bài từ localStorage
   const postData = JSON.parse(localStorage.getItem('postData') || '{}');
@@ -204,7 +214,7 @@ function ThanhToan() {
       flexDirection: 'column'
     }}>
       {/* Header trang */}
-      <Header />
+      {showHeader && <Header />}
 
       {/* Nội dung chính với sidebar */}
       <div style={{
@@ -532,29 +542,6 @@ function ThanhToan() {
         </div>
       )}
 
-      {/* <style>
-        {`
-          @keyframes slideInRight {
-            from {
-              transform: translateX(100%);
-              opacity: 0;
-            }
-            to {
-              transform: translateX(0);
-              opacity: 1;
-            }
-          }
-          
-          @keyframes countdown {
-            from {
-              width: 100%;
-            }
-            to {
-              width: 0%;
-            }
-          }
-        `}
-      </style> */}
     </div>
   );
 }

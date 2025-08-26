@@ -122,7 +122,7 @@ function LichSuGiaoDich() {
         </div>
       </div>
 
-      {currentUserRole !== 'host' && <Footer />}
+      <Footer />
     </div>
   );
 }
