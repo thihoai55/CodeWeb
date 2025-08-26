@@ -73,16 +73,8 @@ function App() {
           <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
           <Route path="/thong-bao" element={<ThongBaoSideBar />} />
 
-          {/* Admin base redirect */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <XemThongTinNguoiDung />
-              </ProtectedRoute>
-            }
-          />
           {/* Admin Routes */}
+
           <Route
             path="/admin/quan-ly-nguoi-dung"
             element={
@@ -115,6 +107,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/admin/dashboard"
             element={
@@ -123,6 +116,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+
+
         </Routes>
       </BrowserRouter>
     </SearchProvider>
