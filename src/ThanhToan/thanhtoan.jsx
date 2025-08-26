@@ -4,6 +4,7 @@ import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 import { accounts as defaultAccounts } from '../DaTa/account.js';
+import { giaoDichTheoTaiKhoan } from '../DaTa/lichSuGiaoDich';
 
 function ThanhToan() {
   const navigate = useNavigate();
@@ -37,17 +38,20 @@ function ThanhToan() {
     { id: 'bank-transfer', name: 'Chuyển khoản ngân hàng', description: 'Chuyển khoản trực tiếp', image: 'anh/bank.jpg' }
   ];
 
-  // Sinh mã tin tự tăng: BD001, BD002, ...
+  // Sinh mã tin tự tăng theo danh sách bài của chính tài khoản: BD001, BD002, ...
+  // (Đọc danh sách từ khóa userPosts_<username> để tránh đếm lẫn giữa các tài khoản)
   const getNextPostId = () => {
     try {
-      const currentPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const key = `userPosts_${userInfo?.username || ''}`;
+      const currentPosts = JSON.parse(localStorage.getItem(key) || '[]');
       const maxFromPosts = currentPosts.reduce((max, p) => {
         const match = String(p.id || '').match(/^BD(\d+)$/);
         return match ? Math.max(max, parseInt(match[1], 10)) : max;
       }, 0);
-      const storedCounter = parseInt(localStorage.getItem('postIdCounter') || '0', 10) || 0;
+      const storedCounter = parseInt(localStorage.getItem(`postIdCounter_${userInfo?.username || 'global'}`) || '0', 10) || 0;
       const next = Math.max(maxFromPosts, storedCounter) + 1;
-      localStorage.setItem('postIdCounter', String(next));
+      localStorage.setItem(`postIdCounter_${userInfo?.username || 'global'}`, String(next));
       return `BD${String(next).padStart(3, '0')}`;
     } catch {
       // Fallback nếu có lỗi
@@ -103,7 +107,8 @@ function ThanhToan() {
       }
 
       // 6) Trừ tiền và cập nhật lại accounts + lưu lại vào localStorage
-      accountsList[idx].balance = (accountsList[idx].balance || 0) - total;
+      const balanceBefore = accountsList[idx].balance || 0;
+      accountsList[idx].balance = balanceBefore - total;
       localStorage.setItem('accounts', JSON.stringify(accountsList));
 
       localStorage.setItem('updatedAccounts', JSON.stringify(accountsList)); // cho Sidebar
@@ -117,7 +122,7 @@ function ThanhToan() {
       window.dispatchEvent(new Event('accountsUpdated'));
       window.dispatchEvent(new Event('userInfoUpdated'));
 
-      // 7) Tạo bài đăng mới và lưu vào userPost
+      // 7) Tạo bài đăng mới và lưu vào danh sách bài theo tài khoản hiện tại
       const newPost = {
         id: getNextPostId(), // Mã tin dạng BD001, BD002, ...
         type: postData.category === 'phongtro' ? 'Phòng trọ' : postData.category === 'nhanguyencan' ? 'Nhà nguyên căn' : postData.category === 'timnguoioghep' ? 'Tìm người ở ghép' : 'Không xác định',
@@ -139,9 +144,41 @@ function ThanhToan() {
         contactPhone: postData.contactPhone
       };
 
-      const currentPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      // Khóa lưu riêng cho từng tài khoản, ví dụ: userPosts_chutro01
+      const storageKey = `userPosts_${userInfo.username}`;
+      const currentPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      // Thêm bài mới lên đầu danh sách
       currentPosts.unshift(newPost);
-      localStorage.setItem('userPosts', JSON.stringify(currentPosts));
+      // Ghi lại vào localStorage theo đúng tài khoản
+      localStorage.setItem(storageKey, JSON.stringify(currentPosts));
+
+      // 7b) Ghi lịch sử giao dịch thanh toán cho tài khoản hiện tại
+      try {
+        const txKey = `transactions_${userInfo.username}`;
+        // Lấy danh sách hiện có: ưu tiên localStorage, nếu chưa có thì lấy seed theo tài khoản
+        let baseList;
+        try {
+          const stored = localStorage.getItem(txKey);
+          baseList = stored ? JSON.parse(stored) : (giaoDichTheoTaiKhoan[userInfo.username] || []);
+        } catch { baseList = giaoDichTheoTaiKhoan[userInfo.username] || []; }
+
+        const nextId = (baseList[0]?.id || baseList.length) + 1;
+        const nowStr = new Date().toLocaleString('vi-VN', { hour12: false });
+        const txCode = `TX${String(Math.floor(100000 + Math.random() * 900000))}`;
+        const vipType = newPost.vipType; // 'Tin thường' | 'Tin VIP 1' | ...
+        const txRecord = {
+          id: nextId,
+          time: nowStr,
+          fee: total,
+          balanceStart: balanceBefore,
+          balanceEnd: accountsList[idx].balance,
+          action: 'Đăng tin mới',
+          code: txCode,
+          type: vipType
+        };
+        const mergedList = [txRecord, ...baseList];
+        localStorage.setItem(txKey, JSON.stringify(mergedList));
+      } catch {}
 
       // 8) Xóa postData tạm sau thanh toán
       localStorage.removeItem('postData');
@@ -150,7 +187,7 @@ function ThanhToan() {
       setShowSuccessToast(true);
       setTimeout(() => {
         navigate('/quan-ly-bai-dang');
-      }, 3000);
+      }, 2000);
     } catch (error) {
       console.error('Lỗi trong quá trình thanh toán:', error);
       alert('Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại!');

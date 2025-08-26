@@ -8,6 +8,7 @@ import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
 import LichHen from '../NhanVaXuLyLichHen/lichhen';
 import YeuCauThue from '../NhanVaXuLyYeuCauThue/yeucauthue';
+import { postsData } from '../DaTa/posts';
 
 function QuanLyBaiDang() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ function QuanLyBaiDang() {
   const [selectedPost, setSelectedPost] = useState(null);
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [storageKey, setStorageKey] = useState('');
 
   // Lấy thông tin người dùng đăng nhập và bài đăng tương ứng
   useEffect(() => {
@@ -26,42 +28,37 @@ function QuanLyBaiDang() {
     if (userInfo) {
       const parsedUserInfo = JSON.parse(userInfo);
       setCurrentUser(parsedUserInfo);
-
-      // Lấy bài đăng từ localStorage
-      let userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
-
-      
-      setPosts(userPosts);
+      const key = `userPosts_${parsedUserInfo.username}`;
+      setStorageKey(key);
+      // Ưu tiên nạp theo khóa từng tài khoản; fallback sang postsData nếu chưa có
+      const stored = localStorage.getItem(key);
+      if (stored) {
+        setPosts(JSON.parse(stored));
+      } else {
+        const initialPosts = postsData[parsedUserInfo.username] || [];
+        setPosts(initialPosts);
+        localStorage.setItem(key, JSON.stringify(initialPosts));
+      }
     } else {
-      // Nếu không có thông tin đăng nhập, chuyển về trang đăng nhập
       navigate('/dang-nhap');
     }
   }, [navigate]);
 
   // Lắng nghe thay đổi trong localStorage để cập nhật danh sách bài đăng
   useEffect(() => {
+    if (!storageKey) return;
     const handleStorageChange = () => {
-      const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      const userPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
       setPosts(userPosts);
     };
 
-    // Lắng nghe sự kiện storage
+    // Lắng nghe sự kiện storage từ các tab khác
     window.addEventListener('storage', handleStorageChange);
-    
-    // Lắng nghe sự kiện từ cùng tab
-    const handleLocalStorageChange = (e) => {
-      if (e.key === 'userPosts') {
-        handleStorageChange();
-      }
-    };
-    
-    window.addEventListener('storage', handleLocalStorageChange);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('storage', handleLocalStorageChange);
     };
-  }, []);
+  }, [storageKey]);
 
   // Đếm số lượng theo trạng thái
   const statusCounts = useMemo(() => {
@@ -151,14 +148,18 @@ function QuanLyBaiDang() {
   const updatePostStatus = (postId, newStatus) => {
     const updatedPosts = posts.map(p => p.id === postId ? { ...p, status: newStatus } : p);
     setPosts(updatedPosts);
-    localStorage.setItem('userPosts', JSON.stringify(updatedPosts));
+    if (storageKey) {
+      localStorage.setItem(storageKey, JSON.stringify(updatedPosts));
+    }
   };
 
   // Hàm xóa bài đăng
   const deletePost = (postId) => {
     const updatedPosts = posts.filter(p => p.id !== postId);
     setPosts(updatedPosts);
-    localStorage.setItem('userPosts', JSON.stringify(updatedPosts));
+    if (storageKey) {
+      localStorage.setItem(storageKey, JSON.stringify(updatedPosts));
+    }
   };
 
   // Nếu chưa có thông tin người dùng, hiển thị loading

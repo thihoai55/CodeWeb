@@ -3,21 +3,25 @@ import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
 import Sidebar from '../DangBai/sidebar';
 import HeaderTab from './HeaderTab';
+import { napTienTheoTaiKhoan } from '../DaTa/lichSuNapTien';
 
 function LichSuNapTien() {
 
-	const topups = useMemo(() => ([
-		{ id: 1, status: 'success', time: '23:32 10/07/2025', amount: 3000000, tx: 'AT03244334', method: 'MOMO', note: 'Nạp tiền thành công' },
-		{ id: 2, status: 'success', time: '23:20 10/07/2025', amount: 1500000, tx: 'AT03244335', method: 'ZaloPay', note: 'Nạp tiền thành công' },
-		{ id: 3, status: 'success', time: '23:10 10/07/2025', amount: 5000000, tx: 'AT03244344', method: 'Banking', note: 'Nạp tiền thành công' },
-		{ id: 4, status: 'success', time: '23:05 10/07/2025', amount: 2000000, tx: 'AT03244350', method: 'MOMO', note: 'Nạp tiền thành công' },
-		{ id: 5, status: 'success', time: '23:02 10/07/2025', amount: 1000000, tx: 'AT03244360', method: 'ViettelPay', note: 'Nạp tiền thành công' },
-		{ id: 6, status: 'pending', time: '22:59 10/07/2025', amount: 3000000, tx: 'AT03244370', method: 'MOMO', note: 'Đang xử lý' },
-		{ id: 7, status: 'failed', time: '22:45 10/07/2025', amount: 2500000, tx: 'AT03244380', method: 'Banking', note: 'Giao dịch thất bại' },
-		{ id: 8, status: 'success', time: '22:30 10/07/2025', amount: 3500000, tx: 'AT03244390', method: 'MOMO', note: 'Nạp tiền thành công' },
-		{ id: 9, status: 'success', time: '22:20 10/07/2025', amount: 4000000, tx: 'AT03244400', method: 'ZaloPay', note: 'Nạp tiền thành công' },
-		{ id: 10, status: 'pending', time: '22:10 10/07/2025', amount: 2000000, tx: 'AT03244410', method: 'Banking', note: 'Đang xử lý' }
-	]), []);
+
+	// Lấy username hiện tại
+	const currentUser = useMemo(() => {
+		try { return JSON.parse(localStorage.getItem('userInfo') || '{}'); } catch { return {}; }
+	}, []);
+
+	// Ưu tiên lấy lịch sử nạp từ localStorage theo tài khoản, nếu không có dùng seed từ data
+	const storageKey = `topups_${currentUser?.username || ''}`;
+	const topups = useMemo(() => {
+		try {
+			const stored = localStorage.getItem(storageKey);
+			if (stored) return JSON.parse(stored);
+		} catch {}
+		return napTienTheoTaiKhoan[currentUser?.username] || [];
+	}, [storageKey, currentUser?.username]);
 
 
 	const formatVND = (num) => num.toLocaleString('vi-VN') + ' VND';

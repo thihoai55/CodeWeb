@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { accounts } from '../DaTa/account.js';
+import { accounts as defaultAccounts } from '../DaTa/account.js';
 
 const googleIcon = "anh/gg.jpg";
 const facebookIcon = "anh/fb.png";
@@ -22,6 +22,17 @@ const DangNhap = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
+  // Lấy danh sách tài khoản: ưu tiên 'updatedAccounts' rồi 'accounts', cuối cùng fallback default
+  const getAccounts = () => {
+    try {
+      const storedUpdated = localStorage.getItem('updatedAccounts');
+      if (storedUpdated) return JSON.parse(storedUpdated);
+      const storedPrimary = localStorage.getItem('accounts');
+      if (storedPrimary) return JSON.parse(storedPrimary);
+    } catch {}
+    return defaultAccounts;
+  };
+
   // Hàm đăng nhập sử dụng toán tử 3 ngôi
   const loginWithTernary = (identifier, password) => {
     // Validation đầu vào
@@ -36,8 +47,9 @@ const DangNhap = () => {
     const cleanIdentifier = identifier.trim();
     const cleanPassword = password.trim();
 
-    // Tìm account trong danh sách
-    const account = accounts.find(acc => 
+    // Tìm account trong danh sách (đã hợp nhất)
+    const accountList = getAccounts();
+    const account = accountList.find(acc => 
       acc.username === cleanIdentifier || 
       acc.email === cleanIdentifier || 
       acc.phone === cleanIdentifier
@@ -73,8 +85,8 @@ const DangNhap = () => {
     
     if (loginResult.success) {
       setError("");
-      // Lấy thông tin đầy đủ từ accounts để có số dư
-      const fullAccount = accounts.find(acc => acc.username === loginResult.account.username);
+      // Lấy thông tin đầy đủ từ danh sách đã hợp nhất để có số dư
+      const fullAccount = getAccounts().find(acc => acc.username === loginResult.account.username);
       
       // Lưu thông tin đăng nhập
       localStorage.setItem('isLoggedIn', 'true');
@@ -90,7 +102,7 @@ const DangNhap = () => {
       if (loginResult.account.role === "admin") {
         navigate("/admin");
       } else if (loginResult.account.role === "host") {
-        navigate("/trang-quan-ly");
+        navigate("/trang-chu-da-dang-nhap");
       } else {
         navigate("/trang-chu-da-dang-nhap");
       }
@@ -118,8 +130,8 @@ const DangNhap = () => {
       return;
     }
     
-    // Kiểm tra email và số điện thoại đã tồn tại chưa
-    const existingAccount = accounts.find(acc => 
+    // Kiểm tra email và số điện thoại đã tồn tại chưa (trên danh sách hợp nhất)
+    const existingAccount = getAccounts().find(acc => 
       acc.email === registerEmail || acc.phone === registerPhone
     );
     
