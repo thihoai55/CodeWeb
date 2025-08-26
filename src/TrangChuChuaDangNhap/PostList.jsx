@@ -3,7 +3,7 @@ import PostCard from "./PostCard";
 import Pagination from "./Pagination";
 import postsData from "../DaTa/danhsachbaidangg";
 import { useSearch } from "../contexts/ngucanhtimkiem";
-import { applyAllFilters } from "../utils/searchUtils";
+import { applyAllFilters } from "../ModalTimKiem/checkDuLieu";
 
 function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageChange, title = "Tin mới đăng" }) {
   // State để quản lý trang hiện tại
@@ -124,7 +124,7 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
       </h2>
       
       {/* Hiển thị thông tin filter nếu đang tìm kiếm */}
-      {isSearchActive && (
+      {/* {isSearchActive && (
         <div style={{
           background: "#e3f2fd",
           padding: "16px",
@@ -243,7 +243,7 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
             </button>
           </div>
         </div>
-      )}
+      )} */}
       
       <div style={{
         display: "grid",

@@ -1,92 +1,209 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
+import { accounts as defaultAccounts } from '../DaTa/account.js';
+import { giaoDichTheoTaiKhoan } from '../DaTa/lichSuGiaoDich';
 
 function ThanhToan() {
+  const navigate = useNavigate();
   // State cho phương thức thanh toán và xuất hóa đơn
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('bank-transfer');
   const [exportInvoice, setExportInvoice] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+
+  // Xác định role hiện tại để điều khiển Header (host: ẩn, renter: hiện)
+  const showHeader = useMemo(() => {
+    try {
+      const ui = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      return ui?.role !== 'host';
+    } catch {
+      return true; // mặc định hiện nếu không xác định được
+    }
+  }, []);
 
   // Lấy thông tin đăng bài từ localStorage
   const postData = JSON.parse(localStorage.getItem('postData') || '{}');
-  
+
   // Tính toán số tiền thanh toán
   const paymentAmount = postData.totalAmount ? `${postData.totalAmount.toLocaleString('vi-VN')} VNĐ` : '0 VNĐ';
-  
-  // Tạo nội dung chuyển khoản tự động
-  const transferContent = `BĐĐ ${Math.floor(Math.random() * 100000)} ${postData.postType?.includes('Vip 1') ? 'VIP1' : postData.postType?.includes('Vip 2') ? 'VIP2' : postData.postType?.includes('Vip 3') ? 'VIP3' : 'THUONG'} ${postData.numberOfDays?.split(' ')[0]} NGAY`;
+
+  // Ảnh đầu tiên (Data URL) nếu có
+  const firstImageDataUrl = Array.isArray(postData.images) && typeof postData.images[0] === 'string' ? postData.images[0] : '';
+
+  // Parse số ngày an toàn
+  const numberOfDaysOnly = (String(postData.numberOfDays || '').match(/\d+/)?.[0] || '0');
+
+  // Tạo nội dung chuyển khoản tự động (dùng số ngày đã parse)
+  const transferContent = `BĐĐ ${Math.floor(Math.random() * 100000)} ${postData.postType?.includes('Vip 1') ? 'VIP1' : postData.postType?.includes('Vip 2') ? 'VIP2' : postData.postType?.includes('Vip 3') ? 'VIP3' : 'THUONG'} ${numberOfDaysOnly} NGAY`;
 
   const paymentMethods = [
-    {
-      id: 'account-balance',
-      name: 'Số dư tài khoản',
-      description: 'Thanh toán bằng số dư trong tài khoản',
-      image: '💰'
-    },
-    {
-      id: 'qr-code',
-      name: 'QR Code',
-      description: 'Quét mã QR để thanh toán',
-      image: 'public/anh/qr.png'
-    },
-    {
-      id: 'momo',
-      name: 'MoMo',
-      description: 'Thanh toán qua ví MoMo',
-      image: 'anh/momo.png'
-    },
-    {
-      id: 'domestic-card',
-      name: 'Thẻ nội địa',
-      description: 'Thẻ ATM nội địa',
-      image: 'anh/thenoidia.jpg'
-    },
-    {
-      id: 'international-card',
-      name: 'Thẻ quốc tế',
-      description: 'Visa, Mastercard, JCB',
-      image: 'anh/thequocte.jpg'
-    },
-    {
-      id: 'bank-transfer',
-      name: 'Chuyển khoản ngân hàng',
-      description: 'Chuyển khoản trực tiếp',
-      image: 'anh/bank.jpg'
-    }
+    { id: 'account-balance', name: 'Số dư tài khoản', description: 'Thanh toán bằng số dư trong tài khoản', image: '💰' },
+    { id: 'qr-code', name: 'QR Code', description: 'Quét mã QR để thanh toán', image: 'public/anh/qr.png' },
+    { id: 'momo', name: 'MoMo', description: 'Thanh toán qua ví MoMo', image: 'anh/momo.png' },
+    { id: 'domestic-card', name: 'Thẻ nội địa', description: 'Thẻ ATM nội địa', image: 'anh/thenoidia.jpg' },
+    { id: 'international-card', name: 'Thẻ quốc tế', description: 'Visa, Mastercard, JCB', image: 'anh/thequocte.jpg' },
+    { id: 'bank-transfer', name: 'Chuyển khoản ngân hàng', description: 'Chuyển khoản trực tiếp', image: 'anh/bank.jpg' }
   ];
 
+  // Sinh mã tin tự tăng theo danh sách bài của chính tài khoản: BD001, BD002, ...
+  // (Đọc danh sách từ khóa userPosts_<username> để tránh đếm lẫn giữa các tài khoản)
+  const getNextPostId = () => {
+    try {
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      const key = `userPosts_${userInfo?.username || ''}`;
+      const currentPosts = JSON.parse(localStorage.getItem(key) || '[]');
+      const maxFromPosts = currentPosts.reduce((max, p) => {
+        const match = String(p.id || '').match(/^BD(\d+)$/);
+        return match ? Math.max(max, parseInt(match[1], 10)) : max;
+      }, 0);
+      const storedCounter = parseInt(localStorage.getItem(`postIdCounter_${userInfo?.username || 'global'}`) || '0', 10) || 0;
+      const next = Math.max(maxFromPosts, storedCounter) + 1;
+      localStorage.setItem(`postIdCounter_${userInfo?.username || 'global'}`, String(next));
+      return `BD${String(next).padStart(3, '0')}`;
+    } catch {
+      // Fallback nếu có lỗi
+      const fallback = Date.now() % 1000; // chỉ để tránh trùng
+      return `BD${String(fallback).padStart(3, '0')}`;
+    }
+  };
+
   // Xử lý thanh toán
-  const handlePayment = () => {
-    console.log('Thanh toán với phương thức:', selectedPaymentMethod);
-    console.log('Thông tin đăng bài:', postData);
-    
-    // Xử lý theo từng phương thức thanh toán
-    if (selectedPaymentMethod === 'bank-transfer') {
-      // Hiển thị thông tin chuyển khoản
-      alert(`Vui lòng chuyển khoản ${paymentAmount} với nội dung: ${transferContent}`);
-    } else if (selectedPaymentMethod === 'account-balance') {
-      // Kiểm tra số dư tài khoản
-      const userBalance = parseInt(localStorage.getItem('userBalance') || '0');
-      if (userBalance >= postData.totalAmount) {
-        alert('Thanh toán thành công từ số dư tài khoản!');
-        // Cập nhật số dư
-        const newBalance = userBalance - postData.totalAmount;
-        localStorage.setItem('userBalance', newBalance.toString());
-      } else {
-        alert('Số dư tài khoản không đủ để thanh toán!');
+  const handlePayment = async () => {
+    if (isProcessing) return; // Ngăn chặn click nhiều lần
+    setIsProcessing(true);
+
+    try {
+      // 1) Xác thực người dùng hiện tại
+      const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      if (!userInfo?.username) {
+        alert('Bạn cần đăng nhập để thanh toán.');
+        setIsProcessing(false);
         return;
       }
-    } else {
-      alert('Chức năng thanh toán này sẽ được tích hợp sau!');
-      return;
+
+      // 2) Lấy danh sách accounts từ localStorage (hoặc seed từ defaultAccounts nếu chưa có)
+      const storedAccounts = localStorage.getItem('accounts');
+      const accountsList = storedAccounts ? JSON.parse(storedAccounts) : defaultAccounts;
+
+      // 3) Tìm account của user
+      const idx = accountsList.findIndex(a => a.username === userInfo.username);
+      if (idx === -1) {
+        alert('Không tìm thấy tài khoản của bạn.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const total = Number(postData.totalAmount || 0);
+      if (Number.isNaN(total) || total <= 0) {
+        alert('Số tiền thanh toán không hợp lệ.');
+        setIsProcessing(false);
+        return;
+      }
+
+      // 4) Kiểm tra số dư đủ trước khi cho thanh toán (áp dụng cho mọi phương thức)
+      if ((accountsList[idx].balance || 0) < total) {
+        alert('Số dư tài khoản không đủ để thanh toán!');
+        setIsProcessing(false);
+        return;
+      }
+
+      // 5) Thực hiện thanh toán theo phương thức (hiển thị thông tin nếu cần)
+      if (selectedPaymentMethod === 'bank-transfer') {
+        // Thông tin chuyển khoản mô phỏng
+        console.log(`Vui lòng chuyển khoản ${paymentAmount} với nội dung: ${transferContent}`);
+      }
+
+      // 6) Trừ tiền và cập nhật lại accounts + lưu lại vào localStorage
+      const balanceBefore = accountsList[idx].balance || 0;
+      accountsList[idx].balance = balanceBefore - total;
+      localStorage.setItem('accounts', JSON.stringify(accountsList));
+
+      localStorage.setItem('updatedAccounts', JSON.stringify(accountsList)); // cho Sidebar
+      try {
+        const latestUserInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+        if (latestUserInfo && latestUserInfo.username === accountsList[idx].username) {
+          latestUserInfo.balance = accountsList[idx].balance;
+          localStorage.setItem('userInfo', JSON.stringify(latestUserInfo));
+        }
+      } catch { }
+      window.dispatchEvent(new Event('accountsUpdated'));
+      window.dispatchEvent(new Event('userInfoUpdated'));
+
+      // 7) Tạo bài đăng mới và lưu vào danh sách bài theo tài khoản hiện tại
+      const newPost = {
+        id: getNextPostId(), // Mã tin dạng BD001, BD002, ...
+        type: postData.category === 'phongtro' ? 'Phòng trọ' : postData.category === 'nhanguyencan' ? 'Nhà nguyên căn' : postData.category === 'timnguoioghep' ? 'Tìm người ở ghép' : 'Không xác định',
+        vipType: postData.postType?.includes('Vip 1') ? 'Tin VIP 1' : postData.postType?.includes('Vip 2') ? 'Tin VIP 2' : postData.postType?.includes('Vip 3') ? 'Tin VIP 3' : 'Tin thường',
+        title: postData.title,
+        price: postData.price,
+        area: postData.area,
+        description: postData.description,
+        image: firstImageDataUrl || '',
+        status: 'Đang hiển thị',
+        startDate: new Date().toLocaleDateString('vi-VN'),
+        endDate: (() => {
+          const days = parseInt(numberOfDaysOnly, 10) || 0;
+          const end = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
+          return end.toLocaleDateString('vi-VN');
+        })(),
+        address: `${postData.exactAddress}, ${postData.street}, ${postData.ward}, ${postData.district}, ${postData.province}`,
+        contactName: postData.contactName,
+        contactPhone: postData.contactPhone
+      };
+
+      // Khóa lưu riêng cho từng tài khoản, ví dụ: userPosts_chutro01
+      const storageKey = `userPosts_${userInfo.username}`;
+      const currentPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      // Thêm bài mới lên đầu danh sách
+      currentPosts.unshift(newPost);
+      // Ghi lại vào localStorage theo đúng tài khoản
+      localStorage.setItem(storageKey, JSON.stringify(currentPosts));
+
+      // 7b) Ghi lịch sử giao dịch thanh toán cho tài khoản hiện tại
+      try {
+        const txKey = `transactions_${userInfo.username}`;
+        // Lấy danh sách hiện có: ưu tiên localStorage, nếu chưa có thì lấy seed theo tài khoản
+        let baseList;
+        try {
+          const stored = localStorage.getItem(txKey);
+          baseList = stored ? JSON.parse(stored) : (giaoDichTheoTaiKhoan[userInfo.username] || []);
+        } catch { baseList = giaoDichTheoTaiKhoan[userInfo.username] || []; }
+
+        const nextId = (baseList[0]?.id || baseList.length) + 1;
+        const nowStr = new Date().toLocaleString('vi-VN', { hour12: false });
+        const txCode = `TX${String(Math.floor(100000 + Math.random() * 900000))}`;
+        const vipType = newPost.vipType; // 'Tin thường' | 'Tin VIP 1' | ...
+        const txRecord = {
+          id: nextId,
+          time: nowStr,
+          fee: total,
+          balanceStart: balanceBefore,
+          balanceEnd: accountsList[idx].balance,
+          action: 'Đăng tin mới',
+          code: txCode,
+          type: vipType
+        };
+        const mergedList = [txRecord, ...baseList];
+        localStorage.setItem(txKey, JSON.stringify(mergedList));
+      } catch {}
+
+      // 8) Xóa postData tạm sau thanh toán
+      localStorage.removeItem('postData');
+
+      // 9) Hiển thị toast đơn giản và chuyển trang sau 2 giây
+      setShowSuccessToast(true);
+      setTimeout(() => {
+        navigate('/quan-ly-bai-dang');
+      }, 2000);
+    } catch (error) {
+      console.error('Lỗi trong quá trình thanh toán:', error);
+      alert('Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại!');
+    } finally {
+      setIsProcessing(false);
     }
-    
-    // Xóa thông tin đăng bài sau khi thanh toán thành công
-    localStorage.removeItem('postData');
-    
-    // Chuyển hướng về trang quản lý bài đăng
-    window.location.href = '/quan-ly-bai-dang';
   };
 
   return (
@@ -97,7 +214,7 @@ function ThanhToan() {
       flexDirection: 'column'
     }}>
       {/* Header trang */}
-      <Header />
+      {showHeader && <Header />}
 
       {/* Nội dung chính với sidebar */}
       <div style={{
@@ -152,7 +269,7 @@ function ThanhToan() {
                 <div style={{ fontWeight: 700, fontSize: '24px', marginBottom: '20px' }}>
                   Thông tin đăng bài
                 </div>
-                
+
                 {/* Tiêu đề bài đăng */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Tiêu đề:</div>
@@ -162,7 +279,7 @@ function ThanhToan() {
                   borderTop: '0.3px solid #222',
                   margin: '10px 0'
                 }} />
-                
+
                 {/* Loại tin */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Loại tin:</div>
@@ -172,7 +289,7 @@ function ThanhToan() {
                   borderTop: '0.3px solid #222',
                   margin: '10px 0'
                 }} />
-                
+
                 {/* Số ngày đăng */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center', marginBottom: '15px' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Số ngày:</div>
@@ -182,7 +299,7 @@ function ThanhToan() {
                   borderTop: '0.3px solid #222',
                   margin: '10px 0'
                 }} />
-                
+
                 {/* Tổng tiền thanh toán */}
                 <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                   <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Tổng tiền:</div>
@@ -207,7 +324,7 @@ function ThanhToan() {
               }}>
                 Chọn phương thức thanh toán
               </h3>
-              
+
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -247,7 +364,7 @@ function ThanhToan() {
                       }}>
                         {/* Hiển thị ảnh nếu có, nếu không thì hiển thị emoji */}
                         {method.image.startsWith('public/') || method.image.startsWith('anh/') ? (
-                          <img 
+                          <img
                             src={method.image.startsWith('public/') ? method.image.replace('public/', '/') : `/${method.image}`}
                             alt={method.name}
                             style={{
@@ -277,7 +394,7 @@ function ThanhToan() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Nút radio để chọn phương thức */}
                     <div style={{
                       width: '20px',
@@ -368,26 +485,35 @@ function ThanhToan() {
               >
                 Quay lại
               </button>
-              
+
               {/* Nút thanh toán */}
               <button
                 onClick={handlePayment}
+                disabled={isProcessing}
                 style={{
                   flex: 1,
                   padding: '16px',
-                  background: '#2196f3',
+                  background: isProcessing ? '#ccc' : '#2196f3',
                   color: '#fff',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '16px',
                   fontWeight: '600',
-                  cursor: 'pointer',
+                  cursor: isProcessing ? 'not-allowed' : 'pointer',
                   transition: 'background 0.2s'
                 }}
-                onMouseEnter={(e) => e.target.style.background = '#1565c0'}
-                onMouseLeave={(e) => e.target.style.background = '#2196f3'}
+                onMouseEnter={(e) => {
+                  if (!isProcessing) {
+                    e.target.style.background = '#1565c0';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isProcessing) {
+                    e.target.style.background = '#2196f3';
+                  }
+                }}
               >
-                Thanh toán {paymentAmount}
+                {isProcessing ? 'Đang xử lý...' : `Thanh toán ${paymentAmount}`}
               </button>
             </div>
           </div>
@@ -396,6 +522,26 @@ function ThanhToan() {
 
       {/* Footer trang */}
       <Footer />
+
+      {/* Toast thông báo đơn giản */}
+      {showSuccessToast && (
+        <div style={{
+          position: 'fixed',
+          top: '10px',
+          right: '20px',
+          background: '#2e7d32',
+          color: '#fff',
+          padding: '12px 16px',
+          borderRadius: '6px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          zIndex: 1000,
+          fontSize: '14px',
+          fontWeight: 600
+        }}>
+          Đăng bài thành công
+        </div>
+      )}
+
     </div>
   );
 }

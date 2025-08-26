@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearch } from "../contexts/ngucanhtimkiem";
-import { applyAllFilters } from "../utils/searchUtils";
+import { applyAllFilters } from "../ModalTimKiem/checkDuLieu";
 import Header from "./Header";
 import AreaSuggestions from "./AreaSuggestions";
 import PostList from "./PostList";
