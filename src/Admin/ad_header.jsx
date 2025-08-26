@@ -1,7 +1,11 @@
 import React from 'react';
 import AdProfile from './ad_profile';
+import AdThongBaoHeader from './ad_thongbaoheader';
+import { useNavigate } from 'react-router-dom';
 
 const AdHeader = () => {
+  const navigate = useNavigate();
+
   return (
     <header className="admin-header">
       <div className="header-left">
@@ -12,9 +16,10 @@ const AdHeader = () => {
       </div>
       <div className="header-right">
         <div className="header-icons">
-          <div className="icon"><i className="bi bi-bell"></i></div>
+          <AdThongBaoHeader />
           <div className="icon"><i className="bi bi-chat-left-text"></i></div>
         </div>
+        
         {/* Thay thế phần user-info cũ bằng AdProfile component */}
         <AdProfile />
       </div>

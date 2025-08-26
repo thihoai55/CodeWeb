@@ -148,7 +148,7 @@ export default function ThongBaoDropdown({
               flexShrink: 0
             }}
           >
-            {showOnlyUnread ? "Hiện tất cả" : "Chỉ chưa đọc"}
+            {showOnlyUnread ? "Hiện tất cả" : "Chưa đọc"}
           </button>
           <button
             onClick={onMarkAllRead}

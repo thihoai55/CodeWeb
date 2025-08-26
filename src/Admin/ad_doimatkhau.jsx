@@ -108,7 +108,7 @@ const AdDoiMatKhau = () => {
 
             {/* Forgot Password Link */}
             <div className="forgot-password">
-            Bạn quên mật khẩu?
+              Bạn quên mật khẩu?
               <button 
                 className="btn-forgot-password"
                 onClick={handleForgotPassword}

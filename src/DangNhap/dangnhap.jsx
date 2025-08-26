@@ -88,7 +88,7 @@ const DangNhap = () => {
       
       // Chuyển hướng dựa trên role
       if (loginResult.account.role === "admin") {
-        navigate("/admin");
+        navigate("/admin/dashboard"); // Chuyển đến trang chủ admin
       } else if (loginResult.account.role === "host") {
         navigate("/trang-quan-ly");
       } else {
