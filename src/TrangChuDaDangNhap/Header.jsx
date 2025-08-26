@@ -1,25 +1,30 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { useSearch } from "../contexts/ngucanhtimkiem";
 import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
-import BoLoc from "../BoLoc/boloc"
+import BoLoc from "../ModalBoLoc/boloc"
 import TimKiemTheoKhuVuc from "../TimKiemTheoKhuVuc/timkiem"
 import YeuThichDropdown from "../LuuBai/YeuThich";
 import ThongBaoDropdown from "../ThongBao/Thongbaoo";
 import { getAllNotifications, markAsRead, markAllAsRead } from "../DaTa/dulieuThongBao";
-import ProfileDropdown from "../Profile/profile";
 
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { searchFilters, updateSearchFilters, clearSearch, isSearchActive } = useSearch();
+
+  // Thêm state để lưu thông tin user
+  const [userInfo, setUserInfo] = React.useState(null);
+  const [userBalance, setUserBalance] = React.useState(0);
 
   const [openBoLoc, setOpenBoLoc] = React.useState(false);
   const [openTimKiem, setOpenTimKiem] = React.useState(false);
   const [openNotify, setOpenNotify] = React.useState(false);
   const [openFav, setOpenFav] = React.useState(false);
   const [openProfile, setOpenProfile] = React.useState(false);
-
+  
   // Thêm refs để kiểm tra click outside
   const profileRef = React.useRef(null);
   const notifyRef = React.useRef(null);
@@ -42,6 +47,60 @@ function Header() {
     };
   }, []);
 
+  // Thêm useEffect để lấy thông tin user từ localStorage
+  React.useEffect(() => {
+    const loadUserInfo = () => {
+      try {
+        const storedUserInfo = localStorage.getItem('userInfo');
+        if (storedUserInfo) {
+          const parsedUserInfo = JSON.parse(storedUserInfo);
+          setUserInfo(parsedUserInfo);
+          
+          // Lấy số dư từ account data (có thể là updated hoặc gốc)
+          let accounts;
+          try {
+            const updatedAccounts = localStorage.getItem('updatedAccounts');
+            if (updatedAccounts) {
+              accounts = JSON.parse(updatedAccounts);
+            } else {
+              const { accounts: originalAccounts } = require('../DaTa/account.js');
+              accounts = originalAccounts;
+            }
+          } catch (error) {
+            const { accounts: originalAccounts } = require('../DaTa/account.js');
+            accounts = originalAccounts;
+          }
+          
+          const userAccount = accounts.find(acc => 
+            acc.username === parsedUserInfo.username ||
+            acc.email === parsedUserInfo.email ||
+            acc.phone === parsedUserInfo.phone
+          );
+          if (userAccount && userAccount.balance) {
+            setUserBalance(userAccount.balance);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+      }
+    };
+
+    loadUserInfo();
+    
+    // Lắng nghe sự thay đổi
+    window.addEventListener('storage', loadUserInfo);
+    window.addEventListener('userInfoUpdated', loadUserInfo);
+    window.addEventListener('accountsUpdated', loadUserInfo);
+    window.addEventListener('passwordUpdated', loadUserInfo); // Thêm event mới
+    
+    return () => {
+      window.removeEventListener('storage', loadUserInfo);
+      window.removeEventListener('userInfoUpdated', loadUserInfo);
+      window.removeEventListener('accountsUpdated', loadUserInfo);
+      window.removeEventListener('passwordUpdated', loadUserInfo); // Thêm event mới
+    };
+  }, []);
+
   // Sửa lại logic đóng dropdown khi click outside
   React.useEffect(() => {
     function handleClickOutside(event) {
@@ -49,12 +108,12 @@ function Header() {
       if (openNotify && notifyRef.current && !notifyRef.current.contains(event.target)) {
         setOpenNotify(false);
       }
-
+      
       // Kiểm tra click có nằm ngoài dropdown yêu thích không
       if (openFav && favRef.current && !favRef.current.contains(event.target)) {
         setOpenFav(false);
       }
-
+      
       // Kiểm tra click có nằm ngoài dropdown profile không
       if (openProfile && profileRef.current && !profileRef.current.contains(event.target)) {
         setOpenProfile(false);
@@ -83,8 +142,30 @@ function Header() {
   const loadSavedPosts = () => {
     try {
       const ids = JSON.parse(localStorage.getItem("savedPosts") || "[]");
-      const detailsMap = JSON.parse(localStorage.getItem("savedPostsDetails") || "{}");
-      return ids.map(id => ({ id, ...(detailsMap[id] || {}) }));
+      
+      // Lấy danh sách bài viết thực tế từ data
+      const { normalizedPosts } = require('../DaTa/selector');
+      const actualPosts = normalizedPosts || [];
+      
+      // Lấy thông tin thực tế của các bài viết đã lưu
+      const savedPostsWithDetails = ids
+        .map(id => {
+          const actualPost = actualPosts.find(post => post && post.id === id);
+          if (actualPost) {
+            return {
+              id: actualPost.id,
+              title: actualPost.title,
+              image: actualPost.images && actualPost.images.length > 0 ? actualPost.images[0] : null,
+              price: actualPost.price,
+              address: actualPost.address,
+              category: actualPost.category
+            };
+          }
+          return null;
+        })
+        .filter(post => post !== null); // Loại bỏ bài viết không tồn tại
+      
+      return savedPostsWithDetails;
     } catch (_) {
       return [];
     }
@@ -141,8 +222,12 @@ function Header() {
   // Hàm xử lý khi chọn loại bài đăng
   const handleCategorySelect = (category) => {
     setSelectedCategory(category);
+    
+    // Cập nhật filter category trong SearchContext
+    updateSearchFilters({ category });
+    
     // Chuyển hướng đến trang tương ứng (dùng chung với Chuyentrang)
-    switch (category) {
+    switch(category) {
       case "Phòng trọ":
         navigate("/phong-tro-da-dang-nhap");
         break;
@@ -156,6 +241,35 @@ function Header() {
       default:
         navigate("/trang-chu-da-dang-nhap");
         break;
+    }
+  };
+
+  // Hàm xóa bài viết đã lưu
+  const removeSavedPost = (postId) => {
+    try {
+      const ids = JSON.parse(localStorage.getItem("savedPosts") || "[]");
+      const detailsMap = JSON.parse(localStorage.getItem("savedPostsDetails") || "{}");
+      
+      // Xóa ID khỏi danh sách
+      const updatedIds = ids.filter(id => id !== postId);
+      
+      // Xóa details khỏi map
+      delete detailsMap[postId];
+      
+      // Cập nhật localStorage
+      localStorage.setItem("savedPosts", JSON.stringify(updatedIds));
+      localStorage.setItem("savedPostsDetails", JSON.stringify(detailsMap));
+      
+      // Cập nhật state
+      setFavorites(loadSavedPosts());
+      
+      // Trigger event để các component khác biết có thay đổi
+      window.dispatchEvent(new CustomEvent("saved-posts-updated"));
+      
+      return true;
+    } catch (error) {
+      console.error('Error removing saved post:', error);
+      return false;
     }
   };
 
@@ -187,14 +301,25 @@ function Header() {
             marginRight: 12,
             cursor: 'pointer'
           }} onClick={() => navigate('/trang-chu-da-dang-nhap')}>
-            <img src="/anh/Logotrang.png" alt="Motel Home" style={{ height: 60, marginBottom: 1 }} />
+            <img 
+              src="/anh/Logotrang.png" 
+              alt="Motel Home" 
+              style={{ height: 60, marginBottom: 1 }}
+              onError={(e) => {
+                console.error('Logo load error:', e);
+                // Fallback nếu logo không load được
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'block';
+              }}
+            />
             <div style={{
-              fontSize: "10px",
-              color: "#888",
+              fontSize: "16px",
+              color: "#52b4f9",
               marginTop: "1px",
-              fontWeight: 500
+              fontWeight: "700",
+              display: "none" // Ẩn mặc định, chỉ hiện khi logo lỗi
             }}>
-
+              Motel Home
             </div>
           </div>
           {/* Menu giữa */}
@@ -202,7 +327,7 @@ function Header() {
             display: "flex",
             gap: 10
           }}>
-            <button
+            <button 
               onClick={() => handleCategorySelect("all")}
               style={{
                 padding: "0 10px",
@@ -237,7 +362,7 @@ function Header() {
               <span style={{ fontSize: 18, display: 'flex', alignItems: 'center' }}>🏠</span>
               Tất cả
             </button>
-            <button
+            <button 
               onClick={() => handleCategorySelect("Phòng trọ")}
               style={{
                 padding: "0 10px",
@@ -272,7 +397,7 @@ function Header() {
               <span style={{ fontSize: 18, display: 'flex', alignItems: 'center' }}><i class="bi bi-house-door"></i></span>
               Phòng trọ
             </button>
-            <button
+            <button 
               onClick={() => handleCategorySelect("Nhà nguyên căn")}
               style={{
                 padding: "0 10px",
@@ -307,7 +432,7 @@ function Header() {
               <span style={{ fontSize: 18, display: 'flex', alignItems: 'center' }}><i class="bi bi-houses"></i></span>
               Nhà nguyên căn
             </button>
-            <button
+            <button 
               onClick={() => handleCategorySelect("Ở ghép")}
               style={{
                 padding: "0 10px",
@@ -513,6 +638,9 @@ function Header() {
                   // Điều hướng tới chi tiết bài viết
                   navigate(`/xem-bai-dang/${id}`);
                 }}
+                onRemove={(id) => {
+                  removeSavedPost(id);
+                }}
               />
             </div>
 
@@ -539,10 +667,135 @@ function Header() {
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
               </div>
-              <ProfileDropdown
-                openProfile={openProfile}
-                onClose={() => setOpenProfile(false)}
-              />
+              {openProfile && (
+                <div
+                  style={{
+                    position: "absolute",
+                    right: 0,
+                    top: "calc(100% + 8px)",
+                    width: 340,
+                    background: "#fff",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    borderRadius: 8,
+                    zIndex: 100,
+                    padding: 16
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <img src="/anh/avt.jpg" alt="avatar" style={{ width: 48, height: 48, borderRadius: "50%" }} />
+                    <div>
+                      <div style={{ fontWeight: "bold", fontSize: 16 }}>
+                        {userInfo ? userInfo.name : 'Đang tải...'}
+                      </div>
+                      <div style={{ color: "#000000ff", fontSize: 14 }}>
+                        {userInfo ? userInfo.phone : 'Đang tải...'}
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      marginTop: 16,
+                      background: "#f5f5f5",
+                      padding: 12,
+                      borderRadius: 6,
+                      border: "1px solid #000",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between"
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontSize: 13, color: "#000000ff" }}>Số dư tài khoản:</div>
+                      <div style={{ fontWeight: "bold", fontSize: 16 }}>
+                        {userBalance ? `${userBalance.toLocaleString('vi-VN')} VND` : 'Đang tải...'}
+                      </div>
+                    </div>
+                    <button
+                      style={{
+                        padding: "10px 12px",
+                        background: "#2196f3",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 15,
+                        fontSize: 13,
+                        cursor: "pointer"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        navigate("/nap-tien");
+                      }}
+                    >
+                      Nạp tiền
+                      <span style={{
+                        marginLeft: "6px",
+                        color: "#070707ff",
+                        fontSize: 18,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center"
+                      }}>
+                        <i className="bi bi-credit-card-2-back"></i>
+                      </span>
+                    </button>
+                  </div>
+                  <div style={{ marginTop: 16 }}>
+                    <div
+                      style={{
+                        alignItems: "center",
+                        padding: "8px 0",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                        display: "flex"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        navigate("/thong-tin-ca-nhan");
+                      }}
+                    >
+                      <i className="bi bi-person-fill" style={{ fontSize: 22, marginRight: 8 }}></i>
+                      Thông tin cá nhân
+                    </div>
+                    <div
+                      style={{
+                        padding: "8px 0",
+                        fontWeight: "bold",
+                        cursor: "pointer",
+                        display: "flex"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        navigate("/lien-he-tro-giup");
+                      }}
+                    >
+                      <i className="bi bi-question-circle" style={{ fontSize: 22, marginRight: 8 }}></i>
+                      Liên hệ và trợ giúp
+                    </div>
+                    <div
+                      style={{
+                        padding: "8px 0",
+                        cursor: "pointer",
+                        color: "#000000ff",
+                        fontWeight: "bold",
+                        display: "flex"
+                      }}
+                      onClick={() => {
+                        setOpenProfile(false);
+                        // Xóa tất cả thông tin đăng nhập
+                        try { 
+                          localStorage.removeItem("authToken"); 
+                          localStorage.removeItem("isLoggedIn");
+                          localStorage.removeItem("userInfo");
+                          localStorage.removeItem("userRole");
+                        } catch (_) {}
+                        navigate("/");
+                      }}
+                    >
+                      <i className="bi bi-box-arrow-left" style={{ color: " #000000ff", fontSize: 20, marginRight: 8 }}></i>
+                      Đăng xuất
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             {/* Đăng bài */}
             <button style={{
@@ -598,31 +851,55 @@ function Header() {
               setOpenTimKiem(true);
             }}
           >
-            <input
-              type="text"
-              placeholder="Tìm kiếm"
+                         <input
+               type="text"
+               placeholder={isSearchActive 
+                 ? searchFilters.province
+                 : "Tìm kiếm theo khu vực"
+               }
               style={{
                 padding: "8px 16px",
                 paddingRight: "44px",
                 borderRadius: "16px",
-                border: "1px solid #e0e0e0",
+                border: isSearchActive ? "2px solid #1976d2" : "1px solid #e0e0e0",
                 fontSize: "16px",
                 width: "100%",
                 outline: "none",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.10)",
+                boxShadow: isSearchActive 
+                  ? "0 4px 12px rgba(25,118,210,0.15)" 
+                  : "0 4px 12px rgba(0,0,0,0.10)",
                 fontWeight: 300,
                 height: "36px",
-                boxSizing: "border-box"
+                boxSizing: "border-box",
+                background: isSearchActive ? "#f8fbff" : "#fff"
               }}
+              readOnly
             />
             <span style={{
               position: "absolute",
               right: "16px",
-              color: "#222",
+              color: isSearchActive ? "#1976d2" : "#222",
               fontSize: "18px"
             }}>
               🔍
             </span>
+            
+            {/* Hiển thị badge khi có filter */}
+            {isSearchActive && (
+              <div style={{
+                position: "absolute",
+                top: "-8px",
+                right: "12px",
+                background: "#1976d2",
+                color: "#fff",
+                fontSize: "10px",
+                padding: "2px 6px",
+                borderRadius: "10px",
+                fontWeight: "600"
+              }}>
+                ✓
+              </div>
+            )}
           </div>
           <button
             onClick={() => {
@@ -674,14 +951,21 @@ function Header() {
           onClose={() => setOpenTimKiem(false)}
           onSelect={(result) => {
             console.log('Kết quả tìm kiếm:', result);
-            // Cập nhật thông tin khu vực vào bộ lọc
-            if (result.province && result.district) {
-              setSelectedArea({
-                province: result.province,
-                district: result.district,
-                ward: "Tất cả" // Mặc định là "Tất cả" cho phường xã
-              });
-            }
+            
+                          // Cập nhật thông tin khu vực vào bộ lọc
+              if (result.province) {
+                setSelectedArea({
+                  province: result.province,
+                  district: "Tất cả",
+                  ward: "Tất cả" // Mặc định là "Tất cả" cho phường xã
+                });
+                
+                // Cập nhật filter khu vực trong SearchContext - chỉ cần province
+                updateSearchFilters({
+                  province: result.province,
+                  district: "" // Không cần district nữa
+                });
+              }
             setOpenTimKiem(false);
           }}
         />

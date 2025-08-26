@@ -29,6 +29,13 @@ function DangBai() {
   const [descCharCount, setDescCharCount] = useState(0);
   const [activeTab, setActiveTab] = useState('khu-vuc');
   const [currentUserRole, setCurrentUserRole] = useState('host');
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      const parsedUserInfo = JSON.parse(userInfo);
+      setCurrentUserRole(parsedUserInfo.role); // dùng trực tiếp role đã lưu khi login
+    }
+  }, []);
 
   // Dữ liệu địa chỉ đã được import từ file addressData.js
 
@@ -114,7 +121,10 @@ function DangBai() {
     let dayPrice = 0;
 
     // Giá theo loại tin
-    if (formData.postType === 'Tin Vip 1 (30.000/ngày)') {
+    if (formData.postType === 'Tin Thường (10.000/ngày)') {
+      basePrice = 10000;
+    }
+    else if (formData.postType === 'Tin Vip 1 (30.000/ngày)') {
       basePrice = 30000;
     } else if (formData.postType === 'Tin Vip 2 (50.000/ngày)') {
       basePrice = 50000;
@@ -152,6 +162,9 @@ function DangBai() {
 
   // Lấy giá theo loại tin
   const getPostTypePrice = () => {
+    if (formData.postType === 'Tin Thường (10.000/ngày)') {
+      return '10.000';
+    }
     if (formData.postType === 'Tin Vip 1 (30.000/ngày)') {
       return '30.000';
     } else if (formData.postType === 'Tin Vip 2 (50.000/ngày)') {
@@ -186,16 +199,37 @@ function DangBai() {
     }
   };
 
-  const handleSubmitAndPayment = () => {
+  const handleSubmitAndPayment = async () => {
     // Kiểm tra các trường bắt buộc
     if (!formData.province || !formData.district || !formData.category || !formData.title || !formData.contactName || !formData.contactPhone) {
       alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
       return;
     }
 
+    // Chuyển File ảnh sang Data URL để có thể lưu/hiển thị sau
+    const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+      try {
+        if (typeof file === 'string') return resolve(file);
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      } catch (e) {
+        resolve('');
+      }
+    });
+
+    let imageDataUrls = [];
+    try {
+      imageDataUrls = await Promise.all((formData.images || []).map(fileToDataUrl));
+    } catch (e) {
+      console.warn('Không thể chuyển một số ảnh sang Data URL:', e);
+    }
+
     // Lưu thông tin đăng bài vào localStorage để sử dụng ở trang thanh toán
     const postData = {
       ...formData,
+      images: imageDataUrls.filter(Boolean),
       totalAmount: calculateTotal(),
       postType: formData.postType,
       numberOfDays: formData.numberOfDays
@@ -213,8 +247,8 @@ function DangBai() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      {/* Header */}
-      <Header />
+      {/* Header (ẩn khi là host) */}
+      {currentUserRole !== 'host' && <Header />}
 
       {/* Main Content with Sidebar */}
       <div style={{
@@ -472,7 +506,7 @@ function DangBai() {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#222' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#333' }}>
                     Số nhà
                   </label>
                   <input
@@ -486,7 +520,7 @@ function DangBai() {
                       border: '2px solid #cfd8dc',
                       borderRadius: '10px',
                       fontSize: '18px',
-                      color: formData.street ? '#222' : '#888',
+                      color: '#222',
                       background: '#fff',
                       outline: 'none',
                       marginBottom: 0
@@ -494,7 +528,7 @@ function DangBai() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#222' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#333' }}>
                     Địa chỉ
                   </label>
                   <input
@@ -508,7 +542,7 @@ function DangBai() {
                       border: '2px solid #cfd8dc',
                       borderRadius: '10px',
                       fontSize: '18px',
-                      color: formData.street ? '#222' : '#888',
+                      color: '#222',
                       background: '#fff',
                       outline: 'none',
                       marginBottom: 0
@@ -567,7 +601,7 @@ function DangBai() {
                   fontStyle: 'italic',
                   textAlign: 'center'
                 }}>
-                  Tài khoản renter chỉ được đăng bài "Tìm người ở ghép"
+                  Tài khoản người thuê chỉ được đăng bài "Tìm người ở ghép"
                 </div>
               )}
             </div>
@@ -625,6 +659,8 @@ function DangBai() {
                     border: '2px solid #cfd8dc',
                     borderRadius: '10px',
                     fontSize: '18px',
+                    fontWeight: '400',
+                    fontFamily: 'inherit',
                     color: '#222',
                     background: '#fff',
                     outline: 'none',
@@ -905,7 +941,7 @@ function DangBai() {
                       marginBottom: 0
                     }}
                   >
-                    <option value="Tin Thường (10.000/ngày)">Tin Thường (110.000/ngày)</option>
+                    <option value="Tin Thường (10.000/ngày)">Tin Thường (10.000/ngày)</option>
                     <option value="Tin Vip 1 (30.000/ngày)">Tin Vip 1 (30.000/ngày)</option>
                     <option value="Tin Vip 2 (50.000/ngày)">Tin Vip 2 (50.000/ngày)</option>
                     <option value="Tin Vip 3 (80.000/ngày)">Tin Vip 3 (80.000/ngày)</option>
@@ -1027,8 +1063,8 @@ function DangBai() {
         </div>
       </div>
 
-      {/* Footer */}
       <Footer />
+      {/* {currentUserRole !== 'host' && <Footer />} */}
     </div>
   );
 }

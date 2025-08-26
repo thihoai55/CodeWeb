@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSearch } from "../contexts/ngucanhtimkiem";
 import ModalBoLoc from "../ModalBoLoc/modal_boloc"
 import ModalTimKiem from "../ModalTimKiem/modal_timkiem"
-import BoLoc from "../BoLoc/boloc"
+import BoLoc from "../ModalBoLoc/boloc"
 import TimKiemTheoKhuVuc from "../TimKiemTheoKhuVuc/timkiem"
 
 function Header() {

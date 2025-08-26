@@ -169,9 +169,17 @@ function DoiMatKhau() {
     }
   };
 
+  // Lấy role để ẩn header/footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
         <div style={{ flex: 1, padding: '20px 0 0 0' }}>
@@ -186,7 +194,7 @@ function DoiMatKhau() {
             <span style={{ color: '#333', fontSize: '16px' }}>Đổi mật khẩu</span>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '0 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '50px 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
             <div style={{ paddingBottom: '16px', borderBottom: '1px solid #ebe9e9ff' }}>
               <h1 style={{ fontSize: '20px', fontWeight: '700', margin: '0', color: '#111' }}>Đổi mật khẩu</h1>
             </div>

@@ -29,6 +29,7 @@ function ProfileInput({ icon, type = 'text', value, onChange, placeholder, readO
 
 function ThongTinCaNhan() {
   const navigate = useNavigate();
+  const role = (localStorage.getItem('userRole')) || (JSON.parse(localStorage.getItem('userInfo')||'{}')?.role) || '';
   const [profile, setProfile] = useState({
     accountId: '',
     fullName: '',
@@ -162,11 +163,17 @@ function ThongTinCaNhan() {
     }
   };
 
-  
+  // Ẩn Header/Footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
 
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
@@ -246,11 +253,9 @@ function ThongTinCaNhan() {
         </div>
       </div>
 
-      <Footer />
+       <Footer />
     </div>
   );
 }
 
 export default ThongTinCaNhan;
-
-

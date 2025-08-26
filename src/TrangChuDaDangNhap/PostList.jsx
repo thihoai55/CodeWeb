@@ -117,7 +117,7 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
       </h2>
       
       {/* Hiển thị thông tin filter nếu đang tìm kiếm */}
-      {isSearchActive && (
+      {/* {isSearchActive && (
         <div style={{
           background: "#e3f2fd",
           padding: "16px",
@@ -236,7 +236,7 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
             </button>
           </div>
         </div>
-      )}
+      )} */}
       
       {currentPosts.length === 0 ? (
         <div style={{
