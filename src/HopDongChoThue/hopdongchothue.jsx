@@ -43,9 +43,17 @@ function HopDongChoThue() {
     </label>
   );
 
+  // Lấy role để ẩn header/footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
 
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
@@ -197,7 +205,7 @@ function HopDongChoThue() {
               <CheckboxItem id={'b2'}>Khi Bên thuê không còn thuộc đối tượng được thuê nhà ở hoặc khi Bên thuê nhà mất (chết);</CheckboxItem>
               <CheckboxItem id={'b3'}>Khi Bên thuê không trả tiền thuê nhà liên tục trong ba tháng mà không có lý do chính đáng;</CheckboxItem>
               <CheckboxItem id={'b4'}>khi Bên thuê tự ý sữa chữa, đục phá kết cấu, cải tạo hoặc cơi nới nhà ở thuê;</CheckboxItem>
-              <CheckboxItem id={'b4'}>Khi Bên thuê tự ý chuyển quyền thuê cho người khác hoặc cho người khác cùng sử dụng nhà ở;</CheckboxItem>
+              <CheckboxItem id={'b4b'}>Khi Bên thuê tự ý chuyển quyền thuê cho người khác hoặc cho người khác cùng sử dụng nhà ở;</CheckboxItem>
               <CheckboxItem id={'b5'}>Khi Bên thuê vi phạm các Điều cấm theo quy định;</CheckboxItem>
               <CheckboxItem id={'b6'}>Khi nhà ở cho thuê bị hư hỏng nặng có nguy cơ sập đổ hoặc nằm trong khu vực đã có quyết định thu hồi đất, giải phóng mặt bằng hoặc có quyết định phá dỡ của cơ quan nhà nước có thẩm quyền;</CheckboxItem>
               <CheckboxItem id={'b7'}>Khi một trong các bên đơn phương chấm dứt hợp đồng theo thỏa thuận (nếu có) hoặc theo quy định pháp luật.</CheckboxItem>
@@ -256,7 +264,7 @@ function HopDongChoThue() {
         </div>
       </div>
 
-      <Footer />
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 }

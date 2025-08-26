@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
-import Header from '../TrangChuDaDangNhap/Header';
-import Footer from '../TrangChuDaDangNhap/Footer';
 import ModalAnTin from '../ModalAnTin/antin';
 import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
@@ -22,37 +20,35 @@ function QuanLyBaiDang() {
   const [currentUser, setCurrentUser] = useState(null);
   const [storageKey, setStorageKey] = useState('');
 
-  // Lấy thông tin người dùng đăng nhập và bài đăng tương ứng
+  // Lấy thông tin người dùng và bảo vệ route cho host
   useEffect(() => {
-    const userInfo = localStorage.getItem('userInfo');
-    if (userInfo) {
-      const parsedUserInfo = JSON.parse(userInfo);
-      setCurrentUser(parsedUserInfo);
-      const key = `userPosts_${parsedUserInfo.username}`;
-      setStorageKey(key);
-      // Ưu tiên nạp theo khóa từng tài khoản; fallback sang postsData nếu chưa có
-      const stored = localStorage.getItem(key);
-      if (stored) {
-        setPosts(JSON.parse(stored));
-      } else {
-        const initialPosts = postsData[parsedUserInfo.username] || [];
-        setPosts(initialPosts);
-        localStorage.setItem(key, JSON.stringify(initialPosts));
-      }
-    } else {
+    const userInfoStr = localStorage.getItem('userInfo');
+    if (!userInfoStr) {
       navigate('/dang-nhap');
+      return;
     }
+    const user = JSON.parse(userInfoStr);
+    setCurrentUser(user);
+
+    // Nếu không phải host thì đưa về trang đã đăng nhập
+    if (user?.role !== 'host') {
+      navigate('/trang-chu-da-dang-nhap');
+      return;
+    }
+
+    // Lấy danh sách bài đăng của user từ localStorage
+    const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+    setPosts(userPosts);
   }, [navigate]);
 
-  // Lắng nghe thay đổi trong localStorage để cập nhật danh sách bài đăng
+  // Lắng nghe thay đổi localStorage để đồng bộ bài đăng
   useEffect(() => {
-    if (!storageKey) return;
-    const handleStorageChange = () => {
-      const userPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      setPosts(userPosts);
+    const handleStorageChange = (e) => {
+      if (e.key === 'userPosts') {
+        const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+        setPosts(userPosts);
+      }
     };
-
-    // Lắng nghe sự kiện storage từ các tab khác
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
@@ -69,7 +65,6 @@ function QuanLyBaiDang() {
       else if (p.status === 'Đã hết hạn') counts.expired += 1;
       else if (p.status === 'Đã ẩn') counts.hidden += 1;
     }
-    // "Tất cả" loại trừ các tin đã ẩn
     counts.all = posts.filter(p => p.status !== 'Đã ẩn').length;
     return counts;
   }, [posts]);
@@ -84,11 +79,10 @@ function QuanLyBaiDang() {
     { id: 'hidden', label: 'Đã ẩn', count: statusCounts.hidden }
   ];
 
-  // Lọc bài đăng theo tab
+  // Lọc bài đăng hiển thị theo tab + bộ lọc
   const displayPosts = useMemo(() => {
     let filteredPosts = posts;
-    
-    // Lọc theo loại tin
+
     if (postTypeFilter) {
       if (postTypeFilter === 'phongtro') {
         filteredPosts = filteredPosts.filter(p => p.type === 'Phòng trọ');
@@ -98,8 +92,7 @@ function QuanLyBaiDang() {
         filteredPosts = filteredPosts.filter(p => p.type === 'Tìm người ở ghép');
       }
     }
-    
-    // Lọc theo loại VIP
+
     if (vipTypeFilter) {
       if (vipTypeFilter === 'thuong') {
         filteredPosts = filteredPosts.filter(p => p.vipType === 'Tin thường');
@@ -111,8 +104,7 @@ function QuanLyBaiDang() {
         filteredPosts = filteredPosts.filter(p => p.vipType === 'Tin VIP 3');
       }
     }
-    
-    // Lọc theo tab
+
     switch (selectedTab) {
       case 'displaying':
         return filteredPosts.filter(p => p.status === 'Đang hiển thị');
@@ -124,7 +116,6 @@ function QuanLyBaiDang() {
         return filteredPosts.filter(p => p.status === 'Đã ẩn');
       case 'all':
       default:
-        // Tất cả trừ đã ẩn
         return filteredPosts.filter(p => p.status !== 'Đã ẩn');
     }
   }, [selectedTab, posts, postTypeFilter, vipTypeFilter]);
@@ -144,7 +135,7 @@ function QuanLyBaiDang() {
     }
   };
 
-  // Hàm cập nhật trạng thái bài đăng
+  // Cập nhật trạng thái
   const updatePostStatus = (postId, newStatus) => {
     const updatedPosts = posts.map(p => p.id === postId ? { ...p, status: newStatus } : p);
     setPosts(updatedPosts);
@@ -153,7 +144,7 @@ function QuanLyBaiDang() {
     }
   };
 
-  // Hàm xóa bài đăng
+  // Xóa bài
   const deletePost = (postId) => {
     const updatedPosts = posts.filter(p => p.id !== postId);
     setPosts(updatedPosts);
@@ -162,7 +153,7 @@ function QuanLyBaiDang() {
     }
   };
 
-  // Nếu chưa có thông tin người dùng, hiển thị loading
+  // Loading trong lúc lấy user
   if (!currentUser) {
     return (
       <div style={{
@@ -184,20 +175,17 @@ function QuanLyBaiDang() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      {/* Header */}
-      <Header />
-
-      {/* Main Content with Sidebar */}
+      {/* Layout quản lý: KHÔNG Header/Footer cho host */}
       <div style={{
         display: 'flex',
         flex: 1
       }}>
-        {/* Sidebar */}
+        {/* Sidebar quản lý */}
         <Sidebar />
 
-        {/* Main Content Area */}
+        {/* Khu vực nội dung chính */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 0 0 0' }}>
-          {/* Header + Filters + Tabs */}
+          {/* Tiêu đề/Breadcrumb + Bộ lọc + Tabs */}
           <HeaderLuaChon
             postTypeFilter={postTypeFilter}
             onPostTypeFilterChange={setPostTypeFilter}
@@ -209,16 +197,13 @@ function QuanLyBaiDang() {
             currentUserRole={currentUser?.role}
           />
 
-          {/* Main Content */}
+          {/* Nội dung chính */}
           <div style={{ padding: '0 32px', flex: 1 }}>
-
-            {/* Conditional Content based on selected tab */}
             {selectedTab === 'appointments' ? (
               <LichHen />
             ) : selectedTab === 'requests' ? (
               <YeuCauThue />
             ) : (
-              /* Posts List */
               <div style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -237,14 +222,14 @@ function QuanLyBaiDang() {
                         if (postTypeFilter || vipTypeFilter) {
                           message = `Không có bài đăng nào phù hợp với bộ lọc đã chọn`;
                           if (postTypeFilter) {
-                            const postTypeLabel = postTypeFilter === 'phongtro' ? 'Phòng trọ' : 
-                                                 postTypeFilter === 'nha' ? 'Nhà nguyên căn' : 'Tìm người ở ghép';
+                            const postTypeLabel = postTypeFilter === 'phongtro' ? 'Phòng trọ' :
+                                                  postTypeFilter === 'nha' ? 'Nhà nguyên căn' : 'Tìm người ở ghép';
                             message += ` (Loại tin: ${postTypeLabel})`;
                           }
                           if (vipTypeFilter) {
-                            const vipTypeLabel = vipTypeFilter === 'thuong' ? 'Tin thường' : 
-                                               vipTypeFilter === 'vip1' ? 'Tin VIP 1' : 
-                                               vipTypeFilter === 'vip2' ? 'Tin VIP 2' : 'Tin VIP 3';
+                            const vipTypeLabel = vipTypeFilter === 'thuong' ? 'Tin thường' :
+                                                 vipTypeFilter === 'vip1' ? 'Tin VIP 1' :
+                                                 vipTypeFilter === 'vip2' ? 'Tin VIP 2' : 'Tin VIP 3';
                             message += ` (VIP: ${vipTypeLabel})`;
                           }
                         } else {
@@ -271,13 +256,12 @@ function QuanLyBaiDang() {
                       gap: '22px',
                       border: '1px solid #ECEBEB'
                     }}>
-                      {/* Post Image */}
+                      {/* Ảnh bài đăng */}
                       <div style={{
                         width: '260px',
                         height: '200px',
                         overflow: 'hidden',
-                        flexShrink: 0,
-                        // borderRadius: '4px'
+                        flexShrink: 0
                       }}>
                         <img
                           src={post.image}
@@ -300,22 +284,20 @@ function QuanLyBaiDang() {
                         />
                       </div>
 
-                      {/* Post Content */}
+                      {/* Nội dung bài đăng */}
                       <div style={{ flex: 1 }}>
-                        {/* Post Header */}
+                        {/* Header bài */}
                         <div style={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          // marginBottom: '5px'
+                          alignItems: 'flex-start'
                         }}>
                           <div>
                             <div style={{
                               display: 'flex',
                               gap: '12px',
                               alignItems: 'center',
-                              marginBottom: '8px',
-
+                              marginBottom: '8px'
                             }}>
                               <span style={{
                                 background: '#ECEBEB',
@@ -348,14 +330,13 @@ function QuanLyBaiDang() {
                               {post.title}
                             </h3>
                           </div>
-                          {/* Empty right area in header on purpose */}
                         </div>
 
-                        {/* Post Details */}
+                        {/* Thông tin cơ bản */}
                         <div style={{
                           display: 'flex',
                           gap: '24px',
-                          marginBottom: '5px',
+                          marginBottom: '5px'
                         }}>
                           <div style={{
                             display: 'flex',
@@ -383,13 +364,13 @@ function QuanLyBaiDang() {
                               {(() => {
                                 const areaStr = String(post.area || '').trim();
                                 if (!areaStr) return '';
-                                return /m\s*²|m2|m\^2/i.test(areaStr) ? areaStr : `${areaStr} m²`;
+                                return /m\\s*²|m2|m\\^2/i.test(areaStr) ? areaStr : `${areaStr} m²`;
                               })()}
                             </span>
                           </div>
                         </div>
 
-                        {/* Description */}
+                        {/* Mô tả */}
                         <p style={{
                           fontSize: '15px',
                           fontWeight: '500',
@@ -400,7 +381,7 @@ function QuanLyBaiDang() {
                           {post.description}
                         </p>
 
-                        {/* Post Info - 3 column grid like preview */}
+                        {/* Lưới thông tin */}
                         <div style={{
                           display: 'grid',
                           gridTemplateColumns: '150px 150px 150px',
@@ -422,15 +403,14 @@ function QuanLyBaiDang() {
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
+                      {/* Hành động */}
                       <div style={{
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '8px',
                         flexShrink: 0,
                         alignItems: 'center',
-                        marginRight: '15px',
-                        // minWidth: '160px'
+                        marginRight: '15px'
                       }}>
                         <div style={{
                           fontSize: '14px',
@@ -481,21 +461,16 @@ function QuanLyBaiDang() {
         </div>
       </div>
 
-      {/* Footer */}
-      <Footer />
-
       {/* Modals */}
       <ModalAnTin
         open={openHideModal}
         onCancel={() => { setOpenHideModal(false); setSelectedPost(null); }}
         onConfirm={() => {
-          // Cập nhật trạng thái bài viết thành "Đã ẩn"
           if (selectedPost?.id) {
             updatePostStatus(selectedPost.id, 'Đã ẩn');
           }
           setOpenHideModal(false);
           setSelectedPost(null);
-          // Chuyển sang tab Đã ẩn
           setSelectedTab('hidden');
         }}
       />
@@ -503,7 +478,6 @@ function QuanLyBaiDang() {
         open={openDeleteModal}
         onCancel={() => { setOpenDeleteModal(false); setSelectedPost(null); }}
         onConfirm={() => {
-          // Xóa bài đăng
           if (selectedPost?.id) {
             deletePost(selectedPost.id);
           }

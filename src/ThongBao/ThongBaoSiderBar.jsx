@@ -86,9 +86,17 @@ const ThongBaoSideBar = () => {
     console.log('Clicked notification:', notification);
   };
 
+  // Lấy role từ localStorage để ẩn header/footer nếu là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
+
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5', display: 'flex', flexDirection: 'column' }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
 
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
@@ -242,7 +250,7 @@ const ThongBaoSideBar = () => {
         </div>
       </div>
 
-      <Footer />
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 };

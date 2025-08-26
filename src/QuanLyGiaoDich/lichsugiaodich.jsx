@@ -23,8 +23,15 @@ function LichSuGiaoDich() {
     return giaoDichTheoTaiKhoan[currentUser?.username] || [];
   }, [storageKey, currentUser?.username]);
 
-
   const formatVND = (num) => num.toLocaleString('vi-VN') + ' VND';
+
+  // Ẩn Header/Footer khi là host
+  const currentUserRole = (() => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      return userInfo ? JSON.parse(userInfo).role : null;
+    } catch (e) { return null; }
+  })();
 
   return (
     <div style={{
@@ -33,7 +40,7 @@ function LichSuGiaoDich() {
       display: 'flex',
       flexDirection: 'column'
     }}>
-      <Header />
+      {currentUserRole !== 'host' && <Header />}
 
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
@@ -77,7 +84,7 @@ function LichSuGiaoDich() {
               </div>
 
               {/* Rows */}
-              {transactions.map((tran, idx) => (
+              {transactions.map((tran) => (
                 <div key={tran.id} style={{
                   display: 'grid',
                   gridTemplateColumns: '220px 160px 160px 160px 180px 140px 120px',
@@ -115,7 +122,7 @@ function LichSuGiaoDich() {
         </div>
       </div>
 
-      <Footer />
+      {currentUserRole !== 'host' && <Footer />}
     </div>
   );
 }

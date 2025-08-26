@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SearchProvider } from "./contexts/ngucanhtimkiem";
 import DangNhap from "./DangNhap/dangnhap";
 import DangKy from "./DangKy/dangky";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 // Trang chưa đăng nhập
 import TrangChuChuaDangNhap from "./TrangChuChuaDangNhap/TrangChuChuaDangNhap";
@@ -58,7 +59,7 @@ function App() {
           <Route path="/dang-bai" element={<DangBai />} />
           <Route path="/thanh-toan" element={<ThanhToan />} />
           <Route path="/xem-bai-dang/:id" element={<XemBaiDang />} />
-          <Route path="/quan-ly-bai-dang/" element={<QuanLyBaiDang />} />
+          <Route path="/quan-ly-bai-dang" element={<QuanLyBaiDang />} />
           <Route path="/sua-bai/" element={<SuaBai />} />
           <Route path="/lich-su-giao-dich" element={<QuanLyGiaoDich />} />
           <Route path="/lich-su-nap-tien" element={<LichSuNapTien />} />
@@ -69,11 +70,48 @@ function App() {
           <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
           <Route path="/thong-bao" element={<ThongBaoSideBar />} />
 
+          {/* Admin base redirect */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <XemThongTinNguoiDung />
+              </ProtectedRoute>
+            }
+          />
           {/* Admin Routes */}
-          <Route path="/admin/quan-ly-nguoi-dung" element={<XemThongTinNguoiDung />} />
-          <Route path="/admin/sua-thong-tin-nguoi-dung" element={<SuaThongTinNguoiDung />} />
-          <Route path="/admin/thong-tin-ca-nhan" element={<AdThongTinCaNhan />} />
-          <Route path="/admin/doi-mat-khau" element={<AdDoiMatKhau />} />
+          <Route
+            path="/admin/quan-ly-nguoi-dung"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <XemThongTinNguoiDung />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/sua-thong-tin-nguoi-dung"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <SuaThongTinNguoiDung />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/thong-tin-ca-nhan"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdThongTinCaNhan />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/doi-mat-khau"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdDoiMatKhau />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </SearchProvider>

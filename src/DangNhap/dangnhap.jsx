@@ -102,7 +102,7 @@ const DangNhap = () => {
       if (loginResult.account.role === "admin") {
         navigate("/admin");
       } else if (loginResult.account.role === "host") {
-        navigate("/trang-chu-da-dang-nhap");
+        navigate("/quan-ly-bai-dang"); // đổi từ /trang-quan-ly -> /quan-ly-bai-dang
       } else {
         navigate("/trang-chu-da-dang-nhap");
       }
@@ -141,9 +141,26 @@ const DangNhap = () => {
     }
     
     // Đăng ký thành công
+    // Lưu role tương ứng với lựa chọn đăng ký
+    const mappedRole = registerRole === 'owner' ? 'host' : 'renter';
+
+    // Đăng ký thành công
     setError("");
     localStorage.setItem('isLoggedIn', 'true');
-    navigate("/trang-chu-da-dang-nhap");
+    localStorage.setItem('userRole', mappedRole);
+    localStorage.setItem('userInfo', JSON.stringify({
+      username: registerEmail,
+      role: mappedRole,
+      name: registerEmail,
+      phone: registerPhone,
+      email: registerEmail
+    }));
+    // Điều hướng theo role sau đăng ký
+    if (mappedRole === 'host') {
+      navigate('/quan-ly-bai-dang');
+    } else {
+      navigate('/trang-chu-da-dang-nhap');
+    }
   };
 
 
