@@ -6,6 +6,7 @@ import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
 import LichHen from '../NhanVaXuLyLichHen/lichhen';
 import YeuCauThue from '../NhanVaXuLyYeuCauThue/yeucauthue';
+import { postsData } from '../DaTa/posts';
 
 function QuanLyBaiDang() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ function QuanLyBaiDang() {
   const [selectedPost, setSelectedPost] = useState(null);
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [storageKey, setStorageKey] = useState('');
 
   // Lấy thông tin người dùng và bảo vệ route cho host
   useEffect(() => {
@@ -48,10 +50,11 @@ function QuanLyBaiDang() {
       }
     };
     window.addEventListener('storage', handleStorageChange);
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [storageKey]);
 
   // Đếm số lượng theo trạng thái
   const statusCounts = useMemo(() => {
@@ -136,14 +139,18 @@ function QuanLyBaiDang() {
   const updatePostStatus = (postId, newStatus) => {
     const updatedPosts = posts.map(p => p.id === postId ? { ...p, status: newStatus } : p);
     setPosts(updatedPosts);
-    localStorage.setItem('userPosts', JSON.stringify(updatedPosts));
+    if (storageKey) {
+      localStorage.setItem(storageKey, JSON.stringify(updatedPosts));
+    }
   };
 
   // Xóa bài
   const deletePost = (postId) => {
     const updatedPosts = posts.filter(p => p.id !== postId);
     setPosts(updatedPosts);
-    localStorage.setItem('userPosts', JSON.stringify(updatedPosts));
+    if (storageKey) {
+      localStorage.setItem(storageKey, JSON.stringify(updatedPosts));
+    }
   };
 
   // Loading trong lúc lấy user

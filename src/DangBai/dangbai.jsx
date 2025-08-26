@@ -506,7 +506,7 @@ function DangBai() {
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#222' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#333' }}>
                     Số nhà
                   </label>
                   <input
@@ -520,7 +520,7 @@ function DangBai() {
                       border: '2px solid #cfd8dc',
                       borderRadius: '10px',
                       fontSize: '18px',
-                      color: formData.street ? '#222' : '#888',
+                      color: '#222',
                       background: '#fff',
                       outline: 'none',
                       marginBottom: 0
@@ -528,7 +528,7 @@ function DangBai() {
                   />
                 </div>
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#222' }}>
+                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600', color: '#333' }}>
                     Địa chỉ
                   </label>
                   <input
@@ -542,7 +542,7 @@ function DangBai() {
                       border: '2px solid #cfd8dc',
                       borderRadius: '10px',
                       fontSize: '18px',
-                      color: formData.street ? '#222' : '#888',
+                      color: '#222',
                       background: '#fff',
                       outline: 'none',
                       marginBottom: 0
@@ -601,7 +601,7 @@ function DangBai() {
                   fontStyle: 'italic',
                   textAlign: 'center'
                 }}>
-                  Tài khoản renter chỉ được đăng bài "Tìm người ở ghép"
+                  Tài khoản người thuê chỉ được đăng bài "Tìm người ở ghép"
                 </div>
               )}
             </div>
@@ -659,6 +659,8 @@ function DangBai() {
                     border: '2px solid #cfd8dc',
                     borderRadius: '10px',
                     fontSize: '18px',
+                    fontWeight: '400',
+                    fontFamily: 'inherit',
                     color: '#222',
                     background: '#fff',
                     outline: 'none',
