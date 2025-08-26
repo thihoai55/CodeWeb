@@ -35,6 +35,9 @@ import XemThongTinNguoiDung from "./Admin/xemthongtinnguoidung";
 import SuaThongTinNguoiDung from "./Admin/suathongtinnguoidung";
 import AdThongTinCaNhan from "./Admin/ad_thongtincanhan";
 import AdDoiMatKhau from "./Admin/ad_doimatkhau";
+import AdTrangChu from "./Admin/ad_trangchu";
+
+
 
 function App() {
   return (
@@ -80,6 +83,15 @@ function App() {
             }
           />
           {/* Admin Routes */}
+
+          <Route path="/admin/quan-ly-nguoi-dung" element={<XemThongTinNguoiDung />} />
+          <Route path="/admin/sua-thong-tin-nguoi-dung" element={<SuaThongTinNguoiDung />} />
+          <Route path="/admin/thong-tin-ca-nhan" element={<AdThongTinCaNhan />} />
+          <Route path="/admin/doi-mat-khau" element={<AdDoiMatKhau />} />
+          <Route path="/admin/dashboard" element={<AdTrangChu />} />
+
+
+
           <Route
             path="/admin/quan-ly-nguoi-dung"
             element={
@@ -112,6 +124,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
         </Routes>
       </BrowserRouter>
     </SearchProvider>
