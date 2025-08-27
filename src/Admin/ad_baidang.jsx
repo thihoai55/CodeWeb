@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdHeader from './ad_header';
 import AdSidebar from './ad_sidebar';
 import './Admin.css';
 
 const AdBaiDang = () => {
+    const navigate = useNavigate();
     const [selectedFilter, setSelectedFilter] = useState('all');
     const [selectedStatus, setSelectedStatus] = useState('approved');
     const [selectedType, setSelectedType] = useState('all');
@@ -136,8 +138,8 @@ const AdBaiDang = () => {
 
     const handleViewDetails = (postId) => {
         console.log('View details for post:', postId);
-        // Navigate to detail page
-        window.location.href = '/admin/chi-tiet-bai-dang';
+        // Navigate to detail page with post ID
+        navigate(`/admin/chi-tiet-bai-dang/${postId}`);
     };
 
     const getStatusBadge = (status) => {
