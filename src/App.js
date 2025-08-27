@@ -36,7 +36,9 @@ import SuaThongTinNguoiDung from "./Admin/suathongtinnguoidung";
 import AdThongTinCaNhan from "./Admin/ad_thongtincanhan";
 import AdDoiMatKhau from "./Admin/ad_doimatkhau";
 import AdTrangChu from "./Admin/ad_trangchu";
-
+import AdDuyetKiemDuyet from "./Admin/ad_duyetkiemduyet";
+import AdBaiDang from "./Admin/ad_baidang";
+import AdChiTietBaiDang from "./Admin/ad_chitietbaidang";
 
 
 function App() {
@@ -73,24 +75,7 @@ function App() {
           <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
           <Route path="/thong-bao" element={<ThongBaoSideBar />} />
 
-          {/* Admin base redirect */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <XemThongTinNguoiDung />
-              </ProtectedRoute>
-            }
-          />
           {/* Admin Routes */}
-
-          <Route path="/admin/quan-ly-nguoi-dung" element={<XemThongTinNguoiDung />} />
-          <Route path="/admin/sua-thong-tin-nguoi-dung" element={<SuaThongTinNguoiDung />} />
-          <Route path="/admin/thong-tin-ca-nhan" element={<AdThongTinCaNhan />} />
-          <Route path="/admin/doi-mat-khau" element={<AdDoiMatKhau />} />
-          <Route path="/admin/dashboard" element={<AdTrangChu />} />
-
-
 
           <Route
             path="/admin/quan-ly-nguoi-dung"
@@ -124,6 +109,43 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdTrangChu />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/duyet-kiem-duyet"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdDuyetKiemDuyet />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/quan-ly-bai-dang"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdBaiDang />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/chi-tiet-bai-dang"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdChiTietBaiDang />
+              </ProtectedRoute>
+            }
+          />
+
 
         </Routes>
       </BrowserRouter>

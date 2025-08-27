@@ -13,7 +13,7 @@ const AdSidebar = () => {
     {
       id: 'dashboard',
       label: 'Trang chủ',
-      icon: '📊',
+      icon: <i class="bi bi-border-all"></i>,
       path: '/admin/dashboard'
     },
     {
@@ -23,30 +23,19 @@ const AdSidebar = () => {
       path: '/admin/quan-ly-nguoi-dung'
       // Bỏ isActive để không có màu xanh
     },
-    {
-      id: 'quan-ly-tai-khoan',
-      label: 'Quản lý tài khoản',
-      icon: '☰',
-      path: '/admin/quan-ly-tai-khoan'
-    },
+    
     {
       id: 'quan-ly-bai-dang',
       label: 'Quản lý bài đăng',
       icon: '☰',
       path: '/admin/quan-ly-bai-dang'
     },
-    {
-      id: 'duyet-kiem-duyet',
-      label: 'Duyệt và kiểm duyệt',
-      icon: '☰',
-      path: '/admin/duyet-kiem-duyet'
-    },
-    {
-      id: 'quan-tri-he-thong',
-      label: 'Quản trị hệ thống',
-      icon: '☰',
-      path: '/admin/quan-tri-he-thong'
-    },
+    // {
+    //   id: 'quan-tri-he-thong',
+    //   label: 'Quản trị hệ thống',
+    //   icon: '☰',
+    //   path: '/admin/quan-tri-he-thong'
+    // },
     {
       id: 'bao-cao-thong-ke',
       label: 'Báo cáo - Thống kê',

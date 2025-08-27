@@ -239,13 +239,7 @@ const XemThongTinNguoiDung = () => {
         <AdSidebar />
 
         <main className="main-content">
-          {/* Breadcrumbs/Page Title */}
-          <div className="page-header">
-            <div className="breadcrumbs">
-            
-              <span>Quản lý người dùng</span>
-            </div>
-          </div>
+          
 
           {/* Search/Filter Inputs */}
           <div className="search-filters">
