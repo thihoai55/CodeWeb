@@ -1989,14 +1989,6 @@
   cursor: pointer;
 }
 
-.notification-icon:hover {
-  background-color: #f0f0f0;
-}
-
-.notification-dropdown {
-  animation: slideDown 0.3s ease-out;
-}
-
 /* ========================================
    (ad_thongbaoheader.jsx)
    ======================================== */
@@ -2009,7 +2001,6 @@
   cursor: pointer;
   padding: 12px;
   border-radius: 50%;
-  transition: background-color 0.2s;
 }
 
 .ad-noti-icon .bi-bell {
@@ -2072,9 +2063,9 @@
   border-radius: 4px;
 }
 
-.ad-noti-close:hover {
+/* .ad-noti-close:hover {
   background: #f0f0f0;
-}
+} */
 
 .ad-noti-actions {
   padding: 0 20px 15px;
@@ -2103,7 +2094,6 @@
   border: none;
   background: #007bff;
   color: #fff;
-  transition: all 0.3s ease;
 }
 
 .ad-noti-list {
@@ -2132,9 +2122,7 @@
   position: relative;
 }
 
-.sidebar-notification-dropdown {
-  animation: slideRight 0.3s ease-out;
-}
+
 
 @keyframes slideRight {
   from {
@@ -2152,7 +2140,7 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #dc3545;
+  background-color: #007bff;
   color: white;
   border-radius: 50%;
   min-width: 18px;
@@ -2849,3 +2837,257 @@
 .contact-btn i {
   font-size: 16px;
 }
+/* ========================================
+   (ad_thongbaosidebar.jsx) - Trang thông báo
+   ======================================== */
+
+   .thong-bao-page {
+    padding: 20px;
+    background: #f8f9fa;
+    min-height: 100vh;
+  }
+  
+  .page-header {
+    margin-bottom: 30px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+    text-align: center;
+  }
+  
+  .ad-thongbaosidebar {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    border: 1px solid #e0e0e0;
+    max-width: 800px;
+    margin: 0 auto;
+    overflow: hidden;
+  }
+  
+  .ad-noti-sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background: #f8f9fa;
+  }
+  
+  .ad-noti-sidebar-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .ad-noti-sidebar-actions {
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    background: white;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  
+  .ad-noti-sidebar-actions .btn {
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 150px;
+    font-weight: 500;
+  }
+  
+  .btn-select-all {
+    background: #007bff;
+    color: white;
+  }
+  
+  .btn-select-all:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+  }
+  
+  .btn-select-all.active {
+    background: #0056b3;
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  }
+  
+  .btn-mark-all {
+    background: #6c757d;
+    color: white;
+  }
+  
+  .btn-mark-all:hover {
+    background: #545b62;
+    transform: translateY(-1px);
+  }
+  
+  .btn-mark-all:disabled {
+    background: #6c757d;
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .btn-delete-selected {
+    background: #dc3545;
+    color: white;
+  }
+  
+  .btn-delete-selected:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+  }
+  
+  .btn-delete-selected:disabled {
+    background: #dc3545;
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .ad-noti-sidebar-list {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+  
+  .notification-sidebar-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s;
+  }
+  
+  .notification-sidebar-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .notification-sidebar-item.selected {
+    background-color: #e3f2fd;
+    border-left: 4px solid #007bff;
+  }
+  
+  .notification-sidebar-item:last-child {
+    border-bottom: none;
+  }
+  
+  .notification-checkbox {
+    margin-top: 3px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: #007bff;
+  }
+  
+  .notification-content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .notification-message {
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    word-wrap: break-word;
+    font-weight: 500;
+  }
+  
+  .notification-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 13px;
+    color: #666;
+  }
+  
+  .notification-date {
+    font-weight: 500;
+  }
+  
+  .notification-time {
+    font-style: italic;
+  }
+  
+  .notification-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #007bff;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  
+  .empty-state {
+    padding: 60px 20px;
+    text-align: center;
+    color: #666;
+  }
+  
+  .empty-state p {
+    margin: 0;
+    font-size: 16px;
+    color: #999;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .thong-bao-page {
+      padding: 15px;
+    }
+    
+    .page-title {
+      font-size: 24px;
+    }
+    
+    .ad-thongbaosidebar {
+      margin: 0 10px;
+    }
+    
+    .ad-noti-sidebar-actions {
+      flex-direction: column;
+      padding: 15px;
+    }
+    
+    .ad-noti-sidebar-actions .btn {
+      min-width: auto;
+    }
+    
+    .notification-sidebar-item {
+      padding: 15px;
+    }
+    
+    .notification-meta {
+      flex-direction: column;
+      gap: 5px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .thong-bao-page {
+      padding: 10px;
+    }
+    
+    .page-title {
+      font-size: 22px;
+    }
+    
+    .ad-thongbaosidebar {
+      margin: 0 5px;
+    }
+    
+    .ad-noti-sidebar-header {
+      padding: 15px;
+    }
+    
+    .ad-noti-sidebar-header h3 {
+      font-size: 18px;
+    }
+  }
