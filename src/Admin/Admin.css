@@ -2908,11 +2908,6 @@
     color: white;
   }
   
-  .btn-select-all:hover {
-    background: #0056b3;
-    transform: translateY(-1px);
-  }
-  
   .btn-select-all.active {
     background: #0056b3;
     box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
@@ -2921,11 +2916,6 @@
   .btn-mark-all {
     background: #6c757d;
     color: white;
-  }
-  
-  .btn-mark-all:hover {
-    background: #545b62;
-    transform: translateY(-1px);
   }
   
   .btn-mark-all:disabled {
@@ -2938,11 +2928,6 @@
   .btn-delete-selected {
     background: #dc3545;
     color: white;
-  }
-  
-  .btn-delete-selected:hover {
-    background: #c82333;
-    transform: translateY(-1px);
   }
   
   .btn-delete-selected:disabled {

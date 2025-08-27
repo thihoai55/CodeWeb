@@ -106,7 +106,7 @@ const AdThongBaoSidebar = () => {
         <main className="admin-main">
           <div className="thong-bao-page">
             <div className="page-header">
-              <h1 className="page-title">Quản lý thông báo</h1>
+          
             </div>
             
             <div className="ad-thongbaosidebar">
