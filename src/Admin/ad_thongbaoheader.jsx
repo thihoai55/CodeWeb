@@ -173,11 +173,8 @@ const AdThongBaoHeader = () => {
                      padding: '15px 20px',
                      borderBottom: '1px solid #f0f0f0',
                      cursor: 'pointer',
-                     backgroundColor: notification.isRead ? 'white' : '#f8f9fa',
-                     transition: 'all 0.3s ease'
+                     backgroundColor: notification.isRead ? 'white' : '#f8f9fa'
                    }}
-                   onMouseEnter={(e) => e.target.style.backgroundColor = '#f0f0f0'}
-                   onMouseLeave={(e) => e.target.style.backgroundColor = notification.isRead ? 'white' : '#f8f9fa'}
                  >
                   <div style={{
                     display: 'flex',

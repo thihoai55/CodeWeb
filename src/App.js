@@ -39,6 +39,8 @@ import AdTrangChu from "./Admin/ad_trangchu";
 import AdDuyetKiemDuyet from "./Admin/ad_duyetkiemduyet";
 import AdBaiDang from "./Admin/ad_baidang";
 import AdChiTietBaiDang from "./Admin/ad_chitietbaidang";
+import AdThongBaoSidebar from "./Admin/ad_thongbaosidebar";
+import AdBaoCaoThongKe from "./Admin/ad_baocaothongke";
 
 
 function App() {
@@ -129,6 +131,15 @@ function App() {
           />
 
           <Route
+            path="/admin/bao-cao-thong-ke"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdBaoCaoThongKe />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/admin/quan-ly-bai-dang"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
@@ -145,7 +156,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="/admin/thong-bao"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdThongBaoSidebar />
+              </ProtectedRoute>
+            }
+          />
 
         </Routes>
       </BrowserRouter>
