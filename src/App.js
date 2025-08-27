@@ -138,7 +138,7 @@ function App() {
           />
 
           <Route
-            path="/admin/chi-tiet-bai-dang"
+            path="/admin/chi-tiet-bai-dang/:postId"
             element={
               <ProtectedRoute allowedRoles={["admin"]}>
                 <AdChiTietBaiDang />
