@@ -1,47 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import AdHeader from './ad_header';
 import AdSidebar from './ad_sidebar';
+import { useNotifications } from './ad_du_lieu_thong_bao';
 
 const AdThongBaoSidebar = () => {
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: 'HOT: Hệ thống phát hiện 5 bài đăng vi phạm quy định cần xem xét',
-      date: '15/01/2024 14:30',
-      isRead: false,
-      timeAgo: '2 giờ trước'
-    },
-    {
-      id: 2,
-      message: 'Thông báo: Có 12 yêu cầu thuê phòng mới cần phê duyệt',
-      date: '15/01/2024 13:45',
-      isRead: true,
-      timeAgo: '3 giờ trước'
-    },
-    {
-      id: 3,
-      message: 'Chào mừng admin mới: Người dùng "user123" báo cáo vấn đề với bài đăng #456',
-      date: '15/01/2024 12:20',
-      isRead: true,
-      timeAgo: '4 giờ trước'
-    },
-    {
-      id: 4,
-      message: 'Hệ thống backup dữ liệu hoàn thành thành công',
-      date: '15/01/2024 11:15',
-      isRead: true,
-      timeAgo: '5 giờ trước'
-    },
-    {
-      id: 5,
-      message: 'Có 3 tài khoản mới đăng ký cần xác minh',
-      date: '15/01/2024 10:30',
-      isRead: false,
-      timeAgo: '6 giờ trước'
-    }
-  ]);
+  const { notifications, markAllAsRead, deleteSelected, markSelectedAsRead } = useNotifications();
 
   // Xử lý chọn tất cả thông báo
   const handleSelectAll = () => {
@@ -71,8 +36,7 @@ const AdThongBaoSidebar = () => {
   // Xử lý xóa thông báo đã chọn
   const handleDeleteSelected = () => {
     if (selectedNotifications.length > 0) {
-      const updatedNotifications = notifications.filter(n => !selectedNotifications.includes(n.id));
-      setNotifications(updatedNotifications);
+      deleteSelected(selectedNotifications);
       setSelectedNotifications([]);
       setSelectAllChecked(false);
     }
@@ -80,11 +44,7 @@ const AdThongBaoSidebar = () => {
 
   // Xử lý đánh dấu tất cả đã đọc
   const handleMarkAllAsRead = () => {
-    const updatedNotifications = notifications.map(notification => ({
-      ...notification,
-      isRead: true
-    }));
-    setNotifications(updatedNotifications);
+    markAllAsRead();
     setSelectedNotifications([]);
     setSelectAllChecked(false);
   };

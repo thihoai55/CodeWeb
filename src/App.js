@@ -41,11 +41,13 @@ import AdBaiDang from "./Admin/ad_baidang";
 import AdChiTietBaiDang from "./Admin/ad_chitietbaidang";
 import AdThongBaoSidebar from "./Admin/ad_thongbaosidebar";
 import AdBaoCaoThongKe from "./Admin/ad_baocaothongke";
+import { NotificationsProvider } from "./Admin/ad_du_lieu_thong_bao";
 
 
 function App() {
   return (
     <SearchProvider>
+      <NotificationsProvider>
       <BrowserRouter>
         <Routes>
           {/* Chưa đăng nhập */}
@@ -167,6 +169,7 @@ function App() {
 
         </Routes>
       </BrowserRouter>
+      </NotificationsProvider>
     </SearchProvider>
   );
 }
