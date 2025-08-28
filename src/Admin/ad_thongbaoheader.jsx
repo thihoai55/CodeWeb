@@ -72,7 +72,7 @@ const AdThongBaoHeader = () => {
         className="sidebar-notification-icon" 
         onClick={handleSidebarClick}
       >
-        <i className="bi bi-list-ul"></i>
+        {/* <i className="bi bi-list-ul"></i> */}
         {unreadCount > 0 && (
           <span className="notification-badge">
             {unreadCount > 9 ? '9+' : unreadCount}
@@ -98,7 +98,7 @@ const AdThongBaoHeader = () => {
           <div className="ad-noti-actions">
             <button 
               className="btn btn-toggle"
-              onClick={() => setShowUnreadOnly(!showUnreadOnly)}
+onClick={() => setShowUnreadOnly(!showUnreadOnly)}
               aria-pressed={showUnreadOnly}
             >
               {showUnreadOnly ? 'Hiện tất cả' : 'Chưa đọc'}
@@ -172,7 +172,7 @@ const AdThongBaoHeader = () => {
                           {notification.date}
                         </span>
                         <span style={{
-                          fontSize: '11px',
+fontSize: '11px',
                           color: '#999',
                           fontStyle: 'italic'
                         }}>

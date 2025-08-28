@@ -83,7 +83,7 @@ const AdDuyetKiemDuyet = () => {
                   <div className="post-images">
                     <div className="image-grid">
                       {post.images.slice(0, 4).map((image, index) => (
-                        <div key={index} className="image-item">
+<div key={index} className="image-item">
                           <img 
                             src={`/anh/${image}`} 
                             alt={`${post.title} - ${index + 1}`}
@@ -149,7 +149,7 @@ const AdDuyetKiemDuyet = () => {
                         <i className="bi bi-x"></i> Từ chối
                       </button>
                     </div>
-                  </div>
+</div>
                 </div>
               ))}
             </div>

@@ -13,7 +13,7 @@ const AdSidebar = () => {
     {
       id: 'dashboard',
       label: 'Trang chủ',
-      icon: <i class="bi bi-border-all"></i>,
+      icon: <i className="bi bi-border-all"></i>,
       path: '/admin/dashboard'
     },
     {
@@ -30,12 +30,7 @@ const AdSidebar = () => {
       icon: '☰',
       path: '/admin/quan-ly-bai-dang'
     },
-    // {
-    //   id: 'quan-tri-he-thong',
-    //   label: 'Quản trị hệ thống',
-    //   icon: '☰',
-    //   path: '/admin/quan-tri-he-thong'
-    // },
+    
     {
       id: 'bao-cao-thong-ke',
       label: 'Báo cáo - Thống kê',
@@ -56,7 +51,7 @@ const AdSidebar = () => {
       path: '/admin/dang-xuat'
     }
   ];
-
+// Tương tác với sidebar
   const handleMouseEnter = (itemId) => {
     setHoveredItem(itemId);
   };
@@ -64,7 +59,7 @@ const AdSidebar = () => {
   const handleMouseLeave = () => {
     setHoveredItem(null);
   };
-
+//dẫn về trang chủ
   const handleItemClick = (item) => {
     if (item.id === 'dang-xuat') {
       navigate('/');
@@ -75,8 +70,14 @@ const AdSidebar = () => {
       navigate(item.path);
     }
   };
-
-
+//render thanh điều hướng bên trái (sidebar)
+  // Xác định item đang active dựa theo đường dẫn hiện tại
+  const isItemActive = (itemPath) => {
+    if (!itemPath) return false;
+    const currentPath = location.pathname || '';
+    // Active nếu path hiện tại khớp hoặc bắt đầu bằng path của item
+    return currentPath === itemPath || currentPath.startsWith(itemPath + '/');
+  };
 
   return (
     <nav className="admin-sidebar">
@@ -84,7 +85,7 @@ const AdSidebar = () => {
         {menuItems.map((item) => (
           <li
             key={item.id}
-            className="nav-item"
+            className={`nav-item ${isItemActive(item.path) ? 'active' : ''}`}
             onMouseEnter={() => handleMouseEnter(item.id)}
             onMouseLeave={handleMouseLeave}
             onClick={() => handleItemClick(item)}

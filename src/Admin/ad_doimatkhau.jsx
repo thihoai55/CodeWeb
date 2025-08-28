@@ -59,12 +59,12 @@ const AdDoiMatKhau = () => {
         <AdSidebar />
         
         <main className="main-content">
-          {/* Page Title */}
+          {/* Tiêu đề trang */}
           <div className="change-password-header">
             <h1 className="page-title">Đổi mật khẩu</h1>
           </div>
 
-          {/* Password Change Form */}
+          {/* Form đổi mật khẩu*/}
           <div className="change-password-form">
             <div className="form-group">
               <label>Mật khẩu cũ</label>
@@ -99,14 +99,14 @@ const AdDoiMatKhau = () => {
               />
             </div>
 
-            {/* Action Button */}
+            {/* Nút đổi mật khẩu*/}
             <div className="form-actions">
               <button className="btn-change-password" onClick={handleChangePassword}>
                 Đổi mật khẩu
               </button>
             </div>
 
-            {/* Forgot Password Link */}
+            {/* Liên kết quên mật khẩu*/}
             <div className="forgot-password">
               Bạn quên mật khẩu?
               <button 

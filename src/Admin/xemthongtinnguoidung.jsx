@@ -10,8 +10,7 @@ const XemThongTinNguoiDung = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [usersPerPage] = useState(10); // Thay đổi từ 5 thành 10 người dùng mỗi trang
-  
+  const [usersPerPage] = useState(10); 
   const [users, setUsers] = useState([
     {
       id: 'N01',
@@ -119,28 +118,28 @@ const XemThongTinNguoiDung = () => {
       role: 'Người cho thuê'
     }
   ]);
-
+//bo loc tim kiemkiem
   const [searchFilters, setSearchFilters] = useState({
     fullName: '',
     email: '',
     phone: '',
     unlabeled: ''
   });
-
+//thay doi gia tri khi gõ
   const handleFilterChange = (field, value) => {
     setSearchFilters(prev => ({
       ...prev,
       [field]: value
     }));
   };
-
+//click vao se ghi nho nguoi dungdung
   const handleUserSelect = (user) => {
     setSelectedUser(user);
   };
-
+// không chon nguoi dung thì nut k click duocduoc
   const handleEditClick = () => {
     if (!selectedUser) {
-      alert('Vui lòng chọn một người dùng để chỉnh sửa!');
+      alert('Vui lòng chọn một người dùng để chỉnh sửa');
       return;
     }
     
@@ -158,20 +157,24 @@ const XemThongTinNguoiDung = () => {
     setShowDeleteModal(true);
   };
 
+  // Hàm xử lý khi nhấn OK trong pop-up xóa người dùng
   const handleConfirmDelete = () => {
     if (selectedUser) {
       // Xóa người dùng khỏi danh sách
       setUsers(prevUsers => prevUsers.filter(user => user.id !== selectedUser.id));
       setSelectedUser(null);
       setShowDeleteModal(false);
-      alert('Đã xóa người dùng thành công!');
+      
+      // Quay lại trang xem thông tin người dùng (không hiện alert)
+      // Lưu ý: Route này phải khớp với route đã định nghĩa trong App.js
+      navigate('/admin/quan-ly-nguoi-dung');
     }
   };
-
+// nhan huy khong xoaxoa
   const handleCancelDelete = () => {
     setShowDeleteModal(false);
   };
-
+//loc danh sach nguoi dung
   const filteredUsers = users.filter(user => {
     return (
       user.fullName.toLowerCase().includes(searchFilters.fullName.toLowerCase()) &&
@@ -230,6 +233,40 @@ const XemThongTinNguoiDung = () => {
     setCurrentPage(1);
     setSelectedUser(null);
   }, [searchFilters.fullName, searchFilters.email, searchFilters.phone, searchFilters.unlabeled]);
+
+  // Kiểm tra và cập nhật dữ liệu từ localStorage khi component mount hoặc khi quay lại từ trang sửa
+  useEffect(() => {
+    const checkForUpdates = () => {
+      const updatedUserData = localStorage.getItem('updatedUserData');
+      if (updatedUserData) {
+        try {
+          const updatedUser = JSON.parse(updatedUserData);
+          setUsers(prevUsers => 
+            prevUsers.map(user => 
+              user.id === updatedUser.id || user.email === updatedUser.email 
+                ? updatedUser 
+                : user
+            )
+          );
+          // Xóa dữ liệu tạm sau khi đã cập nhật
+          localStorage.removeItem('updatedUserData');
+        } catch (error) {
+          console.error('Lỗi khi cập nhật dữ liệu từ localStorage:', error);
+        }
+      }
+    };
+
+    // Kiểm tra ngay khi component mount
+    checkForUpdates();
+
+    // Lắng nghe sự kiện focus để kiểm tra khi quay lại từ trang khác
+    const handleFocus = () => {
+      checkForUpdates();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, []);
 
   return (
     <div className="admin-container">
@@ -303,7 +340,7 @@ const XemThongTinNguoiDung = () => {
             </button>
           </div>
 
-          {/* User Data Table */}
+          {/* bảng dữ liệu người dùngdùng */}
           <div className="table-container">
             <table className="user-table">
               <thead>
@@ -316,10 +353,10 @@ const XemThongTinNguoiDung = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentUsers.map((user, index) => (
+                {currentUsers.map((user, index) => ( // ds cua nhung nguoi khi phan trang 
                   <tr 
                     key={user.id}
-                    className={selectedUser?.id === user.id ? 'selected-row' : ''}
+                    className={selectedUser?.id === user.id ? 'selected-row' : ''}// to mau user dc chonchon
                     onClick={() => handleUserSelect(user)}
                     style={{ cursor: 'pointer' }}
                   >
@@ -334,11 +371,11 @@ const XemThongTinNguoiDung = () => {
             </table>
           </div>
 
-          {/* Pagination Controls */}
+          {/* kiem suat ohan trang */}
           <div className="pagination">
             <div className="page-info">
               <span>Page {currentPage}/{totalPages}</span>
-              <div className="dropdown-arrow">▼</div>
+              {/* <div className="dropdown-arrow">▼</div> */}
             </div>
             <div className="pagination-controls">
               
@@ -360,6 +397,7 @@ const XemThongTinNguoiDung = () => {
                   (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
                 ) {
                   return (
+                    //tao nt so trangtrang
                     <button
                       key={pageNumber}
                       className={`page-btn ${pageNumber === currentPage ? 'active' : ''}`}
@@ -370,11 +408,11 @@ const XemThongTinNguoiDung = () => {
                   );
                 } else if (
                   pageNumber === currentPage - 2 ||
-                  pageNumber === currentPage + 2
+                  pageNumber === currentPage + 2 
                 ) {
                   return <span key={pageNumber} className="page-dots">...</span>;
                 }
-                return null;
+                return null;// cac số trang khác k cần hiênr thị bỏ quaqua
               })}
               
               <button 

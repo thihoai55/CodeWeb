@@ -85,7 +85,7 @@ const AdThongBaoSidebar = () => {
                 </button>
                 <button 
                   className="btn btn-mark-all"
-                  onClick={handleMarkAllAsRead}
+onClick={handleMarkAllAsRead}
                   disabled={notifications.filter(n => !n.isRead).length === 0}
                 >
                   Đánh dấu đã đọc tất cả

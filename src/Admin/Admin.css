@@ -14,7 +14,7 @@
   padding: 0 20px;
   height: 70px;
   background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e0e0e0;
 }
 
@@ -47,33 +47,57 @@
 }
 
 .icon {
-  font-size: 20px;
+
+  padding: 0 10px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  padding: 12px;
-  border-radius: 50%;
-  transition: background-color 0.2s;
+  transition: all 0.2s cubic-bezier(.4, 2, .6, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  min-width: 0;
+  position: relative;
 }
 
-.icon:hover {
-  background-color: #f0f0f0;
-}
+
 
 /* ========================================
    (ad_profile.jsx)
    ======================================== */
 .user-info {
-  display: flex;
+  /* display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
   padding: 8px 12px;
   border-radius: 20px;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s; */
+  padding: 5px 10px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(.4, 2, .6, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  min-width: 0;
+  position: relative;
 }
 
-.user-info:hover {
-  background-color: #f0f0f0;
-}
+
 
 .avatar {
   width: 35px;
@@ -136,9 +160,10 @@
 }
 
 .nav-item.active {
-  background-color: white;
-  color: #333;
-  font-weight: 500;
+  background-color: #e9f2ff;
+  color: #1976d2;
+  font-weight: 600;
+
 }
 
 .nav-item.highlighted {
@@ -164,9 +189,12 @@
 /* ========================================
    Noi dung chínhchính
    ======================================== */
-.main-content, .admin-main {
+.main-content,
+.admin-main {
   flex: 1;
   background-color: #f8f9fa;
+  padding: 30px;
+  overflow-y: auto;
 }
 
 .page-header {
@@ -199,7 +227,7 @@
   padding: 20px;
   border-radius: 10px;
   margin-bottom: 15px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
   border: 1px solid #f0f0f0;
 
 }
@@ -313,10 +341,10 @@
   background-color: white;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   margin-bottom: 25px;
 
-  
+
 }
 
 .user-table {
@@ -343,7 +371,7 @@
 
 .user-table tbody tr:hover {
   background-color: #f8f9fa;
-  
+
 }
 
 .user-table tbody tr:last-child td {
@@ -360,7 +388,7 @@
   background-color: white;
   padding: 20px 25px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
 }
 
@@ -408,15 +436,15 @@
   .admin-sidebar {
     width: 300px;
   }
-  
+
   .main-content {
     padding: 30px 40px;
   }
-  
+
   .search-filters {
     padding: 30px;
   }
-  
+
   .filter-row {
     gap: 25px;
   }
@@ -427,7 +455,7 @@
   .admin-sidebar {
     width: 280px;
   }
-  
+
   .main-content {
     padding: 25px 30px;
   }
@@ -438,7 +466,7 @@
   .admin-sidebar {
     width: 250px;
   }
-  
+
   .filter-row {
     flex-direction: column;
     gap: 15px;
@@ -447,36 +475,36 @@
   .search-filters {
     padding: 25px;
   }
-  
+
   .breadcrumbs {
     margin-left: 50px;
   }
-  
+
   .change-password-form {
     margin-left: 50px;
     max-width: 1000px;
   }
-  
+
   .change-password-form .form-group {
     margin-left: 200px;
   }
-  
+
   .change-password-form .form-actions {
     margin-left: 200px;
   }
-  
+
   .forgot-password {
     margin-left: 200px;
   }
-  
+
   .profile-page {
     max-width: 1200px;
   }
-  
+
   .avatar-section {
     margin-left: 150px;
   }
-  
+
   .info-form {
     margin-left: 250px;
     width: 600px;
@@ -488,73 +516,73 @@
   .admin-sidebar {
     width: 220px;
   }
-  
+
   .main-content {
     padding: 20px 25px;
   }
-  
+
   .admin-header {
     padding: 0 15px;
     height: 60px;
   }
-  
+
   .logo-text {
     font-size: 18px;
   }
-  
+
   .header-icons {
     gap: 15px;
   }
-  
+
   .icon {
     padding: 10px;
     font-size: 18px;
   }
-  
+
   .nav-item {
     padding: 12px 20px;
   }
-  
+
   .nav-icon {
     font-size: 16px;
   }
-  
+
   .nav-item span {
     font-size: 13px;
   }
-  
+
   .breadcrumbs {
     margin-left: 30px;
     font-size: 14px;
   }
-  
+
   .change-password-form {
     margin-left: 30px;
     max-width: 900px;
   }
-  
+
   .change-password-form .form-group {
     margin-left: 150px;
     width: 600px;
   }
-  
+
   .change-password-form .form-actions {
     margin-left: 150px;
     width: 600px;
   }
-  
+
   .forgot-password {
     margin-left: 150px;
   }
-  
+
   .profile-page {
     max-width: 1000px;
   }
-  
+
   .avatar-section {
     margin-left: 100px;
   }
-  
+
   .info-form {
     margin-left: 200px;
     width: 500px;
@@ -566,21 +594,21 @@
   .admin-content {
     flex-direction: column;
   }
-  
+
   .admin-sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #e0e0e0;
     padding: 15px 0;
   }
-  
+
   .nav-list {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     padding: 0 20px;
   }
-  
+
   .nav-item {
     flex: 1;
     min-width: 120px;
@@ -590,32 +618,32 @@
     border-radius: 8px;
     background-color: #f8f9fa;
   }
-  
+
   .nav-item:hover {
     background-color: #e9ecef;
   }
-  
+
   .main-content {
     padding: 20px;
   }
-  
+
   .breadcrumbs {
     margin-left: 0;
     font-size: 14px;
     justify-content: center;
   }
-  
+
   .action-buttons {
     flex-direction: row;
     flex-wrap: wrap;
     gap: 10px;
   }
-  
+
   .btn {
     flex: 1;
     min-width: 120px;
   }
-  
+
   .pagination {
     flex-direction: column;
     gap: 15px;
@@ -626,110 +654,110 @@
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .search-filters {
     padding: 20px;
   }
-  
+
   .filter-group input {
     width: 100%;
     padding: 14px 16px;
     font-size: 14px;
   }
-  
+
   .change-password-form {
     margin: 0;
     max-width: 100%;
     padding: 25px;
   }
-  
+
   .change-password-form .form-group {
     margin-left: 0;
     width: 100%;
   }
-  
+
   .change-password-form .form-actions {
     margin-left: 0;
     width: 100%;
   }
-  
+
   .forgot-password {
     margin-left: 0;
     text-align: center;
   }
-  
+
   .page-title {
     margin-left: 0;
     text-align: center;
     font-size: 24px;
   }
-  
+
   .profile-page {
     padding: 20px 15px;
     max-width: 100%;
   }
-  
+
   .profile-content {
     padding: 20px;
   }
-  
+
   .avatar-section {
     margin-left: 0;
     text-align: center;
   }
-  
+
   .avatar-container {
     margin-right: 0;
   }
-  
+
   .info-form {
     margin-left: 0;
     width: 100%;
   }
-  
+
   .form-input {
     width: 100%;
   }
-  
+
   .user-dropdown {
     width: 280px;
     right: -20px;
   }
-  
+
   .dropdown-profile,
   .dropdown-item {
     padding: 15px;
   }
-  
+
   .edit-user-form {
     padding: 20px;
     margin: 0 10px;
   }
-  
+
   .form-row {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .form-header {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
   }
-  
+
   .btn-cancel {
     align-self: flex-end;
   }
-  
+
   .pagination-controls {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .table-container {
     overflow-x: auto;
   }
-  
+
   .user-table {
     min-width: 600px;
   }
@@ -741,127 +769,127 @@
     padding: 0 10px;
     height: 55px;
   }
-  
+
   .logo-text {
     font-size: 16px;
   }
-  
+
   .header-icons {
     gap: 10px;
   }
-  
+
   .icon {
     padding: 8px;
     font-size: 16px;
   }
-  
+
   .user-info {
     padding: 6px 10px;
   }
-  
+
   .avatar {
     width: 30px;
     height: 30px;
     font-size: 14px;
   }
-  
+
   .username {
     font-size: 13px;
   }
-  
+
   .nav-item {
     padding: 10px 12px;
     min-width: 100px;
   }
-  
+
   .nav-icon {
     font-size: 14px;
   }
-  
+
   .nav-item span {
     font-size: 12px;
   }
-  
+
   .main-content {
     padding: 15px;
   }
-  
+
   .breadcrumbs {
     font-size: 13px;
     gap: 8px;
   }
-  
+
   .search-filters {
     padding: 15px;
   }
-  
+
   .filter-group label {
     font-size: 13px;
   }
-  
+
   .filter-group input {
     padding: 12px 14px;
     font-size: 13px;
   }
-  
+
   .btn {
     padding: 8px 12px;
     font-size: 13px;
     min-width: 100px;
   }
-  
+
   .user-table th,
   .user-table td {
     padding: 10px 12px;
     font-size: 12px;
   }
-  
+
   .change-password-form {
     padding: 20px;
   }
-  
+
   .page-title {
     font-size: 22px;
   }
-  
+
   .profile-content {
     padding: 15px;
   }
-  
+
   .avatar-image {
     width: 80px;
     height: 80px;
     font-size: 32px;
   }
-  
+
   .btn-change-avatar {
     padding: 8px 16px;
     font-size: 13px;
   }
-  
+
   .form-input {
     padding: 10px 12px;
     font-size: 13px;
   }
-  
+
   .btn-update {
     padding: 10px 25px;
     font-size: 14px;
   }
-  
+
   .delete-confirmation-modal {
     width: 90vw;
     max-width: 350px;
   }
-  
+
   .modal-content {
     padding: 20px 15px;
   }
-  
+
   .modal-content p {
     font-size: 14px;
   }
-  
+
   .btn-confirm-yes,
   .btn-confirm-no {
     padding: 8px 20px;
@@ -876,237 +904,237 @@
     padding: 0 8px;
     height: 50px;
   }
-  
+
   .logo-text {
     font-size: 14px;
   }
-  
+
   .logo-icon {
     font-size: 20px;
   }
-  
+
   .header-icons {
     gap: 8px;
   }
-  
+
   .icon {
     padding: 6px;
     font-size: 14px;
   }
-  
+
   .user-info {
     padding: 5px 8px;
   }
-  
+
   .avatar {
     width: 28px;
     height: 28px;
     font-size: 12px;
   }
-  
+
   .username {
     font-size: 12px;
   }
-  
+
   .dropdown-arrow {
     font-size: 10px;
   }
-  
+
   .nav-item {
     padding: 8px 10px;
     min-width: 80px;
   }
-  
+
   .nav-icon {
     font-size: 12px;
   }
-  
+
   .nav-item span {
     font-size: 11px;
   }
-  
+
   .main-content {
     padding: 10px;
   }
-  
+
   .breadcrumbs {
     font-size: 12px;
     gap: 6px;
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .search-filters {
     padding: 12px;
   }
-  
+
   .filter-group label {
     font-size: 12px;
   }
-  
+
   .filter-group input {
     padding: 10px 12px;
     font-size: 12px;
   }
-  
+
   .btn {
     padding: 6px 10px;
     font-size: 12px;
     min-width: 80px;
   }
-  
+
   .btn-icon {
     font-size: 14px;
   }
-  
+
   .user-table th,
   .user-table td {
     padding: 8px 10px;
     font-size: 11px;
   }
-  
+
   .page-header {
     margin-bottom: 10px;
   }
-  
+
   .change-password-form {
     padding: 15px;
   }
-  
+
   .page-title {
     font-size: 20px;
   }
-  
+
   .profile-content {
     padding: 12px;
   }
-  
+
   .avatar-section {
     margin-bottom: 25px;
     padding-bottom: 20px;
   }
-  
+
   .avatar-image {
     width: 70px;
     height: 70px;
     font-size: 28px;
   }
-  
+
   .btn-change-avatar {
     padding: 6px 12px;
     font-size: 12px;
   }
-  
+
   .form-input {
     padding: 8px 10px;
     font-size: 12px;
   }
-  
+
   .btn-update {
     padding: 8px 20px;
     font-size: 13px;
   }
-  
+
   .delete-confirmation-modal {
     width: 95vw;
     max-width: 300px;
   }
-  
+
   .modal-header {
     padding: 12px 15px;
   }
-  
+
   .modal-header h3 {
     font-size: 14px;
   }
-  
+
   .modal-content {
     padding: 15px 12px;
   }
-  
+
   .modal-content p {
     font-size: 13px;
   }
-  
+
   .modal-actions {
     padding: 0 15px 15px;
     gap: 10px;
   }
-  
+
   .btn-confirm-yes,
   .btn-confirm-no {
     padding: 6px 15px;
     font-size: 12px;
     min-width: 60px;
   }
-  
+
   .user-dropdown {
     width: 260px;
     right: -30px;
   }
-  
+
   .dropdown-profile {
     padding: 12px;
   }
-  
+
   .dropdown-avatar {
     width: 40px;
     height: 40px;
     font-size: 20px;
   }
-  
+
   .dropdown-username {
     font-size: 14px;
   }
-  
+
   .dropdown-phone {
     font-size: 12px;
   }
-  
+
   .dropdown-item {
     padding: 12px;
   }
-  
+
   .item-icon {
     font-size: 16px;
   }
-  
+
   .item-text {
     font-size: 13px;
   }
-  
+
   .pagination {
     padding: 15px 20px;
   }
-  
+
   .page-info {
     font-size: 12px;
     margin-left: 0;
   }
-  
+
   .page-btn {
     padding: 6px 10px;
     font-size: 12px;
   }
-  
+
   .edit-user-form {
     padding: 15px;
     margin: 0 5px;
   }
-  
+
   .form-title {
     font-size: 20px;
   }
-  
+
   .form-group label {
     font-size: 13px;
   }
-  
+
   .form-group input {
     padding: 10px 12px;
     font-size: 13px;
   }
-  
+
   .btn-save {
     padding: 10px 20px;
     font-size: 14px;
@@ -1118,102 +1146,102 @@
   .admin-header {
     padding: 0 5px;
   }
-  
+
   .logo-text {
     display: none;
   }
-  
+
   .header-icons {
     gap: 5px;
   }
-  
+
   .icon {
     padding: 5px;
     font-size: 12px;
   }
-  
+
   .nav-item {
     min-width: 70px;
     padding: 6px 8px;
   }
-  
+
   .nav-item span {
     font-size: 10px;
   }
-  
+
   .main-content {
     padding: 8px;
   }
-  
+
   .search-filters {
     padding: 10px;
   }
-  
+
   .btn {
     min-width: 70px;
     padding: 5px 8px;
     font-size: 11px;
   }
-  
+
   .change-password-form {
     padding: 12px;
   }
-  
+
   .page-title {
     font-size: 18px;
   }
-  
+
   .profile-content {
     padding: 10px;
   }
-  
+
   .avatar-image {
     width: 60px;
     height: 60px;
     font-size: 24px;
   }
-  
+
   .btn-change-avatar {
     padding: 5px 10px;
     font-size: 11px;
   }
-  
+
   .form-input {
     padding: 6px 8px;
     font-size: 11px;
   }
-  
+
   .btn-update {
     padding: 6px 15px;
     font-size: 12px;
   }
-  
+
   .delete-confirmation-modal {
     width: 98vw;
     max-width: 280px;
   }
-  
+
   .modal-header {
     padding: 10px 12px;
   }
-  
+
   .modal-header h3 {
     font-size: 13px;
   }
-  
+
   .modal-content {
     padding: 12px 10px;
   }
-  
+
   .modal-content p {
     font-size: 12px;
   }
-  
+
   .modal-actions {
     padding: 0 12px 12px;
     gap: 8px;
   }
-  
+
   .btn-confirm-yes,
   .btn-confirm-no {
     padding: 5px 12px;
@@ -1227,42 +1255,43 @@
   .admin-header {
     height: 45px;
   }
-  
+
   .admin-sidebar {
     padding: 10px 0;
   }
-  
+
   .nav-item {
     padding: 8px 15px;
   }
-  
+
   .main-content {
     padding: 15px 20px;
   }
-  
+
   .search-filters {
     padding: 15px 20px;
   }
-  
+
   .change-password-form {
     padding: 20px;
   }
-  
+
   .profile-content {
     padding: 20px;
   }
 }
 
 /* High DPI Displays */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
   .admin-header {
     border-bottom-width: 0.5px;
   }
-  
+
   .admin-sidebar {
     border-right-width: 0.5px;
   }
-  
+
   .user-table th,
   .user-table td {
     border-bottom-width: 0.5px;
@@ -1271,6 +1300,7 @@
 
 /* Print Styles */
 @media print {
+
   .admin-header,
   .admin-sidebar,
   .action-buttons,
@@ -1278,26 +1308,26 @@
   .btn {
     display: none !important;
   }
-  
+
   .admin-content {
     flex-direction: column;
   }
-  
+
   .main-content {
     padding: 0;
     background: white;
   }
-  
+
   .table-container {
     box-shadow: none;
     border: 1px solid #000;
   }
-  
+
   .user-table th {
     background-color: #f0f0f0 !important;
     color: #000 !important;
   }
-  
+
   .user-table td {
     color: #000 !important;
   }
@@ -1333,7 +1363,7 @@
   background-color: white;
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid #f0f0f0;
   max-width: 800px;
   margin: 0 auto;
@@ -1431,7 +1461,7 @@
 }
 
 .btn-save {
-  background-color:#70b9f5;
+  background-color: #70b9f5;
   color: white;
   border: none;
   padding: 14px 28px;
@@ -1686,7 +1716,7 @@
 }
 
 .avatar-section {
-  
+
   margin-bottom: 40px;
   padding-bottom: 30px;
   border-bottom: 1px solid #f0f0f0;
@@ -1704,7 +1734,7 @@
   flex-direction: column;
   align-items: center;
   gap: 15px;
-  
+
 }
 
 .avatar-image {
@@ -1739,7 +1769,7 @@
   width: 70%;
   margin-left: 150px;
   margin-bottom: 30px;
-  
+
 }
 
 .form-group {
@@ -1822,7 +1852,7 @@
    ======================================== */
 .change-password-header {
   margin-bottom: 30px;
-  
+
 }
 
 .page-title {
@@ -1830,7 +1860,7 @@
   font-weight: 600;
   color: #333;
   margin-left: 110px;
-  
+
 
 }
 
@@ -1839,13 +1869,13 @@
   border-radius: 12px;
   padding: 30px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  
+
 }
 
 .change-password-form .form-group {
   margin-bottom: 25px;
   margin-left: 150PX;
-  
+
 }
 
 .change-password-form .form-group label {
@@ -1858,7 +1888,7 @@
 
 .change-password-form .form-input {
   width: 80%;
-  
+
   padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -1871,8 +1901,8 @@
   width: 40%;
   margin-left: 300PX;
   margin-bottom: 20px;
-  
-  
+
+
 }
 
 .btn-change-password {
@@ -1917,62 +1947,62 @@
   .profile-page {
     padding: 20px 15px;
   }
-  
+
   .profile-content {
     padding: 20px;
   }
-  
+
   .avatar-image {
     width: 100px;
     height: 100px;
     font-size: 40px;
   }
-  
+
   .change-password-form {
     padding: 20px;
     margin: 0 15px;
   }
-  
+
   .page-title {
     font-size: 24px;
   }
-  
+
   .user-dropdown {
     width: 280px;
     right: -20px;
   }
-  
+
   .dropdown-profile,
   .dropdown-balance,
   .dropdown-item {
     padding: 15px;
   }
-  
+
   .edit-user-form {
     padding: 20px;
     margin: 0 10px;
   }
-  
+
   .form-row {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .form-header {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
   }
-  
+
   .btn-cancel {
     align-self: flex-end;
   }
-  
+
   .pagination {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .pagination-controls {
     flex-wrap: wrap;
     justify-content: center;
@@ -2160,8 +2190,7 @@
     width: 90vw;
     max-width: 350px;
   }
-  
-  .sidebar-notification-dropdown {
+.sidebar-notification-dropdown {
     left: 50%;
     transform: translateX(-50%);
     margin-left: 0;
@@ -2204,8 +2233,8 @@
   padding: 15px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .filter-buttons {
@@ -2249,18 +2278,189 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  
-  
 }
 
 .post-card {
-  
   display: flex;
+  flex-direction: column;
   background-color: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
+}
+
+/* Post ID Header */
+.post-id-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.post-id-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 8px 12px;
+  border-radius: 20px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.post-id-badge i {
+  font-size: 16px;
+  color: #fff;
+}
+
+.post-id-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.post-status-badge {
+  display: flex;
+  align-items: center;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-indicator.pending {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.status-indicator.approved {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-indicator.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status-indicator.locked {
+  background-color: #e2e3e5;
+  color: #383d41;
+  border: 1px solid #d6d8db;
+}
+
+.status-indicator i {
+  font-size: 14px;
+}
+
+/* Post Content Container */
+.post-content-container {
+  display: flex;
+  flex: 1;
+}
+
+/* Content Header */
+.content-header {
+  margin-bottom: 30px;
+  padding: 20px 0;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.content-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.content-header p {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+/* Content Body */
+.content-body {
+  padding: 20px 0;
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.status-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.filter-btn {
+  padding: 10px 20px;
+  border: 2px solid #e0e0e0;
+  background-color: white;
+  color: #666;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+  border-color: #4a90e2;
+  color: #4a90e2;
+  transform: translateY(-2px);
+}
+
+.filter-btn.active {
+  background-color: #4a90e2;
+  border-color: #4a90e2;
+  color: white;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.status-dropdown {
+  display: flex;
+  align-items: center;
+}
+
+.status-select {
+  padding: 10px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: #4a90e2;
 }
 
 .post-card:hover {
@@ -2270,7 +2470,7 @@
 /* Post Images */
 .post-images {
   /* margin-top: 20px; */
-  padding: 20px 20px ;
+  padding: 20px 20px;
   width: 300px;
   min-width: 200px;
   background-color: #f8f9fa;
@@ -2305,7 +2505,7 @@
   padding: 20px;
   display: flex;
   flex-direction: column;
-  
+
 }
 
 .post-header {
@@ -2345,17 +2545,30 @@
 .info-row .label {
   font-weight: 500;
   color: #666;
-  min-width: 80px;
-  margin-right: 10px;
+  min-width: 120px;
 }
 
 .info-row .value {
   color: #333;
+  font-weight: 400;
+}
+
+.info-row .value.post-type {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4a90e2;
+  font-weight: 500;
+}
+
+.info-row .value.post-type i {
+  font-size: 16px;
 }
 
 .info-row .value.price {
   color: #e74c3c;
   font-weight: 600;
+  font-size: 15px;
 }
 
 /* Post Content */
@@ -2436,23 +2649,23 @@
   .post-card {
     flex-direction: column;
   }
-  
+
   .post-images {
     width: 100%;
     height: 200px;
   }
-  
+
   .filter-section {
     flex-direction: column;
     gap: 15px;
     align-items: stretch;
   }
-  
+
   .filter-buttons {
     justify-content: center;
     flex-wrap: wrap;
   }
-  
+
   .post-actions {
     flex-wrap: wrap;
   }
@@ -2462,18 +2675,18 @@
   .duyet-kiem-duyet-container {
     padding: 10px;
   }
-  
+
   .post-details {
     padding: 15px;
   }
-  
+
   .image-grid {
     height: 150px;
   }
 }
 
 /* ========================================
-   (ad_baidang.jsx) - Quản lý bài đăng
+   (ad_baidang.jsx) 
    ======================================== */
 .quan-ly-bai-dang-container {
   padding: 20px;
@@ -2504,7 +2717,8 @@
   gap: 10px;
 }
 
-.status-badge, .type-badge {
+.status-badge,
+.type-badge {
   padding: 4px 12px;
   border-radius: 20px;
   font-size: 12px;
@@ -2616,7 +2830,7 @@
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .post-main-title {
@@ -2651,7 +2865,7 @@
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   gap: 20px;
 }
@@ -2712,7 +2926,7 @@
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .description-section h3,
@@ -2837,6 +3051,7 @@
 .contact-btn i {
   font-size: 16px;
 }
+
 /* ========================================
    (ad_thongbaosidebar.jsx) - Trang thông báo
    ======================================== */
@@ -3004,7 +3219,7 @@
   .notification-dot {
     width: 10px;
     height: 10px;
-    border-radius: 50%;
+border-radius: 50%;
     background-color: #007bff;
     margin-top: 8px;
     flex-shrink: 0;

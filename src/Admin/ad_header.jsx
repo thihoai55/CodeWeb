@@ -48,7 +48,7 @@ const AdHeader = () => {
       <div className="header-right">
         <div className="header-icons">
           <AdThongBaoHeader />
-          <div className="icon"><i className="bi bi-chat-left-text"></i></div>
+          <div className="icon" ><i className="bi bi-chat-left-text"></i></div>
         </div>
         
         {/* Thay thế phần user-info cũ bằng AdProfile component */}
