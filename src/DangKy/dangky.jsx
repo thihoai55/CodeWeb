@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { accounts as defaultAccounts } from "../DaTa/account";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -15,9 +16,24 @@ const Register = () => {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    // Validate
+    // Validate cơ bản
     if (!phone || !email || !password || !rePassword || !role) {
       setError("Vui lòng nhập đầy đủ thông tin!");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^0\d{9,10}$/; // 10-11 số, bắt đầu bằng 0
+    if (!emailRegex.test(email.trim())) {
+      setError("Email không hợp lệ!");
+      return;
+    }
+    if (!phoneRegex.test(phone.trim())) {
+      setError("Số điện thoại không hợp lệ!");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Mật khẩu tối thiểu 6 ký tự!");
       return;
     }
     if (password !== rePassword) {
@@ -28,9 +44,74 @@ const Register = () => {
       setError("Bạn phải đồng ý với điều khoản!");
       return;
     }
-    setError("");
-    // Xử lý đăng ký thành công
+
+    // Lấy danh sách tài khoản hiện tại từ localStorage (ưu tiên) hoặc seed mặc định
+    let existingAccounts = [];
+    try {
+      const local = localStorage.getItem('accounts');
+      const updated = localStorage.getItem('updatedAccounts');
+      if (updated) {
+        existingAccounts = JSON.parse(updated) || [];
+      } else if (local) {
+        existingAccounts = JSON.parse(local) || [];
+      } else {
+        existingAccounts = Array.isArray(defaultAccounts) ? defaultAccounts : [];
+      }
+    } catch {
+      existingAccounts = Array.isArray(defaultAccounts) ? defaultAccounts : [];
+    }
+
+    // Kiểm tra trùng email/phone
+    const isDuplicate = existingAccounts.some(acc => acc.email === email.trim() || acc.phone === phone.trim());
+    if (isDuplicate) {
+      setError("Email hoặc số điện thoại đã tồn tại!");
+      return;
+    }
+
+    // Map role từ select sang role hệ thống
+    const mappedRole = role === 'owner' || role === 'host' ? 'host' : 'renter';
+
+    // Tạo username đơn giản dựa trên email/phone, đảm bảo duy nhất
+    const baseUsername = (email.split('@')[0] || `user${Date.now()}`).replace(/[^a-zA-Z0-9_]/g, '').slice(0, 20) || `user${Date.now()}`;
+    let newUsername = baseUsername;
+    let counter = 1;
+    const usernameExists = (u) => existingAccounts.some(a => a.username === u);
+    while (usernameExists(newUsername)) {
+      newUsername = `${baseUsername}_${counter++}`;
+    }
+
+    const displayName = baseUsername || "Người dùng mới";
+
+    const newAccount = {
+      username: newUsername,
+      password: password,
+      role: mappedRole,
+      name: displayName,
+      phone: phone.trim(),
+      email: email.trim(),
+      balance: 0
+    };
+
+    const nextAccounts = [...existingAccounts, newAccount];
+    localStorage.setItem('accounts', JSON.stringify(nextAccounts));
+    localStorage.setItem('updatedAccounts', JSON.stringify(nextAccounts));
+
+    // Lưu thông tin đăng nhập
+    const userInfo = {
+      username: newAccount.username,
+      role: newAccount.role,
+      name: newAccount.name,
+      phone: newAccount.phone,
+      email: newAccount.email,
+      balance: newAccount.balance
+    };
     localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('userInfo', JSON.stringify(userInfo));
+    localStorage.setItem('userRole', newAccount.role);
+    localStorage.setItem('userBalance', String(newAccount.balance));
+    try { window.dispatchEvent(new Event('accountsUpdated')); } catch {}
+    try { window.dispatchEvent(new Event('userInfoUpdated')); } catch {}
+    setError("");
     navigate("/trang-chu-da-dang-nhap");
   };
 
@@ -212,8 +293,8 @@ const Register = () => {
               }}
             >
               <option value="">Chọn vai trò</option>
-              <option value="user">Người thuê</option>
-              <option value="owner">Người cho thuê</option>
+              <option value="renter">Người thuê</option>
+              <option value="host">Người cho thuê</option>
             </select>
           </div>
           {/* Checkbox đồng ý */}

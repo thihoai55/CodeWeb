@@ -39,8 +39,10 @@ function Sidebar() {
             acc.email === parsedUserInfo.email ||
             acc.phone === parsedUserInfo.phone
           );
-          if (userAccount && userAccount.balance) {
+          if (userAccount && typeof userAccount.balance === 'number') {
             setUserBalance(userAccount.balance);
+          } else {
+            setUserBalance(0);
           }
         }
       } catch (error) {
@@ -139,7 +141,7 @@ function Sidebar() {
       }}>
         <div style={{ fontSize: '14px', color: '#666' }}>Số dư tài khoản</div>
         <div style={{ fontSize: '18px', fontWeight: '700', marginBottom: '10px', color: '#333' }}>
-          {userBalance ? `${userBalance.toLocaleString('vi-VN')} đ` : 'Đang tải...'}
+          {userInfo ? `${(Number.isFinite(userBalance) ? userBalance : 0).toLocaleString('vi-VN')} đ` : 'Đang tải...'}
         </div>
 
         <div style={{ fontSize: '14px', color: '#666' }}>Mã tài khoản</div>
