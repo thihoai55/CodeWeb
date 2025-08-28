@@ -46,7 +46,7 @@ export const accounts = [
     },
     {
       username: "nguoidung02",
-      password: "123456",
+      password: "Renter@555",
       role: "renter",
       name: "Hoàng Thị Yến",
       phone: "0900000006",

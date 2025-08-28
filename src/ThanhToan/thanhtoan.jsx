@@ -189,7 +189,7 @@ function ThanhToan() {
           size: newPost.area,
           area: newPost.area,
           address: newPost.address,
-          postedDate: new Date().toISOString(),
+          postedDate: new Date().toLocaleString(),
           category: categoryForHomepage,
           owner: {
             name: newPost.contactName || userInfo.username || 'Chủ trọ',
@@ -199,7 +199,7 @@ function ThanhToan() {
           },
           rating: { average: 0, total: 0, breakdown: {} },
           reviews: [],
-          location: { lat: null, lng: null, address: newPost.address }
+          location: { lat: null, lng: null, address: newPost.address } //lat, lng chỉ là để lưu tọa độ địa lý
         };
         const mergedPublic = [publicRecord, ...existingPublic.filter(p => p && p.id !== publicRecord.id)];
         localStorage.setItem(publicKey, JSON.stringify(mergedPublic));
@@ -282,7 +282,7 @@ function ThanhToan() {
               color: '#333',
               margin: '0 0 10px 0'
             }}>
-              Thanh toán đăng bài
+              Thanh toán đăng bài\
             </h1>
             {/* Đường dẫn điều hướng */}
             <div style={{

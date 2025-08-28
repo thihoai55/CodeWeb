@@ -9,56 +9,6 @@ function NapTien() {
   const [amount, setAmount] = useState(50000);
   const presetAmounts = [50000, 100000, 200000, 500000, 1000000, 2000000, 5000000];
 
-  // Convert number to Vietnamese words (simple currency reader)
-  // const DIGITS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
-  // const SUFFIXES = ['', ' nghìn', ' triệu', ' tỷ', ' nghìn tỷ', ' triệu tỷ'];
-
-  // const readTriple = (num, isFull) => {
-  //   let str = '';
-  //   const hundred = Math.floor(num / 100);
-  //   const ten = Math.floor((num % 100) / 10);
-  //   const unit = num % 10;
-
-  //   if (hundred > 0 || isFull) {
-  //     str += `${DIGITS[hundred]} trăm`;
-  //   }
-
-  //   if (ten > 1) {
-  //     str += (str ? ' ' : '') + `${DIGITS[ten]} mươi`;
-  //     if (unit === 1) str += ' mốt';
-  //     else if (unit === 5) str += ' lăm';
-  //     else if (unit === 4) str += ' tư';
-  //     else if (unit !== 0) str += ` ${DIGITS[unit]}`;
-  //   } else if (ten === 1) {
-  //     str += (str ? ' ' : '') + 'mười';
-  //     if (unit === 5) str += ' lăm';
-  //     else if (unit !== 0) str += ` ${DIGITS[unit]}`;
-  //   } else if (ten === 0 && unit > 0) {
-  //     if (str) str += ' lẻ';
-  //     str += ` ${unit === 5 && str ? 'năm' : DIGITS[unit]}`;
-  //   }
-
-  //   return str.trim();
-  // };
-
-  // const toVietnameseNumber = (n) => {
-  //   if (n === 0) return 'không';
-  //   let i = 0;
-  //   let words = '';
-  //   while (n > 0 && i < SUFFIXES.length) {
-  //     const triple = n % 1000;
-  //     if (triple !== 0) {
-  //       const prefix = readTriple(triple, i > 0);
-  //       words = `${prefix}${SUFFIXES[i]}${words ? ' ' + words : ''}`;
-  //     }
-  //     n = Math.floor(n / 1000);
-  //     i += 1;
-  //   }
-  //   return words.trim();
-  // };
-
-  // const amountInWords = amount > 0 ? `${toVietnameseNumber(amount)} đồng` : '';
-
   const [step, setStep] = useState(1);
   const [countdown, setCountdown] = useState(580); // 09:40
   const [showToast, setShowToast] = useState(false);
@@ -95,7 +45,8 @@ function NapTien() {
     setShowToast(true);
     setTimeout(() => {
       setShowToast(false);
-      navigate('/quan-ly-bai-dang');
+      // navigate('/nap-tien');
+      setStep(1);
     }, 1200);
   };
 

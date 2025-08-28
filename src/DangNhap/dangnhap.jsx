@@ -27,8 +27,8 @@ const DangNhap = () => {
     try {
       const storedUpdated = localStorage.getItem('updatedAccounts');
       if (storedUpdated) return JSON.parse(storedUpdated);
-      const storedPrimary = localStorage.getItem('accounts');
-      if (storedPrimary) return JSON.parse(storedPrimary);
+      // const storedPrimary = localStorage.getItem('accounts');
+      // if (storedPrimary) return JSON.parse(storedPrimary);
     } catch {}
     return defaultAccounts;
   };

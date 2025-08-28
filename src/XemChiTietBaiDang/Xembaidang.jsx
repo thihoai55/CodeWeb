@@ -39,6 +39,7 @@ function XemBaiDang() {
           setUserInfo(parsedUserData);
           console.log('User logged in:', parsedUserData);
         } catch (error) {
+
           console.error('Error parsing user data:', error);
           // Nếu parse lỗi, xóa localStorage và reset state
           localStorage.removeItem('isLoggedIn');
@@ -93,11 +94,14 @@ function XemBaiDang() {
   // Fallbacks
   const safeImages = Array.isArray(postDataSafe?.images) ? postDataSafe.images : [];
   const safeMapAddress = postDataSafe?.map?.address || postDataSafe?.address || '';
+
+  // Cuộn lên đầu trang khi id thay đổi (xem bài khác)
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     }
   }, [id]);
+  
   // Helpers
   const allPosts = (normalizedPosts || []).filter(p => p && p.id);
   const fromNow = (iso) => {
@@ -240,9 +244,6 @@ function XemBaiDang() {
         fontSize: '12px',
         zIndex: 1000
       }}>
-        <div>Login Status: {isLoggedIn ? '✅ Logged In' : '❌ Not Logged In'}</div>
-        <div>User: {userInfo ? userInfo.username : 'None'}</div>
-        <div>Role: {userInfo ? userInfo.role : 'None'}</div>
       </div>
 
       {/* Sử dụng header phù hợp dựa trên trạng thái đăng nhập */}

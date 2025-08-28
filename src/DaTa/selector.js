@@ -1,4 +1,7 @@
 // src/data/selectors.js
+//đây là file để chuẩn hóa dữ liệu bài đăng từ nhiều nguồn khác nhau thành 1 form cố định
+//và cung cấp các hàm tiện ích để truy xuất dữ liệu bài đăng
+
 import { postsData } from './danhsachbaidangg';
 
 // Chuẩn hóa đường dẫn ảnh:
@@ -29,6 +32,7 @@ const mergedPostsSource = (() => {
   return [...publicPosts, ...postsData];
 })();
 
+// Chuẩn hóa dữ liệu bài đăng từ nhiều nguồn khác nhau để có 1 form nhất định
 export const normalizedPosts = mergedPostsSource.map(p => ({
   id: p.id,
   title: p.title,

@@ -186,7 +186,7 @@ function LienHeTroGiup() {
               </h2>
               
               <p style={{ fontSize: '16px', color: '#666', marginBottom: '24px', lineHeight: '1.5' }}>
-                Chúng tôi biết bạn có rất nhiều sự lựa chọn. Nhưng cảm ơn vì đã lựa chọn ThuePhongTro.com
+                Chúng tôi biết bạn có rất nhiều sự lựa chọn. Nhưng cảm ơn vì đã lựa chọn WebTimTro.com
               </p>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
