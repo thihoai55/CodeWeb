@@ -10,9 +10,7 @@ const AdChiTietBaiDang = () => {
     const [postDetail, setPostDetail] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Mock data for all posts (in real app, this would come from API)
     const allPosts = [
-        // Phòng trọ (Rental posts)
         {
             id: 'BĐ209',
             type: 'phongtro',
@@ -94,10 +92,10 @@ const AdChiTietBaiDang = () => {
     ];
 
     useEffect(() => {
-        // Find the post by ID
+        // Tìm bài viết theo ID
         const foundPost = allPosts.find(post => post.id === postId);
         if (foundPost) {
-            // Transform the data to match the expected format
+            // Chuyển đổi dữ liệu để phù hợp với định dạng
             const transformedPost = {
                 id: foundPost.id,
                 title: foundPost.title,
@@ -118,7 +116,7 @@ const AdChiTietBaiDang = () => {
             };
             setPostDetail(transformedPost);
         } else {
-            // Post not found, redirect back to posts list
+            // Bài viết không tìm thấy, chuyển hướng về danh sách bài viết
             navigate('/admin/quan-ly-bai-dang');
         }
         setLoading(false);
@@ -191,7 +189,7 @@ const AdChiTietBaiDang = () => {
 
                         <div style={{ display: 'flex', gap: '24px' }}>
                             <div style={{ flex: 1 }}>
-                                {/* Post Detail Card */}
+                                {/* Thẻ thông tin bài đăng*/}
                                 <div style={{ background: '#fff', borderRadius: '12px', padding: '24px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
 
                                     <h1 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '16px', color: '#52b4f9' }}>
@@ -237,7 +235,7 @@ const AdChiTietBaiDang = () => {
                                         </div>
                                     </div>
 
-                                    {/* Image Gallery */}
+                                    {/* Hình ảnh bài đăng*/}
                                     <div style={{ marginBottom: '24px' }}>
                                         <div style={{ display: 'flex', gap: '12px', marginBottom: '12px' }}>
                                             <div style={{ flex: 1, height: '400px', borderRadius: '8px', overflow: 'hidden' }}>
@@ -298,7 +296,7 @@ const AdChiTietBaiDang = () => {
                                         </div>
                                     </div>
 
-                                    {/* Description Section */}
+                                    {/* Mô tả bài đăng*/}
                                     <div style={{ marginBottom: '24px' }}>
                                         <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
                                             Mô tả
@@ -308,7 +306,7 @@ const AdChiTietBaiDang = () => {
                                         </div>
                                     </div>
 
-                                    {/* Location & Map Section */}
+                                    {/* Vị trí & Bản đồ*/}
                                     <div style={{ marginBottom: '24px' }}>
                                         <h3 style={{ fontSize: '18px', fontWeight: '600', marginBottom: '12px' }}>
                                             Vị trí & Bản đồ

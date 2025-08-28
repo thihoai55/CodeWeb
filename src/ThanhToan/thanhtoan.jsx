@@ -48,7 +48,7 @@ function ThanhToan() {
     { id: 'bank-transfer', name: 'Chuyển khoản ngân hàng', description: 'Chuyển khoản trực tiếp', image: 'anh/bank.jpg' }
   ];
 
-  // Sinh mã tin tự tăng theo danh sách bài của chính tài khoản: BD001, BD002, ...
+  // Sinh mã tin tự tăng theo danh sách bài của chính tài khoản: ND001, ND002, ...
   // (Đọc danh sách từ khóa userPosts_<username> để tránh đếm lẫn giữa các tài khoản)
   const getNextPostId = () => {
     try {
@@ -60,7 +60,7 @@ function ThanhToan() {
       const currentPosts = JSON.parse(localStorage.getItem(key) || '[]');
       //tìm mã lớn nhất hiện có trong danh sách bài đăng
       const maxFromPosts = currentPosts.reduce((max, p) => {
-        const match = String(p.id || '').match(/^BD(\d+)$/);
+        const match = String(p.id || '').match(/^ND(\d+)$/);
         return match ? Math.max(max, parseInt(match[1], 10)) : max;
       }, 0);
       //lấy số đếm đã lưu trong localStorage (riêng theo user) để tránh trùng nếu xóa bài
@@ -69,11 +69,11 @@ function ThanhToan() {
       const next = Math.max(maxFromPosts, storedCounter) + 1;
 
       localStorage.setItem(`postIdCounter_${userInfo?.username || 'global'}`, String(next));
-      return `BD${String(next).padStart(3, '0')}`;
+      return `ND${String(next).padStart(3, '0')}`;
     } catch {
       // Fallback nếu có lỗi
       const fallback = Date.now() % 1000; // chỉ để tránh trùng
-      return `BD${String(fallback).padStart(3, '0')}`;
+      return `ND${String(fallback).padStart(3, '0')}`;
     }
   };
 
@@ -142,7 +142,7 @@ function ThanhToan() {
 
       // 7) Tạo bài đăng mới và lưu vào danh sách bài theo tài khoản hiện tại
       const newPost = {
-        id: getNextPostId(), // Mã tin dạng BD001, BD002, ...
+        id: getNextPostId(), // Mã tin dạng ND001, ND002, ...
         type: postData.category === 'phongtro' ? 'Phòng trọ' : postData.category === 'nhanguyencan' ? 'Nhà nguyên căn' : postData.category === 'timnguoioghep' ? 'Tìm người ở ghép' : 'Không xác định',
         vipType: postData.postType?.includes('Vip 1') ? 'Tin VIP 1' : postData.postType?.includes('Vip 2') ? 'Tin VIP 2' : postData.postType?.includes('Vip 3') ? 'Tin VIP 3' : 'Tin thường',
         title: postData.title,

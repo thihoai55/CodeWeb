@@ -23,7 +23,7 @@ const AdThongTinCaNhan = () => {
 
   const handleUpdate = () => {
     alert('Cập nhật thông tin thành công!');
-    // Có thể thêm logic lưu dữ liệu vào database ở đây
+    
   };
 
   const handleChangePassword = () => {
@@ -53,7 +53,7 @@ const AdThongTinCaNhan = () => {
               <div className="avatar-section">
                 <div className="avatar-label">Ảnh đại diện</div>
                 <div className="avatar-container">
-                  <div className="avatar-image">👤</div>
+                  <div className="avatar-image"><i class="bi bi-person-circle"></i></div>
                   <button 
                     className="btn-change-avatar" 
                     onClick={handleImageChange}
@@ -134,7 +134,7 @@ const AdThongTinCaNhan = () => {
                 
               </div>
 
-              {/* Action Button */}
+              {/* hanh dong button */}
               <div className="form-actions">
                 <button className="btn-update" onClick={handleUpdate}>
                   Cập nhật

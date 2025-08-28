@@ -26,7 +26,7 @@ const AdTrangChu = () => {
 
 
   }, [navigate]);
-
+// khi logout dua ve trang dăng nhapnhap
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userInfo');
@@ -49,12 +49,12 @@ const AdTrangChu = () => {
         <div className="main-content">
           <div className="page-header">
             <div className="breadcrumbs">
-              <span className="arrow">›</span>
+              
               
             </div>
           </div>
 
-          {/* Welcome Section */}
+          {/* cau chao tren trang trang chuchu */}
           <div style={{ 
             background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             borderRadius: '12px',
@@ -71,14 +71,14 @@ const AdTrangChu = () => {
             </p>
           </div>
 
-          {/* Stats Cards */}
+          {/* Thẻ thống kê */}
           <div style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
             gap: '20px',
             margin: '0 20px 20px 20px'
           }}>
-            {/* Users Card */}
+            {/*thẻ người dùngdùng */}
             <div style={{
               background: 'white',
               borderRadius: '10px',
@@ -108,7 +108,7 @@ const AdTrangChu = () => {
               </div>
             </div>
 
-            {/* Posts Card */}
+            {/* thẻ bài viếtviết */}
             <div style={{
               background: 'white',
               borderRadius: '10px',
@@ -138,7 +138,7 @@ const AdTrangChu = () => {
               </div>
             </div>
 
-                         {/* System Status Card */}
+            {/* Thẻ trạng thái hệ thống */}
              <div style={{
                background: 'white',
                borderRadius: '10px',

@@ -47,7 +47,7 @@ const AdBaiDang = () => {
             address: '43 Hồ Đắc Di, Thành phố Huế',
             price: '1.200.000 VND/ Tháng',
             phone: '0963456778',
-            content: 'Trọ sạch sẽ, đầy đủ đồ dùng, đảm bảo an ninh, không ngập lụt, có camera an ninh, wifi tốc độ cao, điều hòa, tủ lạnh, bếp nấu ăn chung. Gần trường Đại học Sư phạm Huế, chợ Tây Lộc, bến xe. Tìm bạn ở ghép văn minh, sạch sẽ, không hút thuốc, không ồn ào. Phù hợp cho sinh viên hoặc người đi làm.',
+content: 'Trọ sạch sẽ, đầy đủ đồ dùng, đảm bảo an ninh, không ngập lụt, có camera an ninh, wifi tốc độ cao, điều hòa, tủ lạnh, bếp nấu ăn chung. Gần trường Đại học Sư phạm Huế, chợ Tây Lộc, bến xe. Tìm bạn ở ghép văn minh, sạch sẽ, không hút thuốc, không ồn ào. Phù hợp cho sinh viên hoặc người đi làm.',
             images: ['phong9.jpg', 'phong10.jpg', 'phong11.jpg', 'phong12.jpg'],
             status: 'pending'
         },
@@ -95,8 +95,8 @@ const AdBaiDang = () => {
     const handleApprove = (postId) => {
         console.log('Approve post:', postId);
         // Update post status to approved
-        setAllPosts(prevPosts => 
-            prevPosts.map(post => 
+        setAllPosts(prevPosts =>
+prevPosts.map(post => 
                 post.id === postId 
                     ? { ...post, status: 'approved' }
                     : post
@@ -183,7 +183,7 @@ const AdBaiDang = () => {
                         {/* Filter Options */}
                         <div className="filter-section">
                                                          <div className="filter-buttons">
-                                 {/* <button
+{/* <button
                                      className={`filter-btn ${selectedStatus === 'all' ? 'active' : ''}`}
                                      onClick={() => setSelectedStatus('all')}
                                  >
@@ -236,7 +236,7 @@ const AdBaiDang = () => {
                                     <div className="post-images">
                                         <div className="image-grid">
                                             {post.images.slice(0, 4).map((image, index) => (
-                                                <div key={index} className="image-item">
+<div key={index} className="image-item">
                                                     <img
                                                         src={`/anh/${image}`}
                                                         alt={`${post.title} - ${index + 1}`}
@@ -282,7 +282,7 @@ const AdBaiDang = () => {
                                         </div>
 
                                                                                  <div className="post-actions">
-                                             <button
+<button
                                                  className="btn-details"
                                                  onClick={() => handleViewDetails(post.id)}
                                              >
@@ -330,7 +330,7 @@ const AdBaiDang = () => {
                                              )}
 
                                              <button
-                                                 className="btn-delete"
+className="btn-delete"
                                                  onClick={() => handleDelete(post.id)}
                                              >
                                                  <i className="bi bi-trash"></i> Xóa
