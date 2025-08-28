@@ -19,11 +19,39 @@ export const filterPostsByArea = (posts, province, district) => {
   
   // Hàm lọc bài đăng theo loại
   export const filterPostsByCategory = (posts, category) => {
+    // Nếu không chọn loại hoặc chọn 'all' thì trả về nguyên danh sách
     if (!category || category === 'all') {
       return posts;
     }
-    
-    return posts.filter(post => post.category === category);
+
+    // Chuẩn hóa chuỗi: bỏ dấu tiếng Việt, viết thường, gọn khoảng trắng
+    const normalize = (s = '') => String(s)
+      .toLowerCase()
+      .normalize('NFD').replace(/\p{Diacritic}/gu, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Map giá trị filter từ UI sang nhãn tương ứng trong dữ liệu bài viết
+    // 'phongtro' -> 'phong tro', 'nha' -> 'nha nguyen can', 'oghep' -> 'o ghep'
+    const mapFilter = (c) => {
+      const n = normalize(c);
+      if (n === 'phongtro' || n === 'phong tro') return 'phong tro';
+      if (n === 'nha' || n === 'nha nguyen can') return 'nha nguyen can';
+      if (n === 'oghep' || n === 'o ghep' || n === 'tim nguoi o ghep') return 'o ghep';
+      return n;
+    };
+
+    // Chuẩn hóa nhãn category của bài viết để so khớp mềm
+    const mapPost = (pc) => {
+      const n = normalize(pc);
+      if (n.includes('phong tro')) return 'phong tro';
+      if (n.includes('nha nguyen can')) return 'nha nguyen can';
+      if (n.includes('o ghep') || n.includes('tim nguoi o ghep')) return 'o ghep';
+      return n;
+    };
+
+    const target = mapFilter(category);
+    return posts.filter(post => mapPost(post.category) === target);
   };
   
   // Hàm lọc bài đăng theo giá

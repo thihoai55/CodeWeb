@@ -5,8 +5,28 @@ import Footer from "../TrangChuChuaDangNhap/Footer";
 import postsData from "../DaTa/danhsachbaidangg";
 
 function TrangNhaNguyenCan() {
-  // Lọc chỉ bài đăng nhà nguyên căn
-  const nhaNguyenCanPosts = postsData
+  const readPublic = () => {
+    try {
+      const raw = localStorage.getItem('publicPosts');
+      const arr = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(arr)) return [];
+      return arr
+        .filter(p => p.category === 'Nhà nguyên căn')
+        .map(p => ({
+          title: p.title,
+          img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
+          price: p.price,
+          size: p.size || p.area,
+          address: p.address,
+          id: p.id,
+          postedAt: p.postedAt,
+          owner: p.owner,
+          category: p.category
+        }));
+    } catch { return []; }
+  };
+
+  const nhaNguyenCanSeed = postsData
     .filter(post => post.category === "Nhà nguyên căn")
     .map(p => ({
       title: p.title,
@@ -19,6 +39,8 @@ function TrangNhaNguyenCan() {
       owner: p.owner,
       category: p.category
     }));
+
+  const nhaNguyenCanPosts = [...readPublic(), ...nhaNguyenCanSeed];
 
   return (
     <div>

@@ -8,8 +8,32 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
   const [currentPage, setCurrentPage] = React.useState(1);
   const postsPerPage = 12;
 
-  // Ưu tiên danh sách truyền vào; nếu không có, lấy từ file dữ liệu chung
-  const defaultPosts = postsData.map(p => ({
+  // Lấy thêm bài công khai từ localStorage (được thêm khi người dùng đăng/Thanh toán)
+  // Đọc publicPosts để hợp nhất vào danh sách hiển thị khi đã đăng nhập
+  // Lý do: sau khi thanh toán, bài mới được lưu ở localStorage['publicPosts']
+  // nên cần đưa vào đây để hiện ngay trên trang chủ mà không cần backend
+  const publicPosts = React.useMemo(() => {
+    try {
+      const raw = localStorage.getItem('publicPosts');
+      const arr = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(arr)) return [];
+      return arr.map(p => ({
+        title: p.title,
+        img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
+        price: p.price,
+        size: p.size || p.area,
+        address: p.address,
+        id: p.id,
+        postedAt: p.postedAt,
+        owner: p.owner,
+        category: p.category
+      }));
+    } catch { return []; }
+  }, []);
+
+  // Ưu tiên danh sách truyền vào; nếu không có, hợp nhất publicPosts + dữ liệu seed
+  // Hợp nhất: publicPosts lên đầu, tiếp theo là seed
+  const defaultPosts = [...publicPosts, ...postsData.map(p => ({
     title: p.title,
     img: p.img,
     price: p.price,
@@ -19,7 +43,7 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
     postedAt: p.postedAt,
     owner: p.owner,
     category: p.category
-  }));
+  }))];
 
   const allPosts = customPosts && customPosts.length > 0 ? customPosts : defaultPosts;
 

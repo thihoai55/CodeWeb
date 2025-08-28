@@ -69,11 +69,30 @@ function XemBaiDang() {
     };
   }, []);
 
+  // Lấy dữ liệu bài viết theo id từ bộ chọn (normalizedPosts)
+  // Lưu ý: normalizedPosts đã merge seed + publicPosts để bài mới cũng tra được
   const postData = getPostById(id);
+  const isNotFound = !postData;
+  // postDataSafe: dữ liệu “an toàn” để tránh crash khi không tìm thấy bài (VD: reload quá sớm)
+  const postDataSafe = postData || {
+    id: '',
+    title: '',
+    address: '',
+    price: '',
+    area: '',
+    postedDate: '',
+    category: '',
+    images: [],
+    description: '',
+    owner: { name: '', phone: '', avatar: '', totalPosts: 0 },
+    rating: { average: 0, total: 0, breakdown: {} },
+    reviews: [],
+    map: { address: '' }
+  };
 
   // Fallbacks
-  const safeImages = Array.isArray(postData?.images) ? postData.images : [];
-  const safeMapAddress = postData?.map?.address || postData?.address || '';
+  const safeImages = Array.isArray(postDataSafe?.images) ? postDataSafe.images : [];
+  const safeMapAddress = postDataSafe?.map?.address || postDataSafe?.address || '';
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
@@ -130,11 +149,11 @@ function XemBaiDang() {
   }, []);
 
   // Replace old featuredPosts/nearbyPosts/latestPosts
-  const currentCity = cityOf(postData.address || postData?.map?.address || '');
+  const currentCity = cityOf(postDataSafe.address || postDataSafe?.map?.address || '');
 
   // Latest posts (newest postedDate)
   const latestPosts = allPosts
-    .filter(p => p.id !== postData.id)
+    .filter(p => p.id !== postDataSafe.id)
     .sort((a, b) => new Date(b.postedDate) - new Date(a.postedDate))
     .slice(0, 4)
     .map(p => ({
@@ -147,7 +166,7 @@ function XemBaiDang() {
 
   // Nearby by city (fallback: same category if no city match)
   let nearbyPosts = allPosts
-    .filter(p => p.id !== postData.id && cityOf(p.address) === currentCity)
+    .filter(p => p.id !== postDataSafe.id && cityOf(p.address) === currentCity)
     .slice(0, 4)
     .map(p => ({
       id: p.id,
@@ -158,7 +177,7 @@ function XemBaiDang() {
     }));
   if (nearbyPosts.length === 0) {
     nearbyPosts = allPosts
-      .filter(p => p.id !== postData.id && p.category === postData.category)
+      .filter(p => p.id !== postDataSafe.id && p.category === postDataSafe.category)
       .slice(0, 4)
       .map(p => ({
         id: p.id,
@@ -171,7 +190,7 @@ function XemBaiDang() {
 
   // Featured by highest rating
   const featuredPosts = allPosts
-    .filter(p => p.id !== postData.id)
+    .filter(p => p.id !== postDataSafe.id)
     .sort((a, b) => (b.rating?.average || 0) - (a.rating?.average || 0))
     .slice(0, 20)
     .map(p => ({
@@ -245,7 +264,7 @@ function XemBaiDang() {
             <div style={{ flex: 1 }}>
               <div ref={postDetailRef} style={{ background: '#fff', borderRadius: '12px', padding: '24px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                 <h1 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '16px', color: '#52b4f9' }}>
-                  {postData.title}
+                  {isNotFound ? 'Không tìm thấy bài đăng' : postDataSafe.title}
                 </h1>
                 
                 <div style={{ marginBottom: '8px' }}>
@@ -257,19 +276,19 @@ function XemBaiDang() {
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', marginBottom: '16px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>💰</span>
-                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.price}</span>
+                    <span style={{ fontWeight: '600', color: '#000' }}>{postDataSafe.price}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>📏</span>
-                    <span style={{ fontWeight: '600', color: '#000' }}>{postData.area}</span>
+                    <span style={{ fontWeight: '600', color: '#000' }}>{postDataSafe.area}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>#</span>
-                    <span>{postData.id}</span>
+                    <span>{postDataSafe.id}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span>📅</span>
-                    <span>{postData.postedDate}</span>
+                    <span>{postDataSafe.postedDate}</span>
                   </div>
                 </div>
 
@@ -401,11 +420,13 @@ function XemBaiDang() {
                   </div>
                 </div>
 
-                <Danhgia
-                  ownerAvatar={postData.owner.avatar}
-                  ratingAverage={postData.rating.average}
-                  initialReviews={postData.reviews}
-                />
+                {!isNotFound && (
+                  <Danhgia
+                    ownerAvatar={postDataSafe.owner.avatar}
+                    ratingAverage={postDataSafe.rating.average}
+                    initialReviews={postDataSafe.reviews}
+                  />
+                )}
               </div>
 
               <div style={{ background: '#fff', borderRadius: '12px', padding: '24px', marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>

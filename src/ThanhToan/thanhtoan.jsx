@@ -170,6 +170,42 @@ function ThanhToan() {
       // Ghi lại vào localStorage theo đúng tài khoản
       localStorage.setItem(storageKey, JSON.stringify(currentPosts));
 
+      // 7c) Lưu bản ghi CÔNG KHAI để hiển thị trên Trang chủ (dành cho mọi tài khoản)
+      // Giải thích:
+      // - Ngoài danh sách riêng theo user (userPosts_<username>), ta cần một nguồn dữ liệu chung
+      //   để mọi tài khoản (kể cả chưa đăng nhập) đều xem được bài vừa đăng.
+      // - Ở đây dùng localStorage key 'publicPosts' như một “feed công khai”.
+      // - Khi thanh toán thành công, ta push bài mới vào 'publicPosts' (đưa lên đầu) để trang chủ đọc và hiển thị ngay.
+      try {
+        const publicKey = 'publicPosts';
+        const existingPublic = JSON.parse(localStorage.getItem(publicKey) || '[]');
+        const categoryForHomepage = newPost.type === 'Tìm người ở ghép' ? 'Ở ghép' : newPost.type;
+        const publicRecord = {
+          id: newPost.id,
+          title: newPost.title,
+          img: newPost.image,
+          images: Array.isArray(postData.images) && postData.images.length ? postData.images : (newPost.image ? [newPost.image] : []),
+          price: newPost.price,
+          size: newPost.area,
+          area: newPost.area,
+          address: newPost.address,
+          postedDate: new Date().toISOString(),
+          category: categoryForHomepage,
+          owner: {
+            name: newPost.contactName || userInfo.username || 'Chủ trọ',
+            phone: newPost.contactPhone || '',
+            avatar: 'anh/avt.jpg',
+            totalPosts: (currentPosts?.length || 0)
+          },
+          rating: { average: 0, total: 0, breakdown: {} },
+          reviews: [],
+          location: { lat: null, lng: null, address: newPost.address }
+        };
+        const mergedPublic = [publicRecord, ...existingPublic.filter(p => p && p.id !== publicRecord.id)];
+        localStorage.setItem(publicKey, JSON.stringify(mergedPublic));
+        window.dispatchEvent(new Event('publicPostsUpdated'));
+      } catch { }
+
       // 7b) Ghi lịch sử giao dịch thanh toán cho tài khoản hiện tại
       try {
         const txKey = `transactions_${userInfo.username}`;

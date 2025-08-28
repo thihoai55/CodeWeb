@@ -31,7 +31,7 @@ function QuanLyBaiDang() {
     }
   }, []);
 
-  // Lấy thông tin người dùng và nạp bài theo tài khoản
+  // Lấy thông tin người dùng và NẠP BÀI THEO TÀI KHOẢN (luôn có seed + thêm bài mới)
   useEffect(() => {
     const userInfoStr = localStorage.getItem('userInfo');
     if (!userInfoStr) {
@@ -45,21 +45,23 @@ function QuanLyBaiDang() {
     setStorageKey(key);
 
     try {
-      const stored = localStorage.getItem(key);
-      const parsed = stored ? JSON.parse(stored) : null;
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        setPosts(parsed);
-      } else {
-        // Migrate từ khóa cũ 'userPosts' nếu có; nếu không, seed từ postsData theo tài khoản
-        const legacy = JSON.parse(localStorage.getItem('userPosts') || '[]');
-        const seed = (Array.isArray(legacy) && legacy.length > 0)
-          ? legacy
-          : (postsData[user.username] || []);
-        setPosts(seed);
-        localStorage.setItem(key, JSON.stringify(seed));
-      }
+      // 1) Seed cố định theo tài khoản từ posts.js (luôn luôn có dữ liệu nền)
+      const seed = Array.isArray(postsData[user.username]) ? postsData[user.username] : [];
+
+      // 2) Bài mới do người dùng đăng, lưu ở localStorage theo tài khoản
+      const storedStr = localStorage.getItem(key);
+      const stored = storedStr ? JSON.parse(storedStr) : [];
+
+      // 3) Hợp nhất: ưu tiên bài mới (stored) lên đầu, loại trùng theo id với seed
+      const seedMap = new Set((seed || []).map(p => p.id));
+      const merged = [...(Array.isArray(stored) ? stored : []), ...seed.filter(p => !seedMap.has(p.id) || !(stored || []).some(s => s.id === p.id))];
+
+      setPosts(merged);
+      // Đồng bộ lại localStorage để lần sau vẫn có đầy đủ
+      localStorage.setItem(key, JSON.stringify(merged));
     } catch (e) {
-      const seed = postsData[user.username] || [];
+      // Fallback: nếu có lỗi parsing, tối thiểu vẫn hiển thị seed
+      const seed = Array.isArray(postsData[user.username]) ? postsData[user.username] : [];
       setPosts(seed);
       localStorage.setItem(key, JSON.stringify(seed));
     }
