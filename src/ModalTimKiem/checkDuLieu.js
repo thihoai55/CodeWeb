@@ -20,6 +20,7 @@ export const filterPostsByArea = (posts, province, district) => {
   // Hàm lọc bài đăng theo loại
   export const filterPostsByCategory = (posts, category) => {
     // Nếu không chọn loại hoặc chọn 'all' thì trả về nguyên danh sách
+    
     if (!category || category === 'all') {
       return posts;
     }

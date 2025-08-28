@@ -422,7 +422,7 @@ function XemBaiDang() {
                 </div>
 
                 {!isNotFound && (
-                  <Danhgia
+                <Danhgia
                     ownerAvatar={postDataSafe.owner.avatar}
                     ratingAverage={postDataSafe.rating.average}
                     initialReviews={postDataSafe.reviews}

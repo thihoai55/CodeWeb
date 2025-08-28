@@ -12,7 +12,7 @@ const AdChiTietBaiDang = () => {
 
     const allPosts = [
         {
-            id: 'BĐ209',
+            id: 'ND209',
             type: 'phongtro',
             title: 'Phòng trọ cao cấp gần trường Đại học Khoa học Huế, khoảng cách chỉ 100m, view đẹp, an ninh 24/7, phù hợp cho sinh viên và người đi làm',
             poster: 'Nguyễn Văn A',
@@ -25,7 +25,7 @@ const AdChiTietBaiDang = () => {
             status: 'pending'
         },
         {
-            id: 'BĐ210',
+            id: 'ND210',
             type: 'phongtro',
             title: 'Phòng trọ cho sinh viên giá rẻ, chỉ cho nữ thuê, không chung chủ, gần trường Đại học Y Dược Huế, an toàn tuyệt đối',
             poster: 'Trần Thị B',
@@ -38,7 +38,7 @@ const AdChiTietBaiDang = () => {
             status: 'approved'
         },
         {
-            id: 'BĐ211',
+            id: 'ND211',
             type: 'oghep',
             title: 'Tìm người ở ghép tại trọ cao cấp, gần trường Đại học Sư phạm Huế, phòng rộng rãi, đầy đủ tiện nghi',
             poster: 'Hoàng Trọng Bảo',
@@ -51,7 +51,7 @@ const AdChiTietBaiDang = () => {
             status: 'pending'
         },
         {
-            id: 'BĐ212',
+            id: 'ND212',
             type: 'oghep',
             title: 'Tìm bạn nữ ở ghép phòng trọ sinh viên, gần trường Đại học Kinh tế Huế, phòng sạch sẽ, giá rẻ, môi trường thân thiện',
             poster: 'Lê Thị C',
@@ -64,7 +64,7 @@ const AdChiTietBaiDang = () => {
             status: 'locked'
         },
         {
-            id: 'BĐ213',
+            id: 'ND213',
             type: 'phongtro',
             title: 'Cho thuê phòng trọ cao cấp, view sông Hương, gần trung tâm thành phố Huế, đầy đủ tiện nghi hiện đại, an ninh 24/7',
             poster: 'Phạm Văn D',
@@ -77,7 +77,7 @@ const AdChiTietBaiDang = () => {
             status: 'approved'
         },
         {
-            id: 'BĐ214',
+            id: 'ND214',
             type: 'phongtro',
             title: 'Phòng trọ bị từ chối - test chức năng duyệt lại',
             poster: 'Nguyễn Văn Test',
@@ -92,8 +92,15 @@ const AdChiTietBaiDang = () => {
     ];
 
     useEffect(() => {
+        console.log('Đang tìm bài đăng với ID:', postId);
+        console.log('Loại dữ liệu của postId:', typeof postId);
+        console.log('Danh sách bài đăng có sẵn:', allPosts.map(p => p.id));
+        console.log('Loại dữ liệu của các ID:', allPosts.map(p => ({ id: p.id, type: typeof p.id })));
         // Tìm bài viết theo ID
-        const foundPost = allPosts.find(post => post.id === postId);
+        const foundPost = allPosts.find(post => {
+            console.log('So sánh:', post.id, '===', postId, 'Kết quả:', post.id === postId);
+            return post.id === postId;
+        });
         if (foundPost) {
             // Chuyển đổi dữ liệu để phù hợp với định dạng
             const transformedPost = {
@@ -117,7 +124,12 @@ const AdChiTietBaiDang = () => {
             setPostDetail(transformedPost);
         } else {
             // Bài viết không tìm thấy, chuyển hướng về danh sách bài viết
-            navigate('/admin/quan-ly-bai-dang');
+            console.log('Không tìm thấy bài đăng với ID:', postId);
+            console.log('Sẽ navigate về:', '/admin/quan-ly-bai-dang');
+            // Thay vì navigate ngay lập tức, hãy đợi một chút để xem debug
+            setTimeout(() => {
+                navigate('/admin/quan-ly-bai-dang');
+            }, 3000);
         }
         setLoading(false);
     }, [postId, navigate]);

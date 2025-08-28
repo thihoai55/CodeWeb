@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdHeader from './ad_header';
 import AdSidebar from './ad_sidebar';
 import { useNotifications } from './ad_du_lieu_thong_bao';
 
 const AdThongBaoSidebar = () => {
+  const navigate = useNavigate();
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [selectAllChecked, setSelectAllChecked] = useState(false);
   const { notifications, markAllAsRead, deleteSelected, markSelectedAsRead } = useNotifications();
@@ -57,6 +59,15 @@ const AdThongBaoSidebar = () => {
       setSelectAllChecked(true);
     }
   }, [selectedNotifications, notifications]);
+
+  // Xử lý click vào thông báo
+  const handleNotificationClick = (notification) => {
+    // Nếu thông báo có postId (báo cáo vi phạm), chuyển đến chi tiết bài đăng
+    if (notification.postId && notification.type === 'violation') {
+      navigate(`/admin/chi-tiet-bai-dang/${notification.postId}`);
+    }
+    // Có thể thêm xử lý cho các loại thông báo khác ở đây
+  };
 
   return (
     <div className="admin-layout">
@@ -120,7 +131,17 @@ onClick={handleMarkAllAsRead}
                       />
                       
                       {/* Content */}
-                      <div className="notification-content">
+                      <div 
+                        className="notification-content"
+                        style={{
+                          cursor: notification.postId && notification.type === 'violation' ? 'pointer' : 'default',
+                          flex: 1
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleNotificationClick(notification);
+                        }}
+                      >
                         <div className="notification-message">
                           {notification.message}
                         </div>

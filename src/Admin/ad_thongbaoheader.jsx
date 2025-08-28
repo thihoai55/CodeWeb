@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import AdThongBaoSidebar from './ad_thongbaosidebar';
 import { useNotifications } from './ad_du_lieu_thong_bao';
 
 const AdThongBaoHeader = () => {
+  const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const { notifications, setNotifications, unreadCount, markAllAsRead, deleteSelected } = useNotifications();
 
-  const handleNotificationClick = () => {
+  const handleNotificationIconClick = () => {
     setShowNotifications(!showNotifications);
     setShowSidebar(false);
   };
@@ -43,6 +45,16 @@ const AdThongBaoHeader = () => {
     setShowNotifications(false);
   };
 
+  // Xử lý click vào thông báo
+  const handleNotificationClick = (notification) => {
+    // Nếu thông báo có postId (báo cáo vi phạm), chuyển đến chi tiết bài đăng
+    if (notification.postId && notification.type === 'violation') {
+      navigate(`/admin/chi-tiet-bai-dang/${notification.postId}`);
+      setShowNotifications(false);
+    }
+    // Có thể thêm xử lý cho các loại thông báo khác ở đây
+  };
+
   const filteredNotifications = showUnreadOnly 
     ? notifications.filter(n => !n.isRead)
     : notifications;
@@ -57,7 +69,7 @@ const AdThongBaoHeader = () => {
       {/* Header Notification Icon */}
       <div 
         className="notification-icon ad-noti-icon" 
-        onClick={handleNotificationClick}
+        onClick={handleNotificationIconClick}
       >
         <i className="bi bi-bell"></i>
         {unreadCount > 0 && (
@@ -137,8 +149,20 @@ onClick={() => setShowUnreadOnly(!showUnreadOnly)}
                   style={{
                     padding: '15px 20px',
                     borderBottom: '1px solid #f0f0f0',
-                    cursor: 'pointer',
-                    backgroundColor: notification.isRead ? 'white' : '#f8f9fa'
+                    cursor: notification.postId && notification.type === 'violation' ? 'pointer' : 'default',
+                    backgroundColor: notification.isRead ? 'white' : '#f8f9fa',
+                    transition: 'background-color 0.2s ease'
+                  }}
+                  onClick={() => handleNotificationClick(notification)}
+                  onMouseEnter={(e) => {
+                    if (notification.postId && notification.type === 'violation') {
+                      e.target.style.backgroundColor = '#e3f2fd';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (notification.postId && notification.type === 'violation') {
+                      e.target.style.backgroundColor = notification.isRead ? 'white' : '#f8f9fa';
+                    }
                   }}
                 >
                   <div style={{

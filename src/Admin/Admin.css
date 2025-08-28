@@ -4,6 +4,46 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Notification Styles */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 500;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+.notification.success {
+  background-color: #4caf50;
+}
+
+.notification.error {
+  background-color: #f44336;
+}
+
+.notification.warning {
+  background-color: #ff9800;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* ========================================
   (ad_header.jsx)
    ======================================== */
@@ -2031,6 +2071,22 @@
   cursor: pointer;
   padding: 12px;
   border-radius: 50%;
+  padding: 0 10px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  color: #222;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(.4, 2, .6, 1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  min-width: 0;
+  position: relative;
 }
 
 .ad-noti-icon .bi-bell {
@@ -2170,7 +2226,7 @@
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #007bff;
+  background-color: #a51414;
   color: white;
   border-radius: 50%;
   min-width: 18px;
@@ -2280,14 +2336,36 @@
   gap: 20px;
 }
 
-.post-card {
-  display: flex;
-  flex-direction: column;
-  background-color: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s;
+ .post-card {
+   display: flex;
+   flex-direction: column;
+   background-color: white;
+   border-radius: 12px;
+   overflow: hidden;
+   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+   transition: transform 0.2s;
+   position: relative;
+ }
+
+ .post-content-wrapper {
+   display: flex;
+   flex-direction: row;
+   align-items: flex-start;
+ }
+
+/* Mã tin - hiển thị ở góc trên bên trái */
+.post-code {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  z-index: 10;
+}
+
+.post-id {
+  display: inline-block;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* Post ID Header */
@@ -2467,14 +2545,14 @@
   transform: translateY(-2px);
 }
 
-/* Post Images */
-.post-images {
-  /* margin-top: 20px; */
-  padding: 20px 20px;
-  width: 300px;
-  min-width: 200px;
-  background-color: #f8f9fa;
-}
+ /* Post Images */
+ .post-images {
+   padding: 20px;
+   width: 300px;
+   min-width: 300px;
+   background-color: #f8f9fa;
+   flex-shrink: 0;
+ }
 
 .image-grid {
   display: grid;
@@ -2499,14 +2577,14 @@
   transform: scale(1.05);
 } */
 
-/* Post Details */
-.post-details {
-  flex: 1;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-
-}
+ /* Post Details */
+ .post-details {
+   flex: 1;
+   padding: 20px;
+   display: flex;
+   flex-direction: column;
+   min-width: 0;
+ }
 
 .post-header {
   margin-bottom: 15px;
@@ -2514,10 +2592,7 @@
 
 .post-id {
   display: inline-block;
-  background-color: #e3f2fd;
-  color: #1976d2;
-  padding: 4px 8px;
-  border-radius: 4px;
+  color: #333;
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 8px;
@@ -2565,10 +2640,15 @@
   font-size: 16px;
 }
 
-.info-row .value.price {
-  color: #e74c3c;
-  font-weight: 600;
-  font-size: 15px;
+ .info-row .value.price {
+   color: #e74c3c;
+   font-weight: 600;
+   font-size: 15px;
+ }
+
+ .info-row .value.post-id {
+  color: #333;
+  font-weight: 500;
 }
 
 /* Post Content */
@@ -2583,13 +2663,13 @@
   margin: 0;
 }
 
-/* Post Actions */
-.post-actions {
-  margin-left: 150px;
-  display: flex;
-  gap: 40px;
-  margin-top: auto;
-}
+ /* Post Actions */
+ .post-actions {
+   display: flex;
+   gap: 15px;
+   margin-top: auto;
+   flex-wrap: wrap;
+ }
 
 .btn-details {
   padding: 8px 16px;
@@ -2644,32 +2724,32 @@
   background-color: #c82333;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-  .post-card {
-    flex-direction: column;
-  }
+ /* Responsive Design */
+ @media (max-width: 768px) {
+   .post-content-wrapper {
+     flex-direction: column;
+   }
 
-  .post-images {
-    width: 100%;
-    height: 200px;
-  }
+   .post-images {
+     width: 100%;
+     min-width: auto;
+   }
 
-  .filter-section {
-    flex-direction: column;
-    gap: 15px;
-    align-items: stretch;
-  }
+   .filter-section {
+     flex-direction: column;
+     gap: 15px;
+     align-items: stretch;
+   }
 
-  .filter-buttons {
-    justify-content: center;
-    flex-wrap: wrap;
-  }
+   .filter-buttons {
+     justify-content: center;
+     flex-wrap: wrap;
+   }
 
-  .post-actions {
-    flex-wrap: wrap;
-  }
-}
+   .post-actions {
+     flex-wrap: wrap;
+   }
+ }
 
 @media (max-width: 480px) {
   .duyet-kiem-duyet-container {
