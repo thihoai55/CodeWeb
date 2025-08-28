@@ -6,7 +6,8 @@ import HeaderTab from './HeaderTab';
 import { giaoDichTheoTaiKhoan } from '../DaTa/lichSuGiaoDich';
 
 function LichSuGiaoDich() {
-  const [activeTab, setActiveTab] = useState('lichsunaptien');
+  // const [activeTab, setActiveTab] = useState('lichsunaptien');
+
 
   // Lấy username hiện tại
   const currentUser = useMemo(() => {
@@ -22,6 +23,7 @@ function LichSuGiaoDich() {
     } catch {}
     return giaoDichTheoTaiKhoan[currentUser?.username] || [];
   }, [storageKey, currentUser?.username]);
+
 
   const formatVND = (num) => num.toLocaleString('vi-VN') + ' VND';
 

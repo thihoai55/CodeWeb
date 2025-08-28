@@ -9,9 +9,9 @@ import { giaoDichTheoTaiKhoan } from '../DaTa/lichSuGiaoDich';
 function ThanhToan() {
   const navigate = useNavigate();
   // State cho phương thức thanh toán và xuất hóa đơn
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('bank-transfer');
-  const [exportInvoice, setExportInvoice] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('bank-transfer'); // mặc định là chuyển khoản
+  const [exportInvoice, setExportInvoice] = useState(false); // mặc định không xuất hóa đơn
+  const [isProcessing, setIsProcessing] = useState(false); // trạng thái đang xử lý thanh toán, chống double click
   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   // Xác định role hiện tại để điều khiển Header (host: ẩn, renter: hiện)
@@ -34,7 +34,7 @@ function ThanhToan() {
   const firstImageDataUrl = Array.isArray(postData.images) && typeof postData.images[0] === 'string' ? postData.images[0] : '';
 
   // Parse số ngày an toàn
-  const numberOfDaysOnly = (String(postData.numberOfDays || '').match(/\d+/)?.[0] || '0');
+  const numberOfDaysOnly = (String(postData.numberOfDays || '').match(/\d+/)?.[0] || '0'); //match là toán tử lấy số đầu tiên, ví dụ "30 ngày" -> "30"
 
   // Tạo nội dung chuyển khoản tự động (dùng số ngày đã parse)
   const transferContent = `BĐĐ ${Math.floor(Math.random() * 100000)} ${postData.postType?.includes('Vip 1') ? 'VIP1' : postData.postType?.includes('Vip 2') ? 'VIP2' : postData.postType?.includes('Vip 3') ? 'VIP3' : 'THUONG'} ${numberOfDaysOnly} NGAY`;
@@ -52,15 +52,22 @@ function ThanhToan() {
   // (Đọc danh sách từ khóa userPosts_<username> để tránh đếm lẫn giữa các tài khoản)
   const getNextPostId = () => {
     try {
+      //lấy thông tin user từ localStorage
       const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      //tạo key lưu danh sách bài đăng theo user
       const key = `userPosts_${userInfo?.username || ''}`;
+      //lấy danh sách bài đăng hiện có
       const currentPosts = JSON.parse(localStorage.getItem(key) || '[]');
+      //tìm mã lớn nhất hiện có trong danh sách bài đăng
       const maxFromPosts = currentPosts.reduce((max, p) => {
         const match = String(p.id || '').match(/^BD(\d+)$/);
         return match ? Math.max(max, parseInt(match[1], 10)) : max;
       }, 0);
+      //lấy số đếm đã lưu trong localStorage (riêng theo user) để tránh trùng nếu xóa bài
+      //nếu không có thì dùng 0
       const storedCounter = parseInt(localStorage.getItem(`postIdCounter_${userInfo?.username || 'global'}`) || '0', 10) || 0;
       const next = Math.max(maxFromPosts, storedCounter) + 1;
+
       localStorage.setItem(`postIdCounter_${userInfo?.username || 'global'}`, String(next));
       return `BD${String(next).padStart(3, '0')}`;
     } catch {
@@ -129,6 +136,7 @@ function ThanhToan() {
           localStorage.setItem('userInfo', JSON.stringify(latestUserInfo));
         }
       } catch { }
+      // Gửi sự kiện để các component khác (Header, Sidebar) cập nhật lại
       window.dispatchEvent(new Event('accountsUpdated'));
       window.dispatchEvent(new Event('userInfoUpdated'));
 
@@ -188,7 +196,7 @@ function ThanhToan() {
         };
         const mergedList = [txRecord, ...baseList];
         localStorage.setItem(txKey, JSON.stringify(mergedList));
-      } catch {}
+      } catch { }
 
       // 8) Xóa postData tạm sau thanh toán
       localStorage.removeItem('postData');

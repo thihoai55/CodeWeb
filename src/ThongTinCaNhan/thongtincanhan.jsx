@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
+import { accounts } from '../DaTa/account.js';
+
 
 function ProfileInput({ icon, type = 'text', value, onChange, placeholder, readOnly }) {
   return (
@@ -73,6 +75,7 @@ function ThongTinCaNhan() {
     };
   }, []);
 
+  // Hàm cập nhật giá trị của 1 trường bất kỳ trong profile
   const handleChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
@@ -80,7 +83,7 @@ function ThongTinCaNhan() {
   const handleAvatarChange = (e) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    const previewUrl = URL.createObjectURL(file);
+    const previewUrl = URL.createObjectURL(file); // Tạo URL tạm thời để hiển thị ảnh
     setProfile(prev => ({ ...prev, avatarFile: file, avatarPreview: previewUrl }));
   };
 
@@ -88,7 +91,7 @@ function ThongTinCaNhan() {
   const updateAccountData = (updatedUserInfo) => {
     try {
       // Import accounts từ file account.js
-      const { accounts } = require('../DaTa/account.js');
+      // const { accounts } = require('../DaTa/account.js');
       
       // Tìm account cần cập nhật
       const accountIndex = accounts.findIndex(acc => 
@@ -122,7 +125,7 @@ function ThongTinCaNhan() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault(); //chặn reload trang
     
     // Cập nhật localStorage với thông tin mới
     try {
@@ -147,12 +150,12 @@ function ThongTinCaNhan() {
           alert('Cập nhật thông tin thành công! Thông tin đã được đồng bộ với tài khoản.');
           
           // Trigger event để các component khác biết có thay đổi
-          window.dispatchEvent(new CustomEvent('userInfoUpdated', {
+          window.dispatchEvent(new CustomEvent('userInfoUpdated', { //userInfoUpdated là để sidebar và profile header có thể update được thông tin
             detail: updatedUserInfo
           }));
           
           // Trigger event để cập nhật accounts
-          window.dispatchEvent(new CustomEvent('accountsUpdated'));
+          window.dispatchEvent(new CustomEvent('accountsUpdated')); //accountsUpdated sự kiện chỉ để thông báo sau khi thêm or xóa 
         } else {
           alert('Cập nhật thông tin thành công! Nhưng có lỗi khi đồng bộ với tài khoản.');
         }

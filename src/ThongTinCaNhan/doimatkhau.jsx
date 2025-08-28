@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
+import { accounts } from '../DaTa/account.js';
 
 function PasswordInput({ label, type = 'password', value, onChange, placeholder }) {
   return (
@@ -61,7 +62,7 @@ function DoiMatKhau() {
   // Hàm kiểm tra mật khẩu cũ
   const verifyOldPassword = (oldPassword) => {
     try {
-      const { accounts } = require('../DaTa/account.js');
+      // const { accounts } = require('../DaTa/account.js');
       
       // Tìm account của user hiện tại
       const userAccount = accounts.find(acc => 
@@ -83,7 +84,7 @@ function DoiMatKhau() {
   // Hàm cập nhật mật khẩu mới
   const updatePassword = (newPassword) => {
     try {
-      const { accounts } = require('../DaTa/account.js');
+      // const { accounts } = require('../DaTa/account.js');
       
       // Tìm account cần cập nhật
       const accountIndex = accounts.findIndex(acc => 

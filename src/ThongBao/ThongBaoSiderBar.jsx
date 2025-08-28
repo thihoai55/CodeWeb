@@ -14,16 +14,6 @@ import {
 
 const ThongBaoSideBar = () => {
   const navigate = useNavigate();
-  
-  // Thêm Font Awesome CDN vào head nếu chưa có
-  // useEffect(() => {
-  //   if (!document.querySelector('link[href*="font-awesome"]')) {
-  //     const link = document.createElement('link');
-  //     link.rel = 'stylesheet';
-  //     link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
-  //     document.head.appendChild(link);
-  //   }
-  // }, []);
 
   // Đọc thông báo từ notificationManager
   const [notifications, setNotifications] = useState(() => {
@@ -52,32 +42,33 @@ const ThongBaoSideBar = () => {
     };
   }, [notifications]);
 
+  // Xử lý chọn/ bỏ chọn thông báo
   const handleCheckboxChange = (id) => {
     const updatedNotifications = updateNotificationSelection(id, !notifications.find(n => n.id === id)?.isSelected);
     setNotifications(updatedNotifications);
   };
-
+  // Xử lý các hành động: chọn tất cả, bor chọn tất cả
   const handleSelectAll = () => {
     const allSelected = notifications.every(n => n.isSelected);
     const updatedNotifications = selectAllNotifications(!allSelected);
     setNotifications(updatedNotifications);
   };
-
+  // Xử lý xóa các thông báo đã chọn
   const handleDeleteSelected = () => {
     const updatedNotifications = deleteSelectedNotifications(notifications);
     setNotifications(updatedNotifications);
   };
-
+  // Xử lý đánh dấu đã đọc
   const handleMarkAsRead = (id) => {
     const updatedNotifications = markAsRead(id);
     setNotifications(updatedNotifications);
   };
-
+  // Xử lý đánh dấu đã đọc tất cả
   const handleMarkAllAsRead = () => {
     const updatedNotifications = markAllAsRead();
     setNotifications(updatedNotifications);
   };
-
+  // Xử lý khi click vào thông báo
   const handleNotificationClick = (notification) => {
     if (!notification.isRead) {
       handleMarkAsRead(notification.id);
@@ -226,12 +217,6 @@ const ThongBaoSideBar = () => {
                           fontSize: '14px',
                           fontWeight: '500'
                         }}>{notification.date}</span>
-                        {/* <div style={{
-                          color: '#ffc107',
-                          fontSize: '16px'
-                        }}>
-                          <i className="fas fa-bell"></i>
-                        </div> */}
                       </div>
                       <div style={{
                         color: '#007bff',

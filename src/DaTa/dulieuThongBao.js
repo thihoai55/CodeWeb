@@ -28,13 +28,7 @@ const defaultNotifications = [
     isRead: false,
     isSelected: false
   },
-  {
-    id: 5,
-    date: '18/02/2020 14:20',
-    message: 'Đơn đặt lịch xem phòng của bạn đã được xác nhận',
-    isRead: true,
-    isSelected: false
-  }
+
 ];
 
 // Lấy tất cả thông báo

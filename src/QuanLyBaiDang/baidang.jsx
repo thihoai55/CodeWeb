@@ -8,19 +8,20 @@ import ModalXoaTin from '../ModalXoaTin/xoatin';
 import HeaderLuaChon from './header_luachon';
 import LichHen from '../NhanVaXuLyLichHen/lichhen';
 import YeuCauThue from '../NhanVaXuLyYeuCauThue/yeucauthue';
-import { postsData } from '../DaTa/posts';    
+import { postsData } from '../DaTa/posts';
 
 function QuanLyBaiDang() {
   const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = useState('all');
   const [postTypeFilter, setPostTypeFilter] = useState('');
   const [vipTypeFilter, setVipTypeFilter] = useState('');
-  const [openHideModal, setOpenHideModal] = useState(false);
+  const [openHideModal, setOpenHideModal] = useState(false); // Modal ẩn tin
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState(null); // Bài đăng được chọn để ẩn/xóa
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [storageKey, setStorageKey] = useState('');
+  const [storageKey, setStorageKey] = useState(''); // Khóa localStorage cho bài đăng của user
+
   const showHeader = useMemo(() => {
     try {
       const ui = JSON.parse(localStorage.getItem('userInfo') || '{}');
@@ -159,7 +160,7 @@ function QuanLyBaiDang() {
     }
   };
 
-  // Cập nhật trạng thái
+  // Cập nhật trạng thái, map là duyệt qua tất cả tất cả các bài đăng và trả về mảng mới, thay trường status
   const updatePostStatus = (postId, newStatus) => {
     const updatedPosts = posts.map(p => p.id === postId ? { ...p, status: newStatus } : p);
     setPosts(updatedPosts);
@@ -168,7 +169,7 @@ function QuanLyBaiDang() {
     }
   };
 
-  // Xóa bài
+  // Xóa bài, filter tạo ra mảng mới gồm tất cả các phần tử p có trong posts mà p.id khác postId
   const deletePost = (postId) => {
     const updatedPosts = posts.filter(p => p.id !== postId);
     setPosts(updatedPosts);
@@ -248,13 +249,13 @@ function QuanLyBaiDang() {
                           message = `Không có bài đăng nào phù hợp với bộ lọc đã chọn`;
                           if (postTypeFilter) {
                             const postTypeLabel = postTypeFilter === 'phongtro' ? 'Phòng trọ' :
-                                                  postTypeFilter === 'nha' ? 'Nhà nguyên căn' : 'Tìm người ở ghép';
+                              postTypeFilter === 'nha' ? 'Nhà nguyên căn' : 'Tìm người ở ghép';
                             message += ` (Loại tin: ${postTypeLabel})`;
                           }
                           if (vipTypeFilter) {
                             const vipTypeLabel = vipTypeFilter === 'thuong' ? 'Tin thường' :
-                                                 vipTypeFilter === 'vip1' ? 'Tin VIP 1' :
-                                                 vipTypeFilter === 'vip2' ? 'Tin VIP 2' : 'Tin VIP 3';
+                              vipTypeFilter === 'vip1' ? 'Tin VIP 1' :
+                                vipTypeFilter === 'vip2' ? 'Tin VIP 2' : 'Tin VIP 3';
                             message += ` (VIP: ${vipTypeLabel})`;
                           }
                         } else {
@@ -442,7 +443,10 @@ function QuanLyBaiDang() {
                           fontWeight: 700,
                           color: getStatusColor(post.status),
                           marginBottom: '4px'
-                        }}>{post.status}</div>
+                        }}
+                        >
+                          {post.status}
+                        </div>
 
                         {(post.status === 'Đã ẩn'
                           ? ['Đăng lại', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
@@ -496,7 +500,7 @@ function QuanLyBaiDang() {
           }
           setOpenHideModal(false);
           setSelectedPost(null);
-          setSelectedTab('hidden');
+          setSelectedTab('hidden'); // Chuyển sang tab Đã ẩn sau khi ẩn tin
         }}
       />
       <ModalXoaTin

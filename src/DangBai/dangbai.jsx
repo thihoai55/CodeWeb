@@ -63,7 +63,8 @@ function DangBai() {
       [field]: value
     }));
 
-    // Reset các trường phụ thuộc khi thay đổi trường chính
+    // Reset các trường phụ thuộc khi thay đổi trường chính, khi đổi Tỉnh -> reset quận/huyện/phường/đường,
+    //đổi Quận-> reset phường/đường, đổi phường-> reset đườngđường
     if (field === 'province') {
       setFormData(prev => ({
         ...prev,
@@ -87,17 +88,17 @@ function DangBai() {
       }));
     }
   };
-
+// cập nhật bộ đếm ký tự cho tiêu đề và phần mô tả 
   const handleTitleChange = (value) => {
     setFormData(prev => ({ ...prev, title: value }));
-    setTitleCharCount(value.length);
+    setTitleCharCount(value.length); //lấy độ dài dài chuỗi value cập nhật cho titleCharcount
   };
 
   const handleDescriptionChange = (value) => {
     setFormData(prev => ({ ...prev, description: value }));
     setDescCharCount(value.length);
   };
-
+// xử lý ảnh: upload, xem trước, xóa
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
     if (files.length <= 5) {
@@ -148,7 +149,7 @@ function DangBai() {
   const getExpirationDate = () => {
     const today = new Date();
     const expiration = new Date(today);
-    
+
     if (formData.numberOfDays === '3 ngày') {
       expiration.setDate(today.getDate() + 3);
     } else if (formData.numberOfDays === '7 ngày') {
@@ -156,8 +157,8 @@ function DangBai() {
     } else if (formData.numberOfDays === '15 ngày') {
       expiration.setDate(today.getDate() + 15);
     }
-    
-    return expiration.toLocaleDateString('vi-VN');
+
+    return expiration.toLocaleDateString('vi-VN'); //chuyển đối tượng ngayf thành chuỗi ngàyngày
   };
 
   // Lấy giá theo loại tin
@@ -191,14 +192,14 @@ function DangBai() {
     }
     return '50.000';
   };
-
+//để cuộn đến phần tưr theo sectionId
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
   };
-
+// Nút đăng tin và chuyển sang thanh toán
   const handleSubmitAndPayment = async () => {
     // Kiểm tra các trường bắt buộc
     if (!formData.province || !formData.district || !formData.category || !formData.title || !formData.contactName || !formData.contactPhone) {
@@ -230,9 +231,9 @@ function DangBai() {
     const postData = {
       ...formData,
       images: imageDataUrls.filter(Boolean),
-      totalAmount: calculateTotal(),
-      postType: formData.postType,
-      numberOfDays: formData.numberOfDays
+      totalAmount: calculateTotal(), //tổng tiền
+      postType: formData.postType, //loại bài đăng
+      numberOfDays: formData.numberOfDays //số ngàyngày
     };
     localStorage.setItem('postData', JSON.stringify(postData));
 
@@ -433,7 +434,7 @@ function DangBai() {
                     disabled={!formData.province}
                   >
                     <option value="">Chọn quận huyện</option>
-                    {formData.province && addressData[formData.province] && 
+                    {formData.province && addressData[formData.province] &&
                       Object.keys(addressData[formData.province].districts).map(districtKey => (
                         <option key={districtKey} value={districtKey}>
                           {addressData[formData.province].districts[districtKey].name}
@@ -463,7 +464,7 @@ function DangBai() {
                     disabled={!formData.district}
                   >
                     <option value="">Chọn phường xã</option>
-                    {formData.district && formData.province && addressData[formData.province] && 
+                    {formData.district && formData.province && addressData[formData.province] &&
                       addressData[formData.province].districts[formData.district] &&
                       Object.keys(addressData[formData.province].districts[formData.district].wards).map(wardKey => (
                         <option key={wardKey} value={wardKey}>
@@ -494,7 +495,7 @@ function DangBai() {
                     disabled={!formData.ward}
                   >
                     <option value="">Chọn đường phố</option>
-                    {formData.ward && formData.district && formData.province && addressData[formData.province] && 
+                    {formData.ward && formData.district && formData.province && addressData[formData.province] &&
                       addressData[formData.province].districts[formData.district] &&
                       addressData[formData.province].districts[formData.district].wards[formData.ward] &&
                       Object.keys(addressData[formData.province].districts[formData.district].wards[formData.ward].streets).map(streetKey => (
@@ -581,7 +582,7 @@ function DangBai() {
                   outline: 'none',
                   marginBottom: 0
                 }}
-                disabled={currentUserRole === 'renter'}
+                disabled={currentUserRole === 'renter'} //nút quyết định có vô hiệu hóa ô chọn chuyện mục hay không
               >
                 <option value="">Chọn chuyên mục</option>
                 {currentUserRole === 'renter' ? (
@@ -594,10 +595,10 @@ function DangBai() {
                 )}
               </select>
               {currentUserRole === 'renter' && (
-                <div style={{ 
-                  marginTop: '8px', 
-                  fontSize: '14px', 
-                  color: '#666', 
+                <div style={{
+                  marginTop: '8px',
+                  fontSize: '14px',
+                  color: '#666',
                   fontStyle: 'italic',
                   textAlign: 'center'
                 }}>
@@ -671,6 +672,7 @@ function DangBai() {
                   {descCharCount}/1000 ký tự
                 </div>
               </div>
+
               <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ marginBottom: '8px', display: 'block', fontSize: '17px', fontWeight: '600' }}>Giá</label>
@@ -921,57 +923,57 @@ function DangBai() {
                 <h3 style={{ marginBottom: '20px', fontSize: '25px', fontWeight: '700' }}>
                   Chọn gói đăng tin
                 </h3>
-                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
-                    Loại tin
-                  </label>
-                  <select
-                    value={formData.postType}
-                    onChange={(e) => handleInputChange('postType', e.target.value)}
-                    style={{
-                      width: '90%',
-                      padding: '10px 8px',
-                      border: '2px solid #cfd8dc',
-                      borderRadius: '10px',
-                      fontSize: '18px',
-                      color: '#222',
-                      background: '#fff',
-                      outline: 'none',
-                      marginBottom: 0
-                    }}
-                  >
-                    <option value="Tin Thường (10.000/ngày)">Tin Thường (10.000/ngày)</option>
-                    <option value="Tin Vip 1 (30.000/ngày)">Tin Vip 1 (30.000/ngày)</option>
-                    <option value="Tin Vip 2 (50.000/ngày)">Tin Vip 2 (50.000/ngày)</option>
-                    <option value="Tin Vip 3 (80.000/ngày)">Tin Vip 3 (80.000/ngày)</option>
-                  </select>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
+                      Loại tin
+                    </label>
+                    <select
+                      value={formData.postType}
+                      onChange={(e) => handleInputChange('postType', e.target.value)}
+                      style={{
+                        width: '90%',
+                        padding: '10px 8px',
+                        border: '2px solid #cfd8dc',
+                        borderRadius: '10px',
+                        fontSize: '18px',
+                        color: '#222',
+                        background: '#fff',
+                        outline: 'none',
+                        marginBottom: 0
+                      }}
+                    >
+                      <option value="Tin Thường (10.000/ngày)">Tin Thường (10.000/ngày)</option>
+                      <option value="Tin Vip 1 (30.000/ngày)">Tin Vip 1 (30.000/ngày)</option>
+                      <option value="Tin Vip 2 (50.000/ngày)">Tin Vip 2 (50.000/ngày)</option>
+                      <option value="Tin Vip 3 (80.000/ngày)">Tin Vip 3 (80.000/ngày)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
+                      Số ngày
+                    </label>
+                    <select
+                      value={formData.numberOfDays}
+                      onChange={(e) => handleInputChange('numberOfDays', e.target.value)}
+                      style={{
+                        width: '90%',
+                        padding: '10px 8px',
+                        border: '2px solid #cfd8dc',
+                        borderRadius: '10px',
+                        fontSize: '18px',
+                        color: '#222',
+                        background: '#fff',
+                        outline: 'none',
+                        marginBottom: 0
+                      }}
+                    >
+                      <option value="3 ngày">3 ngày (+50.000đ)</option>
+                      <option value="7 ngày">7 ngày (+150.000đ)</option>
+                      <option value="15 ngày">15 ngày (+300.000đ)</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontSize: '17px', fontWeight: '600' }}>
-                    Số ngày
-                  </label>
-                  <select
-                    value={formData.numberOfDays}
-                    onChange={(e) => handleInputChange('numberOfDays', e.target.value)}
-                    style={{
-                      width: '90%',
-                      padding: '10px 8px',
-                      border: '2px solid #cfd8dc',
-                      borderRadius: '10px',
-                      fontSize: '18px',
-                      color: '#222',
-                      background: '#fff',
-                      outline: 'none',
-                      marginBottom: 0
-                    }}
-                  >
-                    <option value="3 ngày">3 ngày (+50.000đ)</option>
-                    <option value="7 ngày">7 ngày (+150.000đ)</option>
-                    <option value="15 ngày">15 ngày (+300.000đ)</option>
-                  </select>
-                </div>
-              </div>
               </div>
             </div>
 
@@ -1036,7 +1038,7 @@ function DangBai() {
               }} />
               <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
                 <div style={{ minWidth: '220px', fontWeight: 500, fontSize: '18px' }}>Thành tiền:</div>
-                <div style={{ fontWeight: 700, fontSize: '16px'}}>{calculateTotal().toLocaleString('vi-VN')} VNĐ</div>
+                <div style={{ fontWeight: 700, fontSize: '16px' }}>{calculateTotal().toLocaleString('vi-VN')} VNĐ</div>
               </div>
             </div>
 
