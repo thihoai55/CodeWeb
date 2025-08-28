@@ -1,10 +1,18 @@
 import React from "react";
-import Header from "../TrangChuChuaDangNhap/Header";
-import PostList from "../TrangChuChuaDangNhap/PostList";
-import Footer from "../TrangChuChuaDangNhap/Footer";
+import HeaderDa from "../TrangChuDaDangNhap/Header";
+import HeaderGuest from "../TrangChuChuaDangNhap/Header";
+import PostListDa from "../TrangChuDaDangNhap/PostList";
+import PostListGuest from "../TrangChuChuaDangNhap/PostList";
+import FooterDa from "../TrangChuDaDangNhap/Footer";
+import FooterGuest from "../TrangChuChuaDangNhap/Footer";
 import postsData from "../DaTa/danhsachbaidangg";
 
 function TrangPhongTro() {
+  const isLoggedIn = typeof window !== 'undefined' && localStorage.getItem('isLoggedIn') === 'true';
+  const Header = isLoggedIn ? HeaderDa : HeaderGuest;
+  const PostList = isLoggedIn ? PostListDa : PostListGuest;
+  const Footer = isLoggedIn ? FooterDa : FooterGuest;
+
   // Lọc chỉ bài đăng phòng trọ
   const phongTroPosts = postsData
     .filter(post => post.category === "Phòng trọ")
