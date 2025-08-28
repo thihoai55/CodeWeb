@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import AdHeader from './ad_header';
 import AdSidebar from './ad_sidebar';
 
-// Simple responsive container without external deps
+//co giãn kích thước cho biểu đồđồ
 const ResponsiveContainer = ({ aspect = 16 / 9, minHeight = 260, maxHeight = 520, children }) => {
   const [size, setSize] = useState({ width: 0, height: minHeight });
   const containerRef = React.useRef(null);
@@ -32,18 +32,18 @@ const ResponsiveContainer = ({ aspect = 16 / 9, minHeight = 260, maxHeight = 520
   );
 };
 
-// Animated Bar Chart component with CSS animations
+// Thành phần biểu đồ thanh động 
 const BarChart = ({ data, width = 800, height = 400, color = '#f4a261', key }) => {
   const padding = { top: 20, right: 20, bottom: 40, left: 50 };
   const innerWidth = width - padding.left - padding.right;
   const innerHeight = height - padding.top - padding.bottom;
 
-  // Round Y max to nearest 50 for clean ticks (50, 100, 150, ...)
+  // Các thanh cách 50
   const rawMax = Math.max(...data, 1);
   const yMax = Math.max(50, Math.ceil(rawMax / 50) * 50);
   const barWidth = innerWidth / data.length - 10;
 
-  // CSS animation styles
+  // hiệu ứng
   const barAnimationStyle = {
     animation: key ? 'barUpdate 0.8s ease-out forwards' : 'barGrow 1.2s ease-out forwards',
     transformOrigin: 'bottom',
@@ -134,9 +134,9 @@ const BarChart = ({ data, width = 800, height = 400, color = '#f4a261', key }) =
         `}
       </style>
       <svg width={width} height={height} style={{ background: '#fff', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-        {/* Axes */}
+        {/* Trục */}
         <g transform={`translate(${padding.left},${padding.top})`}>
-          {/* Y grid lines at steps of 50 */}
+          {/* Lưới theo 50*/}
           {Array.from({ length: Math.floor(yMax / 50) + 1 }).map((_, idx) => {
             const val = idx * 50;
             const t = val / yMax;
@@ -170,7 +170,7 @@ const BarChart = ({ data, width = 800, height = 400, color = '#f4a261', key }) =
             );
           })}
 
-          {/* Bars with staggered animation */}
+          {/* Các thanh có hiệu ứng */}
           {data.map((v, i) => {
             const x = i * (innerWidth / data.length) + 5;
             const h = (v / yMax) * innerHeight;
@@ -212,14 +212,14 @@ const BarChart = ({ data, width = 800, height = 400, color = '#f4a261', key }) =
   );
 };
 
-// Animated Pie Chart component
+// Thành phần biểu đồ tròn động
 const PieChart = ({ data, width = 280, height = 280, colors, legend, key }) => {
   const radius = Math.min(width, height) / 2;
   const centerX = width / 2;
   const centerY = height / 2;
   const sum = data.reduce((a, b) => a + b.value, 0) || 1;
 
-  let startAngle = -Math.PI / 2; // start at top
+  let startAngle = -Math.PI / 2; // bắt đầu từ trên
 
   const arcs = data.map((d, idx) => {
     const angle = (d.value / sum) * Math.PI * 2;
@@ -365,24 +365,24 @@ const AdBaoCaoThongKe = () => {
   const [dataStatus, setDataStatus] = useState([]);
   const [dataLoaiPhong, setDataLoaiPhong] = useState([]);
   const [kpis, setKpis] = useState({ totalViews: 0, totalPosts: 0, approved: 0, pending: 0, rejected: 0 });
-  const [chartKey, setChartKey] = useState(0); // Key để force re-render biểu đồ
+  const [chartKey, setChartKey] = useState(0); // Key để force re-render biểu đồ, hiển thị lại 
 
-  // Simulated fetch functions (replace with real API calls later)
+  // Simulated fetch functions (thay thế bằng API sau, dữ liệu giả lập)
   const fetchMonthlyPosts = async (year) => {
-    // Mùa: Xuân (2-4) ít, Hè/Thu (5-11) cao, Đông (12,1) bình thường
+
     const seasonFactor = [
-      1.0,  // 1 - Đông
-      0.8,  // 2 - Xuân (thấp)
-      0.8,  // 3 - Xuân (thấp)
-      0.85, // 4 - Xuân (thấp)
-      1.3,  // 5 - Hè (cao)
-      1.4,  // 6 - Hè (cao)
-      1.55, // 7 - Hè (cao)
-      1.45, // 8 - Hè (cao)
-      1.35, // 9 - Thu (cao)
-      1.25, // 10 - Thu (cao)
-      1.2,  // 11 - Thu (cao)
-      1.0   // 12 - Đông (bth)
+      1.0,  
+      0.8,  
+      0.8,  
+      0.85, 
+      1.3,  
+      1.4,  
+      1.55, 
+      1.45, 
+      1.35, 
+      1.25, 
+      1.2,  
+      1.0   
     ];
     const yearFactor = year === 2023 ? 0.9 : year === 2025 ? 1.1 : 1.0;
     const base = 100;
@@ -397,20 +397,19 @@ const AdBaoCaoThongKe = () => {
   };
 
   const fetchMonthlyViews = async (year) => {
-    // Lượt xem: xu hướng mùa tương tự nhưng biên độ lớn hơn
     const seasonFactor = [
-      1.0,  // 1 - Đông
-      0.85, // 2 - Xuân (thấp)
-      0.85, // 3 - Xuân (thấp)
-      0.9,  // 4 - Xuân (thấp)
-      1.35, // 5 - Hè (cao)
-      1.5,  // 6 - Hè (cao)
-      1.7,  // 7 - Hè (cao)
-      1.6,  // 8 - Hè (cao)
-      1.4,  // 9 - Thu (cao)
-      1.3,  // 10 - Thu (cao)
-      1.2,  // 11 - Thu (cao)
-      1.0   // 12 - Đông (bth)
+      1.0,  
+      0.85, 
+      0.85, 
+      0.9,  
+      1.35, 
+      1.5,  
+      1.7,  
+      1.6,  
+      1.4,  
+      1.3,  
+      1.2,  
+      1.0   
     ];
     const yearFactor = year === 2023 ? 0.9 : year === 2025 ? 1.12 : 1.0;
     const base = 1500;
@@ -422,7 +421,7 @@ const AdBaoCaoThongKe = () => {
   };
 
   const fetchStatusData = async (month, year) => {
-    // Trả về tỉ lệ để lát chia theo tổng bài của tháng đã tính ở trên
+    // Trả về tỉ lệ để  chia theo tổng bài của tháng đã tính ở trên
     const approvedRatio = 0.6 + ((month % 3) - 1) * 0.05 + (year === 2025 ? 0.03 : year === 2023 ? -0.03 : 0);
     const pendingRatio = 0.25 + ((year % 2) ? 0.02 : -0.02);
     const rejectedRatio = Math.max(0.05, 1 - approvedRatio - pendingRatio);
@@ -430,7 +429,7 @@ const AdBaoCaoThongKe = () => {
   };
 
   const fetchTypeData = async (month, year) => {
-    // vary by month/year
+    // thay đổi theo tháng/năm
     const roomPercent = 52 + (month % 6) * 2 + (year === 2025 ? 2 : year === 2023 ? -2 : 0);
     const a = Math.min(85, Math.max(30, roomPercent));
     const b = 100 - a;
@@ -473,7 +472,7 @@ const AdBaoCaoThongKe = () => {
 
   useEffect(() => {
     refetch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [selectedMonth, selectedYear]);
 
   return (
@@ -500,7 +499,7 @@ const AdBaoCaoThongKe = () => {
                   animation: fadeInDown 0.8s ease-out forwards;
                 }
                 
-                                 .chart-container {
+                   .chart-container {
                    animation: fadeInDown 1s ease-out forwards;
                    animation-delay: 0.3s;
                    opacity: 0;
@@ -520,7 +519,7 @@ const AdBaoCaoThongKe = () => {
               Báo cáo - Thống kê
             </h2>
 
-            {/* KPI Cards with animations */}
+            {/* KPI Cards với hiệu ứng */}
             <style>
               {`
                 @keyframes slideInUp {
@@ -645,7 +644,7 @@ const AdBaoCaoThongKe = () => {
               </div>
             </div>
 
-            {/* Filters with animations */}
+            {/* Lọc với hiệu ứng */}
             <style>
               {`
                 @keyframes slideInRight {
@@ -740,7 +739,7 @@ const AdBaoCaoThongKe = () => {
               </button>
             </div>
 
-            {/* Bar chart */}
+            {/* Biểu đồ thanh */}
             <div className="chart-container" style={{ marginBottom: 24 }}>
               <ResponsiveContainer aspect={16/9} minHeight={260} maxHeight={460}>
                 {(w, h) => (
@@ -755,7 +754,7 @@ const AdBaoCaoThongKe = () => {
               </ResponsiveContainer>
             </div>
 
-            {/* Pie charts */}
+            {/* Biểu đồ tròn */}
             <div 
               className="pie-chart-container"
               style={{ 

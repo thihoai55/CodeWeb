@@ -43,19 +43,19 @@ const AdProfile = () => {
 
   return (
     <div className="user-profile-dropdown" ref={dropdownRef}>
-      {/* Trigger Button */}
+      {/* Nút kích hoạt */}
       <div className="user-info" onClick={toggleDropdown}>
         <div className="avatar">👤</div>
         <span className="username">Admin</span>
         <div className={`dropdown-arrow ${showDropdown ? 'active' : ''}`}>▼</div>
       </div>
       
-      {/* Dropdown Menu */}
+      {/* Menu thả xuống */}
       {showDropdown && (
         <div className="user-dropdown">
           {/* Profile Summary */}
           <div className="dropdown-profile">
-            <div className="dropdown-avatar">👤</div>
+            <div className="dropdown-avatar"><i class="bi bi-person-circle"></i></div>
             <div className="dropdown-user-info">
               <div className="dropdown-username">Admin</div>
               <div className="dropdown-phone">Quản trị viên</div>
