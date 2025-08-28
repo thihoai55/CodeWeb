@@ -1,90 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import AdThongBaoSidebar from './ad_thongbaosidebar';
+import { useNotifications } from './ad_du_lieu_thong_bao';
 
 const AdThongBaoHeader = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      message: 'HOT: Hệ thống phát hiện 5 bài đăng vi phạm quy định cần xem xét',
-      date: '15/01/2024 14:30',
-      isRead: false,
-      timeAgo: '2 giờ trước'
-    },
-    {
-      id: 2,
-      message: 'Thông báo: Có 12 yêu cầu thuê phòng mới cần phê duyệt',
-      date: '15/01/2024 13:45',
-      isRead: true,
-      timeAgo: '3 giờ trước'
-    },
-    {
-      id: 3,
-      message: 'Chào mừng admin mới: Người dùng "user123" báo cáo vấn đề với bài đăng #456',
-      date: '15/01/2024 12:20',
-      isRead: true,
-      timeAgo: '4 giờ trước'
-    },
-    {
-      id: 4,
-      message: 'Hệ thống backup dữ liệu hoàn thành thành công',
-      date: '15/01/2024 11:15',
-      isRead: true,
-      timeAgo: '5 giờ trước'
-    },
-    {
-      id: 5,
-      message: 'Có 3 tài khoản mới đăng ký cần xác minh',
-      date: '15/01/2024 10:30',
-      isRead: false,
-      timeAgo: '6 giờ trước'
-    }
-  ]);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const { notifications, setNotifications, unreadCount, markAllAsRead, deleteSelected } = useNotifications();
 
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
+    setShowSidebar(false);
+  };
+
+  const handleSidebarClick = () => {
+    setShowSidebar(!showSidebar);
+    setShowNotifications(false);
   };
 
   const handleClickOutside = (e) => {
     if (!e.target.closest('.notification-dropdown') && !e.target.closest('.notification-icon')) {
       setShowNotifications(false);
     }
+    if (!e.target.closest('.ad-thongbaosidebar') && !e.target.closest('.sidebar-notification-icon')) {
+      setShowSidebar(false);
+    }
   };
 
   const handleMarkAllAsRead = () => {
-    // Đánh dấu tất cả thông báo đã đọc
-    const updatedNotifications = notifications.map(notification => ({
-      ...notification,
-      isRead: true
-    }));
-    setNotifications(updatedNotifications);
-    
-    // Thêm hiệu ứng CSS để thông báo đã được đọc
-    const notificationItems = document.querySelectorAll('.notification-item');
-    notificationItems.forEach((item, index) => {
-      setTimeout(() => {
-        item.style.backgroundColor = '#f8f9fa';
-        item.style.transform = 'scale(1.02)';
-        item.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-        
-        // Reset transform sau 300ms
-        setTimeout(() => {
-          item.style.transform = 'scale(1)';
-          item.style.boxShadow = 'none';
-        }, 300);
-      }, index * 100); // Hiệu ứng lần lượt từng item
-    });
-    
-    // Thêm hiệu ứng cho nút
-    const button = document.querySelector('.mark-all-read-btn');
-    if (button) {
-      button.style.transform = 'scale(0.95)';
-      button.style.backgroundColor = '';
-      setTimeout(() => {
-        button.style.transform = 'scale(1)';
-        button.style.backgroundColor = '#6c757d';
-      }, 200);
-    }
+    markAllAsRead();
+  };
+
+  const handleSelectAll = (selectAll) => {
+    console.log('Select all:', selectAll);
+  };
+
+  const handleDeleteSelected = (selectedIds) => {
+    deleteSelected(selectedIds);
   };
 
   const handleClose = () => {
@@ -102,20 +54,33 @@ const AdThongBaoHeader = () => {
 
   return (
     <div className="ad-thongbaoheader">
-      {/* Notification Icon */}
+      {/* Header Notification Icon */}
       <div 
         className="notification-icon ad-noti-icon" 
         onClick={handleNotificationClick}
       >
         <i className="bi bi-bell"></i>
-        {notifications.filter(n => !n.isRead).length > 0 && (
+        {unreadCount > 0 && (
           <span className="ad-noti-badge">
-            {notifications.filter(n => !n.isRead).length > 9 ? '9+' : notifications.filter(n => !n.isRead).length}
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        )}
+      </div>
+
+      {/* Sidebar Notification Icon */}
+      <div 
+        className="sidebar-notification-icon" 
+        onClick={handleSidebarClick}
+      >
+        <i className="bi bi-list-ul"></i>
+        {unreadCount > 0 && (
+          <span className="notification-badge">
+            {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </div>
       
-      {/* Notification Dropdown */}
+      {/* Header Notification Dropdown */}
       {showNotifications && (
         <div className="notification-dropdown ad-noti-dropdown">
           {/* Header */}
@@ -166,16 +131,16 @@ const AdThongBaoHeader = () => {
               </div>
             ) : (
               filteredNotifications.map(notification => (
-                                 <div 
-                   key={notification.id}
-                   className="notification-item"
-                   style={{
-                     padding: '15px 20px',
-                     borderBottom: '1px solid #f0f0f0',
-                     cursor: 'pointer',
-                     backgroundColor: notification.isRead ? 'white' : '#f8f9fa'
-                   }}
-                 >
+                <div 
+                  key={notification.id}
+                  className="notification-item"
+                  style={{
+                    padding: '15px 20px',
+                    borderBottom: '1px solid #f0f0f0',
+                    cursor: 'pointer',
+                    backgroundColor: notification.isRead ? 'white' : '#f8f9fa'
+                  }}
+                >
                   <div style={{
                     display: 'flex',
                     alignItems: 'flex-start',
@@ -229,6 +194,18 @@ const AdThongBaoHeader = () => {
               ))
             )}
           </div>
+        </div>
+      )}
+
+      {/* Sidebar Notification Panel */}
+      {showSidebar && (
+        <div className="sidebar-notification-dropdown">
+          <AdThongBaoSidebar
+            notifications={notifications}
+            onMarkAllAsRead={handleMarkAllAsRead}
+            onSelectAll={handleSelectAll}
+            onDeleteSelected={handleDeleteSelected}
+          />
         </div>
       )}
     </div>
