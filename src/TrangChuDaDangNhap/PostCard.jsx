@@ -54,22 +54,22 @@ function PostCard({ post }) {
         }}>
           {post.title}
         </h3>
+        {/* Hiển thị giá: thêm hậu tố "/ tháng" để người dùng dễ hiểu đơn vị */}
         <div style={{
           color: "#1976d2",
           fontWeight: "bold",
           fontSize: "16px",
           marginBottom: "8px"
         }}>
-          {post.price}
-
-          
+          {post.price ? `${post.price} / tháng` : ''}
         </div>
+        {/* Hiển thị diện tích: thêm hậu tố "m²" (đã xử lý để tránh trùng nếu dữ liệu seed đã có) */}
         <div style={{
           fontSize: "14px",
           color: "#666",
           marginBottom: "4px"
         }}>
-          {post.size}
+          {post.size ? `${post.size} m²` : ''}
         </div>
         <div style={{
           fontSize: "14px",

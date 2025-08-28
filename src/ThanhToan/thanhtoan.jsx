@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
@@ -9,10 +9,20 @@ import { giaoDichTheoTaiKhoan } from '../DaTa/lichSuGiaoDich';
 function ThanhToan() {
   const navigate = useNavigate();
   // State cho phương thức thanh toán và xuất hóa đơn
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('bank-transfer');
-  const [exportInvoice, setExportInvoice] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('bank-transfer'); // mặc định là chuyển khoản
+  const [exportInvoice, setExportInvoice] = useState(false); // mặc định không xuất hóa đơn
+  const [isProcessing, setIsProcessing] = useState(false); // trạng thái đang xử lý thanh toán, chống double click
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+
+  // Xác định role hiện tại để điều khiển Header (host: ẩn, renter: hiện)
+  const showHeader = useMemo(() => {
+    try {
+      const ui = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      return ui?.role !== 'host';
+    } catch {
+      return true; // mặc định hiện nếu không xác định được
+    }
+  }, []);
 
   // Lấy thông tin đăng bài từ localStorage
   const postData = JSON.parse(localStorage.getItem('postData') || '{}');
@@ -24,7 +34,7 @@ function ThanhToan() {
   const firstImageDataUrl = Array.isArray(postData.images) && typeof postData.images[0] === 'string' ? postData.images[0] : '';
 
   // Parse số ngày an toàn
-  const numberOfDaysOnly = (String(postData.numberOfDays || '').match(/\d+/)?.[0] || '0');
+  const numberOfDaysOnly = (String(postData.numberOfDays || '').match(/\d+/)?.[0] || '0'); //match là toán tử lấy số đầu tiên, ví dụ "30 ngày" -> "30"
 
   // Tạo nội dung chuyển khoản tự động (dùng số ngày đã parse)
   const transferContent = `BĐĐ ${Math.floor(Math.random() * 100000)} ${postData.postType?.includes('Vip 1') ? 'VIP1' : postData.postType?.includes('Vip 2') ? 'VIP2' : postData.postType?.includes('Vip 3') ? 'VIP3' : 'THUONG'} ${numberOfDaysOnly} NGAY`;
@@ -42,15 +52,22 @@ function ThanhToan() {
   // (Đọc danh sách từ khóa userPosts_<username> để tránh đếm lẫn giữa các tài khoản)
   const getNextPostId = () => {
     try {
+      //lấy thông tin user từ localStorage
       const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      //tạo key lưu danh sách bài đăng theo user
       const key = `userPosts_${userInfo?.username || ''}`;
+      //lấy danh sách bài đăng hiện có
       const currentPosts = JSON.parse(localStorage.getItem(key) || '[]');
+      //tìm mã lớn nhất hiện có trong danh sách bài đăng
       const maxFromPosts = currentPosts.reduce((max, p) => {
         const match = String(p.id || '').match(/^BD(\d+)$/);
         return match ? Math.max(max, parseInt(match[1], 10)) : max;
       }, 0);
+      //lấy số đếm đã lưu trong localStorage (riêng theo user) để tránh trùng nếu xóa bài
+      //nếu không có thì dùng 0
       const storedCounter = parseInt(localStorage.getItem(`postIdCounter_${userInfo?.username || 'global'}`) || '0', 10) || 0;
       const next = Math.max(maxFromPosts, storedCounter) + 1;
+
       localStorage.setItem(`postIdCounter_${userInfo?.username || 'global'}`, String(next));
       return `BD${String(next).padStart(3, '0')}`;
     } catch {
@@ -119,6 +136,7 @@ function ThanhToan() {
           localStorage.setItem('userInfo', JSON.stringify(latestUserInfo));
         }
       } catch { }
+      // Gửi sự kiện để các component khác (Header, Sidebar) cập nhật lại
       window.dispatchEvent(new Event('accountsUpdated'));
       window.dispatchEvent(new Event('userInfoUpdated'));
 
@@ -152,6 +170,42 @@ function ThanhToan() {
       // Ghi lại vào localStorage theo đúng tài khoản
       localStorage.setItem(storageKey, JSON.stringify(currentPosts));
 
+      // 7c) Lưu bản ghi CÔNG KHAI để hiển thị trên Trang chủ (dành cho mọi tài khoản)
+      // Giải thích:
+      // - Ngoài danh sách riêng theo user (userPosts_<username>), ta cần một nguồn dữ liệu chung
+      //   để mọi tài khoản (kể cả chưa đăng nhập) đều xem được bài vừa đăng.
+      // - Ở đây dùng localStorage key 'publicPosts' như một “feed công khai”.
+      // - Khi thanh toán thành công, ta push bài mới vào 'publicPosts' (đưa lên đầu) để trang chủ đọc và hiển thị ngay.
+      try {
+        const publicKey = 'publicPosts';
+        const existingPublic = JSON.parse(localStorage.getItem(publicKey) || '[]');
+        const categoryForHomepage = newPost.type === 'Tìm người ở ghép' ? 'Ở ghép' : newPost.type;
+        const publicRecord = {
+          id: newPost.id,
+          title: newPost.title,
+          img: newPost.image,
+          images: Array.isArray(postData.images) && postData.images.length ? postData.images : (newPost.image ? [newPost.image] : []),
+          price: newPost.price,
+          size: newPost.area,
+          area: newPost.area,
+          address: newPost.address,
+          postedDate: new Date().toISOString(),
+          category: categoryForHomepage,
+          owner: {
+            name: newPost.contactName || userInfo.username || 'Chủ trọ',
+            phone: newPost.contactPhone || '',
+            avatar: 'anh/avt.jpg',
+            totalPosts: (currentPosts?.length || 0)
+          },
+          rating: { average: 0, total: 0, breakdown: {} },
+          reviews: [],
+          location: { lat: null, lng: null, address: newPost.address }
+        };
+        const mergedPublic = [publicRecord, ...existingPublic.filter(p => p && p.id !== publicRecord.id)];
+        localStorage.setItem(publicKey, JSON.stringify(mergedPublic));
+        window.dispatchEvent(new Event('publicPostsUpdated'));
+      } catch { }
+
       // 7b) Ghi lịch sử giao dịch thanh toán cho tài khoản hiện tại
       try {
         const txKey = `transactions_${userInfo.username}`;
@@ -178,7 +232,7 @@ function ThanhToan() {
         };
         const mergedList = [txRecord, ...baseList];
         localStorage.setItem(txKey, JSON.stringify(mergedList));
-      } catch {}
+      } catch { }
 
       // 8) Xóa postData tạm sau thanh toán
       localStorage.removeItem('postData');
@@ -204,7 +258,7 @@ function ThanhToan() {
       flexDirection: 'column'
     }}>
       {/* Header trang */}
-      <Header />
+      {showHeader && <Header />}
 
       {/* Nội dung chính với sidebar */}
       <div style={{
@@ -532,29 +586,6 @@ function ThanhToan() {
         </div>
       )}
 
-      {/* <style>
-        {`
-          @keyframes slideInRight {
-            from {
-              transform: translateX(100%);
-              opacity: 0;
-            }
-            to {
-              transform: translateX(0);
-              opacity: 1;
-            }
-          }
-          
-          @keyframes countdown {
-            from {
-              width: 100%;
-            }
-            to {
-              width: 0%;
-            }
-          }
-        `}
-      </style> */}
     </div>
   );
 }

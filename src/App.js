@@ -35,10 +35,19 @@ import XemThongTinNguoiDung from "./Admin/xemthongtinnguoidung";
 import SuaThongTinNguoiDung from "./Admin/suathongtinnguoidung";
 import AdThongTinCaNhan from "./Admin/ad_thongtincanhan";
 import AdDoiMatKhau from "./Admin/ad_doimatkhau";
+import AdTrangChu from "./Admin/ad_trangchu";
+import AdDuyetKiemDuyet from "./Admin/ad_duyetkiemduyet";
+import AdBaiDang from "./Admin/ad_baidang";
+import AdChiTietBaiDang from "./Admin/ad_chitietbaidang";
+import AdThongBaoSidebar from "./Admin/ad_thongbaosidebar";
+import AdBaoCaoThongKe from "./Admin/ad_baocaothongke";
+import { NotificationsProvider } from "./Admin/ad_du_lieu_thong_bao";
+
 
 function App() {
   return (
     <SearchProvider>
+      <NotificationsProvider>
       <BrowserRouter>
         <Routes>
           {/* Chưa đăng nhập */}
@@ -70,16 +79,8 @@ function App() {
           <Route path="/hop-dong-cho-thue" element={<HopDongChoThue />} />
           <Route path="/thong-bao" element={<ThongBaoSideBar />} />
 
-          {/* Admin base redirect */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={["admin"]}>
-                <XemThongTinNguoiDung />
-              </ProtectedRoute>
-            }
-          />
           {/* Admin Routes */}
+
           <Route
             path="/admin/quan-ly-nguoi-dung"
             element={
@@ -112,8 +113,63 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdTrangChu />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/duyet-kiem-duyet"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdDuyetKiemDuyet />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/bao-cao-thong-ke"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdBaoCaoThongKe />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/quan-ly-bai-dang"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdBaiDang />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/chi-tiet-bai-dang/:postId"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdChiTietBaiDang />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/thong-bao"
+            element={
+              <ProtectedRoute allowedRoles={["admin"]}>
+                <AdThongBaoSidebar />
+              </ProtectedRoute>
+            }
+          />
+
         </Routes>
       </BrowserRouter>
+      </NotificationsProvider>
     </SearchProvider>
   );
 }

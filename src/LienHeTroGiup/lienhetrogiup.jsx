@@ -205,7 +205,7 @@ function LienHeTroGiup() {
         </div>
       </div>
       
-      {currentUserRole !== 'host' && <Footer />}
+      <Footer />
     </div>
   );
 }

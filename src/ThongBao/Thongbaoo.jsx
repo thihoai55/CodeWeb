@@ -3,10 +3,13 @@ import React from "react";
 function parseViDateStringToDate(dateStr) {
   // dateStr ví dụ: '01/03/2020 23:39'
   try {
+    //tách ngày và giờ
     const [d, t] = dateStr.split(" ");
+    //tách ngày tháng năm
     const [day, month, year] = d.split("/").map(Number);
+    //tách giờ phút
     const [hour, minute] = t.split(":").map(Number);
-    return new Date(year, month - 1, day, hour, minute);
+    return new Date(year, month - 1, day, hour, minute); // Tháng trong JS từ 0-11
   } catch (_) {
     return new Date();
   }
@@ -64,7 +67,7 @@ function DropdownNotificationItem({ notification, onClick }) {
           <span style={{ color: "#333", fontSize: 13, fontWeight: 500 }}>
             {date}
           </span>
-          <span style={{ color: "#888", fontSize: 12 }}>
+          <span style={{ color: "#888", fontSize: 13 }}>
             {formatTimeAgoFromVi(date)} trước
           </span>
         </div>

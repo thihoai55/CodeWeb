@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../DangBai/sidebar';
 import Header from '../TrangChuDaDangNhap/Header';
 import Footer from '../TrangChuDaDangNhap/Footer';
+import { accounts } from '../DaTa/account.js';
 
 function PasswordInput({ label, type = 'password', value, onChange, placeholder }) {
   return (
@@ -61,7 +62,7 @@ function DoiMatKhau() {
   // Hàm kiểm tra mật khẩu cũ
   const verifyOldPassword = (oldPassword) => {
     try {
-      const { accounts } = require('../DaTa/account.js');
+      // const { accounts } = require('../DaTa/account.js');
       
       // Tìm account của user hiện tại
       const userAccount = accounts.find(acc => 
@@ -83,7 +84,7 @@ function DoiMatKhau() {
   // Hàm cập nhật mật khẩu mới
   const updatePassword = (newPassword) => {
     try {
-      const { accounts } = require('../DaTa/account.js');
+      // const { accounts } = require('../DaTa/account.js');
       
       // Tìm account cần cập nhật
       const accountIndex = accounts.findIndex(acc => 
@@ -194,7 +195,7 @@ function DoiMatKhau() {
             <span style={{ color: '#333', fontSize: '16px' }}>Đổi mật khẩu</span>
           </div>
 
-          <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '0 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+          <form onSubmit={handleSubmit} style={{ background: '#fff', borderRadius: '10px', padding: '20px', margin: '50px 100px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
             <div style={{ paddingBottom: '16px', borderBottom: '1px solid #ebe9e9ff' }}>
               <h1 style={{ fontSize: '20px', fontWeight: '700', margin: '0', color: '#111' }}>Đổi mật khẩu</h1>
             </div>
@@ -233,7 +234,7 @@ function DoiMatKhau() {
           </form>
         </div>
       </div>
-      {currentUserRole !== 'host' && <Footer />}
+      <Footer />
     </div>
   );
 }

@@ -13,8 +13,30 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
   // Sử dụng SearchContext
   const { searchFilters, isSearchActive } = useSearch();
 
-  // Ưu tiên danh sách truyền vào; nếu không có, lấy từ file dữ liệu chung
-  const defaultPosts = postsData.map(p => ({
+  // Đọc bài công khai từ localStorage để hiển thị cả khi chưa đăng nhập
+  // Đọc publicPosts để trang chưa đăng nhập cũng thấy bài mới đăng
+  const publicPosts = React.useMemo(() => {
+    try {
+      const raw = localStorage.getItem('publicPosts');
+      const arr = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(arr)) return [];
+      return arr.map(p => ({
+        title: p.title,
+        img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
+        price: p.price,
+        size: p.size || p.area,
+        address: p.address,
+        id: p.id,
+        postedAt: p.postedAt,
+        owner: p.owner,
+        category: p.category
+      }));
+    } catch { return []; }
+  }, []);
+
+  // Ưu tiên danh sách truyền vào; nếu không có, hợp nhất publicPosts + dữ liệu seed
+  // Hợp nhất: ưu tiên publicPosts trước seed để bài mới đứng đầu
+  const defaultPosts = [...publicPosts, ...postsData.map(p => ({
     title: p.title,
     img: p.img,
     price: p.price,
@@ -24,7 +46,7 @@ function PostList({ posts: customPosts, fixedColumns, onPageChange: parentPageCh
     postedAt: p.postedAt,
     owner: p.owner,
     category: p.category
-  }));
+  }))];
 
   // Lọc bài đăng theo filter
   const filteredPosts = applyAllFilters(defaultPosts, searchFilters);

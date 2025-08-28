@@ -1,12 +1,35 @@
 // src/data/selectors.js
 import { postsData } from './danhsachbaidangg';
 
+// Chuẩn hóa đường dẫn ảnh:
+// - Nếu là đường dẫn tương đối (ảnh trong public) thì thêm '/'
+// - Nếu là http/https hoặc data URL (khi người dùng upload) thì giữ nguyên
 const toAbsolute = (url) => {
   if (!url) return '';
-  return url.startsWith('/') ? url : `/${url}`;
+  const s = String(url);
+  if (s.startsWith('/') || s.startsWith('http://') || s.startsWith('https://') || s.startsWith('data:')) return s;
+  return `/${s}`;
 };
 
-export const normalizedPosts = postsData.map(p => ({
+// Đọc danh sách bài CÔNG KHAI từ localStorage để merge thêm vào nguồn dữ liệu seed
+const fromLocalPublic = () => {
+  try {
+    const raw = localStorage.getItem('publicPosts');
+    const arr = raw ? JSON.parse(raw) : [];
+    return Array.isArray(arr) ? arr : [];
+  } catch {
+    return [];
+  }
+};
+
+// Hợp nhất: ưu tiên publicPosts (bài mới) nằm trước seed để hiển thị “trên đầu”
+const mergedPostsSource = (() => {
+  const publicPosts = fromLocalPublic();
+  // Ưu tiên publicPosts trước để bài mới lên đầu
+  return [...publicPosts, ...postsData];
+})();
+
+export const normalizedPosts = mergedPostsSource.map(p => ({
   id: p.id,
   title: p.title,
   address: p.address,

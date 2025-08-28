@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../TrangChuDaDangNhap/Footer';
+import Header from '../TrangChuDaDangNhap/Header';
 import Sidebar from '../DangBai/sidebar';
 import ModalAnTin from '../ModalAnTin/antin';
 import ModalXoaTin from '../ModalXoaTin/xoatin';
@@ -13,14 +15,23 @@ function QuanLyBaiDang() {
   const [selectedTab, setSelectedTab] = useState('all');
   const [postTypeFilter, setPostTypeFilter] = useState('');
   const [vipTypeFilter, setVipTypeFilter] = useState('');
-  const [openHideModal, setOpenHideModal] = useState(false);
+  const [openHideModal, setOpenHideModal] = useState(false); // Modal ẩn tin
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
+  const [selectedPost, setSelectedPost] = useState(null); // Bài đăng được chọn để ẩn/xóa
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
-  const [storageKey, setStorageKey] = useState('');
+  const [storageKey, setStorageKey] = useState(''); // Khóa localStorage cho bài đăng của user
 
-  // Lấy thông tin người dùng và bảo vệ route cho host
+  const showHeader = useMemo(() => {
+    try {
+      const ui = JSON.parse(localStorage.getItem('userInfo') || '{}');
+      return ui?.role !== 'host';
+    } catch {
+      return true;
+    }
+  }, []);
+
+  // Lấy thông tin người dùng và NẠP BÀI THEO TÀI KHOẢN (luôn có seed + thêm bài mới)
   useEffect(() => {
     const userInfoStr = localStorage.getItem('userInfo');
     if (!userInfoStr) {
@@ -30,22 +41,38 @@ function QuanLyBaiDang() {
     const user = JSON.parse(userInfoStr);
     setCurrentUser(user);
 
-    // Nếu không phải host thì đưa về trang đã đăng nhập
-    if (user?.role !== 'host') {
-      navigate('/trang-chu-da-dang-nhap');
-      return;
-    }
+    const key = `userPosts_${user.username}`;
+    setStorageKey(key);
 
-    // Lấy danh sách bài đăng của user từ localStorage
-    const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
-    setPosts(userPosts);
+    try {
+      // 1) Seed cố định theo tài khoản từ posts.js (luôn luôn có dữ liệu nền)
+      const seed = Array.isArray(postsData[user.username]) ? postsData[user.username] : [];
+
+      // 2) Bài mới do người dùng đăng, lưu ở localStorage theo tài khoản
+      const storedStr = localStorage.getItem(key);
+      const stored = storedStr ? JSON.parse(storedStr) : [];
+
+      // 3) Hợp nhất: ưu tiên bài mới (stored) lên đầu, loại trùng theo id với seed
+      const seedMap = new Set((seed || []).map(p => p.id));
+      const merged = [...(Array.isArray(stored) ? stored : []), ...seed.filter(p => !seedMap.has(p.id) || !(stored || []).some(s => s.id === p.id))];
+
+      setPosts(merged);
+      // Đồng bộ lại localStorage để lần sau vẫn có đầy đủ
+      localStorage.setItem(key, JSON.stringify(merged));
+    } catch (e) {
+      // Fallback: nếu có lỗi parsing, tối thiểu vẫn hiển thị seed
+      const seed = Array.isArray(postsData[user.username]) ? postsData[user.username] : [];
+      setPosts(seed);
+      localStorage.setItem(key, JSON.stringify(seed));
+    }
   }, [navigate]);
 
-  // Lắng nghe thay đổi localStorage để đồng bộ bài đăng
+  // Lắng nghe thay đổi localStorage để đồng bộ bài đăng của tài khoản hiện tại
   useEffect(() => {
+    if (!storageKey) return;
     const handleStorageChange = (e) => {
-      if (e.key === 'userPosts') {
-        const userPosts = JSON.parse(localStorage.getItem('userPosts') || '[]');
+      if (e.key === storageKey) {
+        const userPosts = JSON.parse(localStorage.getItem(storageKey) || '[]');
         setPosts(userPosts);
       }
     };
@@ -135,7 +162,7 @@ function QuanLyBaiDang() {
     }
   };
 
-  // Cập nhật trạng thái
+  // Cập nhật trạng thái, map là duyệt qua tất cả tất cả các bài đăng và trả về mảng mới, thay trường status
   const updatePostStatus = (postId, newStatus) => {
     const updatedPosts = posts.map(p => p.id === postId ? { ...p, status: newStatus } : p);
     setPosts(updatedPosts);
@@ -144,7 +171,7 @@ function QuanLyBaiDang() {
     }
   };
 
-  // Xóa bài
+  // Xóa bài, filter tạo ra mảng mới gồm tất cả các phần tử p có trong posts mà p.id khác postId
   const deletePost = (postId) => {
     const updatedPosts = posts.filter(p => p.id !== postId);
     setPosts(updatedPosts);
@@ -175,6 +202,7 @@ function QuanLyBaiDang() {
       display: 'flex',
       flexDirection: 'column'
     }}>
+      {showHeader && <Header />}
       {/* Layout quản lý: KHÔNG Header/Footer cho host */}
       <div style={{
         display: 'flex',
@@ -223,13 +251,13 @@ function QuanLyBaiDang() {
                           message = `Không có bài đăng nào phù hợp với bộ lọc đã chọn`;
                           if (postTypeFilter) {
                             const postTypeLabel = postTypeFilter === 'phongtro' ? 'Phòng trọ' :
-                                                  postTypeFilter === 'nha' ? 'Nhà nguyên căn' : 'Tìm người ở ghép';
+                              postTypeFilter === 'nha' ? 'Nhà nguyên căn' : 'Tìm người ở ghép';
                             message += ` (Loại tin: ${postTypeLabel})`;
                           }
                           if (vipTypeFilter) {
                             const vipTypeLabel = vipTypeFilter === 'thuong' ? 'Tin thường' :
-                                                 vipTypeFilter === 'vip1' ? 'Tin VIP 1' :
-                                                 vipTypeFilter === 'vip2' ? 'Tin VIP 2' : 'Tin VIP 3';
+                              vipTypeFilter === 'vip1' ? 'Tin VIP 1' :
+                                vipTypeFilter === 'vip2' ? 'Tin VIP 2' : 'Tin VIP 3';
                             message += ` (VIP: ${vipTypeLabel})`;
                           }
                         } else {
@@ -417,7 +445,10 @@ function QuanLyBaiDang() {
                           fontWeight: 700,
                           color: getStatusColor(post.status),
                           marginBottom: '4px'
-                        }}>{post.status}</div>
+                        }}
+                        >
+                          {post.status}
+                        </div>
 
                         {(post.status === 'Đã ẩn'
                           ? ['Đăng lại', 'Sửa bài', 'Xóa bài', 'Lịch hẹn', 'Yêu cầu thuê']
@@ -471,7 +502,7 @@ function QuanLyBaiDang() {
           }
           setOpenHideModal(false);
           setSelectedPost(null);
-          setSelectedTab('hidden');
+          setSelectedTab('hidden'); // Chuyển sang tab Đã ẩn sau khi ẩn tin
         }}
       />
       <ModalXoaTin
@@ -485,6 +516,7 @@ function QuanLyBaiDang() {
           setSelectedPost(null);
         }}
       />
+      <Footer />
     </div>
   );
 }

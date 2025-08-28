@@ -13,8 +13,28 @@ function TrangPhongTro() {
   const PostList = isLoggedIn ? PostListDa : PostListGuest;
   const Footer = isLoggedIn ? FooterDa : FooterGuest;
 
-  // Lọc chỉ bài đăng phòng trọ
-  const phongTroPosts = postsData
+  const readPublic = () => {
+    try {
+      const raw = localStorage.getItem('publicPosts');
+      const arr = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(arr)) return [];
+      return arr
+        .filter(p => p.category === 'Phòng trọ')
+        .map(p => ({
+          title: p.title,
+          img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
+          price: p.price,
+          size: p.size || p.area,
+          address: p.address,
+          id: p.id,
+          postedAt: p.postedAt,
+          owner: p.owner,
+          category: p.category
+        }));
+    } catch { return []; }
+  };
+
+  const phongTroSeed = postsData
     .filter(post => post.category === "Phòng trọ")
     .map(p => ({
       title: p.title,
@@ -27,6 +47,8 @@ function TrangPhongTro() {
       owner: p.owner,
       category: p.category
     }));
+
+  const phongTroPosts = [...readPublic(), ...phongTroSeed];
 
   return (
     <div>

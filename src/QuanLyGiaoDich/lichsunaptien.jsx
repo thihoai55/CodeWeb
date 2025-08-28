@@ -83,7 +83,7 @@ function LichSuNapTien() {
 					</div>
 				</div>
 			</div>
-			{currentUserRole !== 'host' && <Footer />}
+			<Footer />
 		</div>
 	);
 }
