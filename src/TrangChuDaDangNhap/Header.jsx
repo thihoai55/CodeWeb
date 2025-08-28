@@ -17,7 +17,7 @@ function Header() {
 
   // Thêm state để lưu thông tin user
   const [userInfo, setUserInfo] = React.useState(null);
-  const [userBalance, setUserBalance] = React.useState(0);
+  const [userBalance, setUserBalance] = React.useState(null);
 
   const [openBoLoc, setOpenBoLoc] = React.useState(false);
   const [openTimKiem, setOpenTimKiem] = React.useState(false);
@@ -76,8 +76,10 @@ function Header() {
             acc.email === parsedUserInfo.email ||
             acc.phone === parsedUserInfo.phone
           );
-          if (userAccount && userAccount.balance) {
+          if (userAccount && typeof userAccount.balance === 'number') {
             setUserBalance(userAccount.balance);
+          } else {
+            setUserBalance(0);
           }
         }
       } catch (error) {
@@ -707,7 +709,7 @@ function Header() {
                     <div>
                       <div style={{ fontSize: 13, color: "#000000ff" }}>Số dư tài khoản:</div>
                       <div style={{ fontWeight: "bold", fontSize: 16 }}>
-                        {userBalance ? `${userBalance.toLocaleString('vi-VN')} VND` : 'Đang tải...'}
+                        {userInfo ? `${(Number.isFinite(userBalance) ? userBalance : 0).toLocaleString('vi-VN')} VND` : 'Đang tải...'}
                       </div>
                     </div>
                     <button
