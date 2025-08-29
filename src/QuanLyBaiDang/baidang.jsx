@@ -169,6 +169,48 @@ function QuanLyBaiDang() {
     if (storageKey) {
       localStorage.setItem(storageKey, JSON.stringify(updatedPosts));
     }
+    
+    // Khi ẩn bài đăng, cũng xóa khỏi publicPosts
+    if (newStatus === 'Đã ẩn') {
+      try {
+        const publicPosts = JSON.parse(localStorage.getItem('publicPosts') || '[]');
+        const updatedPublicPosts = publicPosts.filter(p => p.id !== postId);
+        localStorage.setItem('publicPosts', JSON.stringify(updatedPublicPosts));
+        // Dispatch event để cập nhật trang chủ
+        window.dispatchEvent(new Event('publicPostsUpdated'));
+      } catch (error) {
+        console.error('Lỗi khi ẩn bài đăng khỏi publicPosts:', error);
+      }
+    }
+    
+    // Khi đăng lại bài đăng (từ trạng thái ẩn), thêm lại vào publicPosts
+    if (newStatus === 'Đang hiển thị') {
+      try {
+        const publicPosts = JSON.parse(localStorage.getItem('publicPosts') || '[]');
+        const postToRestore = posts.find(p => p.id === postId);
+        if (postToRestore && !publicPosts.some(p => p.id === postId)) {
+          // Chuyển đổi định dạng từ posts sang publicPosts
+          const publicPost = {
+            id: postToRestore.id,
+            title: postToRestore.title,
+            img: postToRestore.image,
+            price: postToRestore.price,
+            size: postToRestore.area,
+            area: postToRestore.area,
+            address: `${postToRestore.province || ''} ${postToRestore.district || ''}`.trim(),
+            postedDate: new Date().toISOString(),
+            category: postToRestore.type,
+            owner: { name: currentUser?.name || 'Người dùng', phone: currentUser?.phone || '', avatar: 'anh/avt.jpg', totalPosts: 1 }
+          };
+          publicPosts.unshift(publicPost); // Thêm vào đầu danh sách
+          localStorage.setItem('publicPosts', JSON.stringify(publicPosts));
+          // Dispatch event để cập nhật trang chủ
+          window.dispatchEvent(new Event('publicPostsUpdated'));
+        }
+      } catch (error) {
+        console.error('Lỗi khi đăng lại bài đăng vào publicPosts:', error);
+      }
+    }
   };
 
   // Xóa bài, filter tạo ra mảng mới gồm tất cả các phần tử p có trong posts mà p.id khác postId
@@ -177,6 +219,17 @@ function QuanLyBaiDang() {
     setPosts(updatedPosts);
     if (storageKey) {
       localStorage.setItem(storageKey, JSON.stringify(updatedPosts));
+    }
+    
+    // Đồng thời xóa bài đăng khỏi publicPosts để không hiển thị trên trang chủ
+    try {
+      const publicPosts = JSON.parse(localStorage.getItem('publicPosts') || '[]');
+      const updatedPublicPosts = publicPosts.filter(p => p.id !== postId);
+      localStorage.setItem('publicPosts', JSON.stringify(updatedPublicPosts));
+      // Dispatch event để cập nhật trang chủ
+      window.dispatchEvent(new Event('publicPostsUpdated'));
+    } catch (error) {
+      console.error('Lỗi khi xóa bài đăng khỏi publicPosts:', error);
     }
   };
 

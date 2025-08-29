@@ -23,24 +23,50 @@ function TrangChuDaDangNhap() {
   // Đọc publicPosts từ localStorage và map về định dạng PostList/PostCard đang dùng
   // Lý do: để bài vừa đăng (được lưu ở 'publicPosts') xuất hiện trên trang chủ ngay lập tức,
   // kể cả khi không truyền props 'posts' từ bên ngoài.
-  const publicPosts = React.useMemo(() => {
-    try {
-      const raw = localStorage.getItem('publicPosts');
-      const arr = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(arr)) return [];
-      return arr.map(p => ({
-        id: p.id,
-        title: p.title,
-        img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
-        price: p.price,
-        size: p.size || p.area,
-        area: p.area,
-        address: p.address,
-        postedDate: p.postedDate,
-        category: p.category,
-        owner: p.owner
-      }));
-    } catch { return []; }
+  const [publicPosts, setPublicPosts] = React.useState([]);
+
+  React.useEffect(() => {
+    const loadPublicPosts = () => {
+      try {
+        const raw = localStorage.getItem('publicPosts');
+        const arr = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(arr)) return [];
+        const mappedPosts = arr.map(p => ({
+          id: p.id,
+          title: p.title,
+          img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
+          price: p.price,
+          size: p.size || p.area,
+          area: p.area,
+          address: p.address,
+          postedDate: p.postedDate,
+          category: p.category,
+          owner: p.owner
+        }));
+        setPublicPosts(mappedPosts);
+      } catch { 
+        setPublicPosts([]); 
+      }
+    };
+
+    // Load lần đầu
+    loadPublicPosts();
+
+    // Lắng nghe sự thay đổi của publicPosts
+    const handlePublicPostsUpdate = () => {
+      loadPublicPosts();
+    };
+
+    window.addEventListener('publicPostsUpdated', handlePublicPostsUpdate);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'publicPosts') {
+        loadPublicPosts();
+      }
+    });
+
+    return () => {
+      window.removeEventListener('publicPostsUpdated', handlePublicPostsUpdate);
+    };
   }, []);
 
   // Áp dụng filter vào danh sách bài đăng seed (danh sách tĩnh ban đầu)

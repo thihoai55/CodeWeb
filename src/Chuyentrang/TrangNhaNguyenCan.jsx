@@ -13,26 +13,52 @@ function TrangNhaNguyenCan() {
   const PostList = isLoggedIn ? PostListDa : PostListGuest;
   const Footer = isLoggedIn ? FooterDa : FooterGuest;
 
-  const readPublic = () => {
-    try {
-      const raw = localStorage.getItem('publicPosts');
-      const arr = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(arr)) return [];
-      return arr
-        .filter(p => p.category === 'Nhà nguyên căn')
-        .map(p => ({
-          title: p.title,
-          img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
-          price: p.price,
-          size: p.size || p.area,
-          address: p.address,
-          id: p.id,
-          postedAt: p.postedAt,
-          owner: p.owner,
-          category: p.category
-        }));
-    } catch { return []; }
-  };
+  const [publicPosts, setPublicPosts] = React.useState([]);
+
+  React.useEffect(() => {
+    const loadPublicPosts = () => {
+      try {
+        const raw = localStorage.getItem('publicPosts');
+        const arr = raw ? JSON.parse(raw) : [];
+        if (!Array.isArray(arr)) return [];
+        const mappedPosts = arr
+          .filter(p => p.category === 'Nhà nguyên căn')
+          .map(p => ({
+            title: p.title,
+            img: p.img || (Array.isArray(p.images) && p.images[0]) || '',
+            price: p.price,
+            size: p.size || p.area,
+            address: p.address,
+            id: p.id,
+            postedAt: p.postedAt,
+            owner: p.owner,
+            category: p.category
+          }));
+        setPublicPosts(mappedPosts);
+      } catch { 
+        setPublicPosts([]); 
+      }
+    };
+
+    // Load lần đầu
+    loadPublicPosts();
+
+    // Lắng nghe sự thay đổi của publicPosts
+    const handlePublicPostsUpdate = () => {
+      loadPublicPosts();
+    };
+
+    window.addEventListener('publicPostsUpdated', handlePublicPostsUpdate);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'publicPosts') {
+        loadPublicPosts();
+      }
+    });
+
+    return () => {
+      window.removeEventListener('publicPostsUpdated', handlePublicPostsUpdate);
+    };
+  }, []);
 
   const nhaNguyenCanSeed = postsData
     .filter(post => post.category === "Nhà nguyên căn")
@@ -48,7 +74,7 @@ function TrangNhaNguyenCan() {
       category: p.category
     }));
 
-  const nhaNguyenCanPosts = [...readPublic(), ...nhaNguyenCanSeed];
+  const nhaNguyenCanPosts = [...publicPosts, ...nhaNguyenCanSeed];
 
   return (
     <div>
