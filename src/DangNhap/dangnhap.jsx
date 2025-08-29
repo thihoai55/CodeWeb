@@ -144,7 +144,27 @@ const DangNhap = () => {
     // Lưu role tương ứng với lựa chọn đăng ký
     const mappedRole = registerRole === 'owner' ? 'host' : 'renter';
 
-    // Đăng ký thành công
+    // Tạo tài khoản mới với thông tin đầy đủ
+    const newAccount = {
+      username: registerEmail,
+      password: registerPassword,
+      role: mappedRole,
+      name: registerEmail, // Sử dụng email làm tên mặc định
+      phone: registerPhone,
+      email: registerEmail,
+      balance: 0 // Số dư mặc định là 0
+    };
+
+    // Lấy danh sách tài khoản hiện tại
+    const currentAccounts = getAccounts();
+    
+    // Thêm tài khoản mới vào danh sách
+    const updatedAccounts = [...currentAccounts, newAccount];
+    
+    // Lưu danh sách tài khoản đã cập nhật
+    localStorage.setItem('updatedAccounts', JSON.stringify(updatedAccounts));
+    
+    // Lưu thông tin đăng nhập
     setError("");
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('userRole', mappedRole);
@@ -153,8 +173,19 @@ const DangNhap = () => {
       role: mappedRole,
       name: registerEmail,
       phone: registerPhone,
-      email: registerEmail
+      email: registerEmail,
+      balance: 0
     }));
+    localStorage.setItem('userBalance', '0');
+    
+    // Trigger events để các component khác biết có thay đổi
+    try { 
+      window.dispatchEvent(new Event('accountsUpdated')); 
+    } catch {}
+    try { 
+      window.dispatchEvent(new Event('userInfoUpdated')); 
+    } catch {}
+    
     // Điều hướng theo role sau đăng ký
     if (mappedRole === 'host') {
       navigate('/quan-ly-bai-dang');
@@ -431,8 +462,8 @@ const DangNhap = () => {
               </label>
               <input
                 type="password"
-                value={matKhau}
-                onChange={(e) => setMatKhau(e.target.value)}
+                value={registerPassword}
+onChange={(e) => setRegisterPassword(e.target.value)}
                 placeholder="Mật khẩu"
                 style={{
                   width: "100%",
